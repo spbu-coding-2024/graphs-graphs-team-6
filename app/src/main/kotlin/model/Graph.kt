@@ -1,7 +1,13 @@
 package model
 
 interface Graph<V, K> {
+    /**
+     * A collection of vertices
+     */
     val vertices: Collection<Vertex<V>>
+    /**
+     * A collection of edges
+     */
     val edges: Collection<Edge<V, K>>
 
     /**
