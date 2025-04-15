@@ -10,21 +10,21 @@ class UndirectedGraph<V, K> : Graph<V, K> {
         override var key: K
     ) : Edge<V, K>
 
-    private var vertexMap = HashMap<V, UndirectedVertex<V>>()
-    private var edgeMap = HashMap<K, UndirectedEdge<V, K>>()
+    private var _vertices = HashMap<V, UndirectedVertex<V>>()
+    private var _edges = HashMap<K, UndirectedEdge<V, K>>()
 
     override val vertices: Collection<Vertex<V>>
-        get() = vertexMap.values
+        get() = _vertices.values
 
     override val edges: Collection<Edge<V, K>>
-        get() = edgeMap.values
+        get() = _edges.values
 
     override fun addEdge(firstVertex: V, secondVertex: V, key: K): UndirectedEdge<V, K> {
-        return edgeMap.getOrPut(key) { chooseVertexOrder(firstVertex, secondVertex, key) }
+        return _edges.getOrPut(key) { chooseVertexOrder(firstVertex, secondVertex, key) }
     }
 
     override fun addVertex(vertex: V) {
-        vertexMap.getOrPut(vertex) { UndirectedVertex(vertex) }
+        _vertices.getOrPut(vertex) { UndirectedVertex(vertex) }
     }
     private fun chooseVertexOrder(firstVertex: V, secondVertex: V, key: K): UndirectedEdge<V, K> {
         var result = UndirectedEdge(
