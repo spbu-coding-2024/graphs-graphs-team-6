@@ -13,4 +13,4 @@ jobs:
        - name: "detekt"
          uses: natiginfo/action-detekt-all@1.23.8
          with:
-          args:  --config lib/detekt.yml
+          args:  --config app/detekt.yml
