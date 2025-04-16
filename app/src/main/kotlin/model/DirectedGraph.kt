@@ -10,17 +10,17 @@ class DirectedGraph<V, K> : Graph<V, K> {
         override var key: K
     ) : Edge<V, K>
 
-    private var vertexMap = HashMap<V, DirectedVertex<V>>()
-    private var edgeMap = HashMap<K, DirectedEdge<V, K>>()
+    private var _verticies = HashMap<V, DirectedVertex<V>>()
+    private var _edges = HashMap<K, DirectedEdge<V, K>>()
 
     override val vertices: Collection<Vertex<V>>
-        get() = vertexMap.values
+        get() = _verticies.values
 
     override val edges: Collection<Edge<V, K>>
-        get() = edgeMap.values
+        get() = _edges.values
 
     override fun addEdge(firstVertex: V, secondVertex: V, element: K): Edge<V, K> {
-        return edgeMap.getOrPut(element) {
+        return _edges.getOrPut(element) {
             DirectedEdge<V, K>(
                 DirectedVertex<V>(firstVertex),
                 DirectedVertex<V>(secondVertex),
@@ -30,7 +30,7 @@ class DirectedGraph<V, K> : Graph<V, K> {
     }
 
     override fun addVertex(vertex: V) {
-        vertexMap.getOrPut(vertex) { DirectedVertex<V>(vertex) }
+        _edges.getOrPut(vertex) { DirectedVertex<V>(vertex) }
     }
 
 }
