@@ -6,8 +6,6 @@
  */
 
 plugins {
-    // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
-    alias(libs.plugins.kotlin.jvm)
 
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
 

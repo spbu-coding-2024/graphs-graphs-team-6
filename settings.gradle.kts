@@ -14,3 +14,4 @@ pluginManagement {
 }
 
 rootProject.name = "graphs"
+include(":src")
