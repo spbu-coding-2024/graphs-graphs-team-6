@@ -1,8 +1,6 @@
 package model
 
 interface Edge<V, K> {
-    var firstVertex: Vertex<V>
-    var secondVertex: Vertex<V>
-
-    var key: K
+    val pair: Collection<Vertex<V>>
+    val key: K
 }
