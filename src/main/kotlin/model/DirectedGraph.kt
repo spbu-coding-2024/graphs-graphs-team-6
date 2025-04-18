@@ -9,11 +9,11 @@ class DirectedGraph<V, K> : Graph<V, K> {
         var secondVertex: DirectedVertex<V>,
         override var key: K
     ) : Edge<V, K> {
-        override var pair: List<Vertex<V>> = listOf(firstVertex, secondVertex)
+        override val pair: List<Vertex<V>> = listOf(firstVertex, secondVertex)
     }
 
-    private var _vertices = HashMap<V, DirectedVertex<V>>()
-    private var _edges = HashMap<K, DirectedEdge<V, K>>()
+    private val _vertices = HashMap<V, DirectedVertex<V>>()
+    private val _edges = HashMap<K, DirectedEdge<V, K>>()
 
     override val vertices: Collection<Vertex<V>>
         get() = _vertices.values
