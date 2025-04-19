@@ -21,12 +21,12 @@ class DirectedGraph<V, K> : Graph<V, K> {
     override val edges: Collection<Edge<V, K>>
         get() = _edges.values
 
-    override fun addEdge(firstVertex: V, secondVertex: V, element: K): Edge<V, K> {
-        return _edges.getOrPut(element) {
+    override fun addEdge(firstVertex: V, secondVertex: V, key: K): Edge<V, K> {
+        return _edges.getOrPut(key) {
             DirectedEdge<V, K>(
                 DirectedVertex<V>(firstVertex),
                 DirectedVertex<V>(secondVertex),
-                element
+                key
             )
         }
     }
