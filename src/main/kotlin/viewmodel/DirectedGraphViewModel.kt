@@ -6,13 +6,13 @@ import androidx.compose.ui.graphics.Color
 import model.DirectedGraph
 
 private const val MIN_RANDOM_VALUE = 0
-private const val MAX_RANDOM_VALUE = 1000
+private const val MAX_RANDOM_VALUE = 500
 private const val DEFAULT_VERTEX_COLOR = 0xFF2979FF
 private const val DEFAULT_VERTEX_BORDER_COLOR = 0xFF2962FF
-private const val DEFAULT_WIDTH = 50
+private const val DEFAULT_WIDTH = 25
 private const val DEFAULT_BORDER_WIDTH = 5
 
-private const val DEFAULT_EDGE_WIDTH = 5
+private const val DEFAULT_EDGE_WIDTH = 2
 
 class DirectedGraphViewModel<V, K>(
     graph: DirectedGraph<V, K>
