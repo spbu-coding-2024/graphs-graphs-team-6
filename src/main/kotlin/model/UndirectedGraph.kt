@@ -36,5 +36,4 @@ class UndirectedGraph<V, K> : Graph<V, K> {
         _vertices.getOrPut(vertex) { UndirectedVertex<V>(vertex) }
     }
 
-
 }
