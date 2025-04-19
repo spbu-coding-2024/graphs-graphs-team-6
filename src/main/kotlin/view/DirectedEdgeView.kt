@@ -14,7 +14,9 @@ import viewmodel.DirectedEdgeViewModel
 import kotlin.math.atan2
 import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.pow
 import kotlin.math.sin
+import kotlin.math.sqrt
 
 private const val DEFAULT_ARROW_TRIANGLE_HEIGHT = 30
 private const val DEFAULT_ARROW_TRIANGLE_WIDTH = 10
@@ -61,6 +63,10 @@ fun <V, K> DirectedEdgeView(
             lineTo(secondViewModel.x.toPx() + radius.toPx() + secondCornerX, secondViewModel.y.toPx() + radius.toPx() + secondCornerY)
             close()
         }
-        drawPath(path, dirEdgeViewModel.color)
+        val norm = sqrt((secondViewModel.x.toPx() - firstViewModel.x.toPx()).pow(2)
+                + (secondViewModel.y.toPx() - firstViewModel.y.toPx()).pow(2))
+        if (norm >= 2 * radius.toPx()) {
+            drawPath(path, dirEdgeViewModel.color)
+        }
     }
 }
