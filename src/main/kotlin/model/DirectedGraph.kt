@@ -15,10 +15,10 @@ class DirectedGraph<V, K> : Graph<V, K> {
     private val _vertices = HashMap<V, DirectedVertex<V>>()
     private val _edges = HashMap<K, DirectedEdge<V, K>>()
 
-    override val vertices: Collection<Vertex<V>>
+    override val vertices: Collection<DirectedVertex<V>>
         get() = _vertices.values
 
-    override val edges: Collection<Edge<V, K>>
+    override val edges: Collection<DirectedEdge<V, K>>
         get() = _edges.values
 
     override fun addEdge(firstVertex: V, secondVertex: V, element: K): Edge<V, K> {

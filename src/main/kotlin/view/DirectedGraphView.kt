@@ -9,5 +9,6 @@ import androidx.compose.ui.Modifier
 fun <V,K> DirectedGraphView(
     graphViewModel: DirectedGraphViewModel<K, V>
 ) {
+    graphViewModel.edges.forEach { DirectedEdgeView(it, modifier = Modifier) }
     graphViewModel.vertices.forEach { VertexView( it, modifier = Modifier) }
 }

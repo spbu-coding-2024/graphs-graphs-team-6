@@ -1,10 +1,8 @@
 package viewmodel
 
 import androidx.compose.ui.unit.dp
-import model.Graph
 import kotlin.random.Random
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Vertices
 import model.DirectedGraph
 
 private const val MIN_RANDOM_VALUE = 0
@@ -14,10 +12,11 @@ private const val DEFAULT_VERTEX_BORDER_COLOR = 0xFF2962FF
 private const val DEFAULT_WIDTH = 50
 private const val DEFAULT_BORDER_WIDTH = 5
 
+private const val DEFAULT_EDGE_WIDTH = 5
+
 class DirectedGraphViewModel<V, K>(
     graph: DirectedGraph<V, K>
 ) {
-
     private val _vertices = graph.vertices.associateWith { it ->
         VertexViewModel<V>(
             Random.nextInt(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE).dp,
@@ -30,6 +29,18 @@ class DirectedGraphViewModel<V, K>(
         )
     }
 
+    private val _edges = graph.edges.associateWith { it ->
+        DirectedEdgeViewModel<V, K>(
+            _vertices[it.firstVertex] ?: throw IllegalStateException("Vertex is missing"),
+            _vertices[it.secondVertex] ?: throw IllegalStateException("Vertex is missing"),
+            it,
+            Color.Black,
+            DEFAULT_EDGE_WIDTH.dp
+        )
+    }
     val vertices: Collection<VertexViewModel<V>>
         get() = _vertices.values
+
+    val edges: Collection<DirectedEdgeViewModel<V, K>>
+        get() = _edges.values
 }
