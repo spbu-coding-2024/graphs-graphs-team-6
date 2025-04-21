@@ -48,6 +48,12 @@ dependencies {
 	// With compose.desktop.common you will also lose @Preview functionality
 	implementation(compose.desktop.currentOs)
 	detekt("io.gitlab.arturbosch.detekt:detekt-cli:1.23.8")
+	testImplementation(kotlin("test"))
+	testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+}
+
+tasks.test {
+	useJUnitPlatform()
 }
 
 tasks.check {
