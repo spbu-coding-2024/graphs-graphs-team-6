@@ -8,6 +8,8 @@ import model.UndirectedGraph.UndirectedEdge
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+
 typealias Graph = (UndirectedGraph<Int, Int>)
 typealias Vertex = (UndirectedVertex<Int>)
 typealias Edge = (UndirectedEdge<Int, Int>)
@@ -41,5 +43,23 @@ class UndirectedGraphTest {
         assert(graph.vertices.contains(Vertex(0)))
         assert(graph.vertices.contains(Vertex(1)))
         assert(graph.edges.contains(Edge(setOf(Vertex(0), Vertex(1)), 10)))
+    }
+
+    @DisplayName("Incorrect edge")
+    @Test
+    fun incorrectEdge() {
+        assertThrows<IllegalArgumentException> { Edge(setOf(), 0) }
+    }
+
+    @DisplayName("Graph with loop")
+    @Test
+    fun graphWithLoop() {
+        graph.addVertex(0)
+        graph.addEdge(0, 0, 10)
+        assert(graph.vertices.isNotEmpty())
+        assert(graph.vertices.size == 1)
+        assert(graph.edges.size == 1)
+        assert(graph.vertices.contains(Vertex(0)))
+        assert(graph.edges.contains(Edge(setOf(Vertex(0)), 10)))
     }
 }
