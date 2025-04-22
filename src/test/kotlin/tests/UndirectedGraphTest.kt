@@ -40,21 +40,6 @@ class UndirectedGraphTest {
         assert(graph.edges.size == 1)
         assert(graph.vertices.contains(Vertex(0)))
         assert(graph.vertices.contains(Vertex(1)))
-        assert(graph.edges.contains(Edge(Vertex(0), Vertex(1), 10)))
-    }
-
-    @DisplayName("Two vertex and one undirected edge graph")
-    @Test
-    fun twoVertexAndOneUndirectedEdgeGraph() {
-        graph.addVertex(0)
-        graph.addVertex(1)
-        graph.addEdge(0, 1, 10)
-        assert(graph.vertices.isNotEmpty())
-        assert(graph.vertices.size == 2)
-        assert(graph.edges.size == 1)
-        assert(graph.vertices.contains(UndirectedVertex(0)))
-        assert(graph.vertices.contains(UndirectedVertex(1)))
-        assert(graph.edges.contains(UndirectedEdge(UndirectedVertex(0), UndirectedVertex(1), 10)))
-        assert(graph.edges.contains(UndirectedEdge(UndirectedVertex(1), UndirectedVertex(0), 10)))
+        assert(graph.edges.contains(Edge(setOf(Vertex(0), Vertex(1)), 10)))
     }
 }
