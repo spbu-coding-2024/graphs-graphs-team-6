@@ -32,6 +32,7 @@ fun main() = application {
 	graph.addEdge("A", "B", 1)
 	graph.addEdge("B", "C", 2)
 	graph.addEdge("C", "D", 3)
+	graph.addEdge("C", "C", 4)
 
 	Window(onCloseRequest = ::exitApplication) {
 		App(graph)
