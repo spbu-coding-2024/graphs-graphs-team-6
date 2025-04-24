@@ -13,7 +13,7 @@ interface Graph<V, K> {
     /**
      * Adds edge to graph
      *
-     * If edge already exist, overwrite it
+     * If edge already exist, don't overwrite it
      *
      * @param firstVertex First end point
      * @param secondVertex Second end point
@@ -24,7 +24,7 @@ interface Graph<V, K> {
     /**
      * Adds vertex to graph
      *
-     * If vertex already exist, overwrite it
+     * If vertex already exist, don't overwrite it
      *
      * @param vertex A vertex to be added to a graph
      */
