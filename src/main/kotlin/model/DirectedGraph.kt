@@ -1,6 +1,6 @@
 package model
 
-class DirectedGraph<V, K> : Graph<V, K> {
+class DirectedGraph<V, K>(initVertex: Vertex<V>? = null) : Graph<V, K>{
 
 	class DirectedVertex<V>(
 		override var element: V, override val adjacencyList: MutableList<Vertex<V>> = mutableListOf()
@@ -11,7 +11,7 @@ class DirectedGraph<V, K> : Graph<V, K> {
 	) : Edge<V, K> {
 		override val pair: List<Vertex<V>> = listOf(firstVertex, secondVertex)
 	}
-
+	override var enterVertex = initVertex
 	private val _vertices = HashMap<V, DirectedVertex<V>>()
 	private val _edges = HashMap<K, DirectedEdge<V, K>>()
 
@@ -22,8 +22,10 @@ class DirectedGraph<V, K> : Graph<V, K> {
 		get() = _edges.values
 
 	override fun addEdge(firstVertex: V, secondVertex: V, key: K): Edge<V, K> {
-		val firstV  = _vertices.getOrPut(firstVertex)  { DirectedVertex(firstVertex) }
-		val secondV = _vertices.getOrPut(secondVertex) { DirectedVertex(secondVertex) }
+		val firstV: DirectedVertex<V> = _vertices[firstVertex]
+			?: throw NoSuchElementException("Vertex not found")
+		val secondV = _vertices[secondVertex]
+			?: throw NoSuchElementException("Vertex not found")
 		firstV.adjacencyList.add(secondV)
 
 		return _edges.getOrPut(key) { DirectedEdge(firstV, secondV, key) }
@@ -31,7 +33,8 @@ class DirectedGraph<V, K> : Graph<V, K> {
 
 
 	override fun addVertex(vertex: V) {
-		_vertices.getOrPut(vertex) { DirectedVertex<V>(vertex) }
+		val newVertex = DirectedVertex<V>(vertex)
+		if (enterVertex == null) enterVertex = newVertex
+		_vertices.getOrPut(vertex) { newVertex }
 	}
-
 }
