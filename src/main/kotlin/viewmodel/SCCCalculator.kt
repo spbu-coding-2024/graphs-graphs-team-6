@@ -6,30 +6,15 @@ import androidx.compose.ui.graphics.Color
 import java.awt.Color as AwtColor
 import java.util.ArrayDeque
 
-/**
- * Класс для вычисления компонент сильной связности (SCC) в ориентированном графе
- * и предоставления цвета для каждой вершины.
- * Вместо LiveData и ViewModel используется простой callback.
- */
 class SCCCalculator<V, E> {
 
-	/**
-	 * Callback, который будет вызван после вычисления цветов.
-	 * Передаёт отображение вершина -> compose-ui Color.
-	 */
 	var onComputeListener: ((Map<Vertex<V>, Color>) -> Unit)? = null
-
-	/**
-	 * Запускает вычисление компонент и генерирует цвета.
-	 * Результат передаётся в [onComputeListener].
-	 */
 	fun calculateComponents(graph: Graph<V, E>) {
 		val sccs = tarjanSCC(graph)
 		val colors = assignColors(sccs)
 		onComputeListener?.invoke(colors)
 	}
 
-	// --- Алгоритм Тарджана для SCC ---
 	private fun tarjanSCC(graph: Graph<V, E>): List<List<Vertex<V>>> {
 		val indexMap = mutableMapOf<Vertex<V>, Int>()
 		val lowLink  = mutableMapOf<Vertex<V>, Int>()
@@ -45,7 +30,6 @@ class SCCCalculator<V, E> {
 			stack.push(v)
 			onStack.add(v)
 
-			// Обход всех исходящих соседей через adjacencyList
 			v.adjacencyList.forEach { w ->
 				if (!indexMap.containsKey(w)) {
 					dfs(w)
@@ -55,7 +39,6 @@ class SCCCalculator<V, E> {
 				}
 			}
 
-			// Если вершина является корнем SCC — вытаскиваем компоненту из стека
 			if (lowLink[v] == indexMap[v]) {
 				val component = mutableListOf<Vertex<V>>()
 				while (true) {
@@ -74,7 +57,6 @@ class SCCCalculator<V, E> {
 		return result
 	}
 
-	// --- Назначение цветов компонентам ---
 	private fun assignColors(components: List<List<Vertex<V>>>): Map<Vertex<V>, Color> {
 		val mapping = mutableMapOf<Vertex<V>, Color>()
 		components.forEachIndexed { idx, comp ->
@@ -84,13 +66,11 @@ class SCCCalculator<V, E> {
 		return mapping
 	}
 
-	// --- Генерация цвета через HSB и преобразование в compose-ui Color ---
 	private fun generateColor(index: Int): Color {
-		val hue = ((index * 137) % 360) / 360f  // нормализуем [0,1)
+		val hue = ((index * 137) % 360) / 360f
 		val saturation = 0.7f
 		val brightness = 0.9f
 		val rgbInt = AwtColor.HSBtoRGB(hue, saturation, brightness)
-		// HSBtoRGB возвращает ARGB в виде Int (0xAARRGGBB)
 		return Color(rgbInt)
 	}
 }

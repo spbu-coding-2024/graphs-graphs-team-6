@@ -11,29 +11,27 @@ import viewmodel.MainScreenViewModel
 
 
 val graph = DirectedGraph<String, Int>().apply {
-		addVertex("A")
-		addVertex("B")
-		addVertex("C")
-		addVertex("D")
-		addVertex("E")
-		addVertex("F")
-		addVertex("G")
-		addVertex("H")
+	addVertex("A")
+	addVertex("B")
+	addVertex("C")
+	addVertex("D")
+	addVertex("E")
+	addVertex("F")
+	addVertex("G")
+	addVertex("H")
 
-		// SCC #1: A → B → C → A (plus self-loop on C)
-		addEdge("A", "B", 1)
-		addEdge("B", "C", 2)
-		addEdge("C", "A", 3)
-		addEdge("C", "C", 4)
+	addEdge("A", "B", 1)
+	addEdge("B", "C", 2)
+	addEdge("C", "A", 3)
+	addEdge("C", "C", 4)
 
-		// SCC #2: D → E → F → D
-		addEdge("D", "E", 5)
-		addEdge("E", "F", 6)
-		addEdge("F", "D", 7)
+	addEdge("D", "E", 5)
+	addEdge("E", "F", 6)
+	addEdge("F", "D", 7)
 
-		// SCC #3: G ↔ H
-		addEdge("G", "H", 8)
-		addEdge("H", "G", 9)
+	// SCC #3: G ↔ H
+	addEdge("G", "H", 8)
+	addEdge("H", "G", 9)
 	}
 
 @Composable
