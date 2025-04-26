@@ -5,7 +5,7 @@ import model.DirectedGraph.DirectedVertex
 
 class UndirectedGraph<V, K>(initVertex: Vertex<V>? = null) : Graph<V, K> {
 
-	data class UndirectedVertex<V>(
+	class UndirectedVertex<V>(
 		override var element: V,
 		override val adjacencyList: MutableList<Vertex<V>> = mutableListOf()
 	) : Vertex<V>
