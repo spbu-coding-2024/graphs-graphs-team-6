@@ -1,4 +1,4 @@
-package view
+package view.graph
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
@@ -86,10 +86,10 @@ fun <V, K> DirectedEdgeView(
             }
         }
         else {
-            val centerX = firstViewModel.x.toPx() + 3*DEFAULT_LOOP_RADIUS_COEFF*radius.toPx()
-            val centerY = firstViewModel.y.toPx() + 3*DEFAULT_LOOP_RADIUS_COEFF*radius.toPx()
+            val centerX = firstViewModel.x.toPx() + 3* DEFAULT_LOOP_RADIUS_COEFF *radius.toPx()
+            val centerY = firstViewModel.y.toPx() + 3* DEFAULT_LOOP_RADIUS_COEFF *radius.toPx()
 
-            val loopRadius = 2*DEFAULT_LOOP_RADIUS_COEFF*radius.toPx()
+            val loopRadius = 2* DEFAULT_LOOP_RADIUS_COEFF *radius.toPx()
 
             drawArc(
                 color = dirEdgeViewModel.color,
