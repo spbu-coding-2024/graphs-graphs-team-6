@@ -6,10 +6,7 @@ import androidx.compose.runtime.setValue
 import model.Vertex
 import androidx.compose.ui.graphics.Color
 import model.DirectedGraph
-/**
- * ViewModel для основного экрана.
- * Хранит граф, калькулятор SCC и состояние цветов вершин.
- */
+
 class MainScreenViewModel<V, K>(
 	private val graph: DirectedGraph<V, K>
 ) {
