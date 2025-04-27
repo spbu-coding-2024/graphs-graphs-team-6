@@ -32,8 +32,8 @@ class DirectedGraphViewModel<V, K>(
 
 	private val _edges = graph.edges.associateWith { it ->
 		DirectedEdgeViewModel<V, K>(
-			_vertices[it.firstVertex] ?: throw IllegalStateException("Vertex is missing"),
-			_vertices[it.secondVertex] ?: throw IllegalStateException("Vertex is missing"),
+			_vertices[it.firstVertex] ?: error("Vertex is missing"),
+			_vertices[it.secondVertex] ?: error("Vertex is missing"),
 			it,
 			Color.Black,
 			DEFAULT_EDGE_WIDTH.dp
@@ -48,7 +48,7 @@ class DirectedGraphViewModel<V, K>(
 	internal fun updateVertexColors(colorMap: Map<Vertex<V>, Color>) {
 		_vertices.forEach { (modelVertex, vm) ->
 			vm.color = colorMap[modelVertex]
-				?: throw IllegalStateException("Missing color for $modelVertex")
+				?: error("Missing color for $modelVertex")
 		}
 	}
 
