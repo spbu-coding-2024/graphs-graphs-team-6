@@ -33,12 +33,12 @@ fun <V, K> DirectedEdgeView(
         if (firstViewModel != secondViewModel) {
             drawStraightEdge(dirEdgeViewModel, modifier)
         } else {
-            drawLoop(dirEdgeViewModel, modifier)
+            drawDirectedSelfLoop(dirEdgeViewModel, modifier)
         }
 }
 
 @Composable
-fun <V, K> drawLoop(
+fun <V, K> drawDirectedSelfLoop(
     dirEdgeViewModel: DirectedEdgeViewModel<V, K>,
     modifier: Modifier
 ) {
