@@ -31,7 +31,6 @@ val graph = DirectedGraph<String, Int>().apply {
 	addEdge("E", "F", index++)
 	addEdge("F", "D", index++)
 
-	// SCC #3: G ↔ H
 	addEdge("G", "H", index++)
 	addEdge("H", "G", index)
 	}
@@ -47,7 +46,6 @@ fun App() {
 }
 
 fun main() = application {
-
 		Window(onCloseRequest = ::exitApplication) {
 		App()
 	}
