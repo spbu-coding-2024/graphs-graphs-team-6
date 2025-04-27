@@ -19,7 +19,6 @@ class DirectedGraphTest {
   assertEquals(1, graph.vertices.size)
   val vertex = graph.vertices.first()
   assertEquals("A", vertex.element)
-  assertEquals(vertex, graph.enterVertex)
  }
 
  @Test

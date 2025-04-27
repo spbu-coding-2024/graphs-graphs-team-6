@@ -2,10 +2,6 @@ package model
 
 interface Graph<V, K>{
 	/**
-	 * The first vertex in a graph.
-	 */
-	var enterVertex: Vertex<V>?
-	/**
 	 * A collection of vertices
 	 */
 	val vertices: Collection<Vertex<V>>

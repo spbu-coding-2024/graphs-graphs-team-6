@@ -3,7 +3,7 @@ package model
 import model.DirectedGraph.DirectedVertex
 
 
-class UndirectedGraph<V, K>(initVertex: Vertex<V>? = null) : Graph<V, K> {
+class UndirectedGraph<V, K>: Graph<V, K> {
 
 	class UndirectedVertex<V>(
 		override var element: V,
@@ -19,7 +19,7 @@ class UndirectedGraph<V, K>(initVertex: Vertex<V>? = null) : Graph<V, K> {
 			{ "Edge must connect 2 (or 1 if it is a loop) vertices" }
 		}
 	}
-	override var enterVertex = initVertex
+
 	private val _vertices = HashMap<V, UndirectedVertex<V>>()
 	private val _edges = HashMap<K, UndirectedEdge<V, K>>()
 
@@ -45,9 +45,6 @@ class UndirectedGraph<V, K>(initVertex: Vertex<V>? = null) : Graph<V, K> {
 	}
 
 	override fun addVertex(vertex: V) {
-		val newVertex = UndirectedVertex<V>(vertex)
-		if (enterVertex == null) enterVertex = newVertex
-		_vertices.getOrPut(vertex) { newVertex }
+		_vertices.getOrPut(vertex) { UndirectedVertex(vertex) }
 	}
-
 }

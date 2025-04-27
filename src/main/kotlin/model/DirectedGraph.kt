@@ -1,6 +1,6 @@
 package model
 
-class DirectedGraph<V, K>(initVertex: Vertex<V>? = null) : Graph<V, K>{
+class DirectedGraph<V, K>: Graph<V, K>{
 
 	class DirectedVertex<V>(
 		override var element: V, override val adjacencyList: MutableList<Vertex<V>> = mutableListOf()
@@ -11,7 +11,6 @@ class DirectedGraph<V, K>(initVertex: Vertex<V>? = null) : Graph<V, K>{
 	) : Edge<V, K> {
 		override val pair: List<Vertex<V>> = listOf(firstVertex, secondVertex)
 	}
-	override var enterVertex = initVertex
 	private val _vertices = HashMap<V, DirectedVertex<V>>()
 	private val _edges = HashMap<K, DirectedEdge<V, K>>()
 
@@ -33,8 +32,6 @@ class DirectedGraph<V, K>(initVertex: Vertex<V>? = null) : Graph<V, K>{
 
 
 	override fun addVertex(vertex: V) {
-		val newVertex = DirectedVertex<V>(vertex)
-		if (enterVertex == null) enterVertex = newVertex
-		_vertices.getOrPut(vertex) { newVertex }
+		_vertices.getOrPut(vertex) {DirectedVertex(vertex)}
 	}
 }
