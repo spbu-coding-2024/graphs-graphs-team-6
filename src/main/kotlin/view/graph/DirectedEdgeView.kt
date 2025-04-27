@@ -19,7 +19,15 @@ import kotlin.math.sqrt
 
 private const val DEFAULT_ARROW_TRIANGLE_HEIGHT = 30
 private const val DEFAULT_ARROW_TRIANGLE_WIDTH = 10
-private const val DEFAULT_LOOP_RADIUS_COEFF = 0.75f
+private const val DEFAULT_LOOP_RADIUS = 0.75f
+private const val LOOP_CENTER_OFFSET_COEFF = 3
+private const val LOOP_RADIUS_COEFF = 2
+private const val LOOP_LINE_THICKNESS = 30f
+
+private const val ZERO_ANGLE = 0f
+private const val FULL_CIRCLE = 360f
+
+
 
 @Composable
 fun <V, K> DirectedEdgeView(
@@ -48,17 +56,17 @@ fun <V, K> drawLoop(
     val radius by remember { mutableStateOf(dirEdgeViewModel.firstVertexViewModel.radius) }
 
     Canvas(modifier = modifier.fillMaxSize()) {
-        val centerX = firstViewModel.x.toPx() + 3 * DEFAULT_LOOP_RADIUS_COEFF * radius.toPx()
-        val centerY = firstViewModel.y.toPx() + 3 * DEFAULT_LOOP_RADIUS_COEFF * radius.toPx()
+        val centerX = firstViewModel.x.toPx() + LOOP_CENTER_OFFSET_COEFF * DEFAULT_LOOP_RADIUS * radius.toPx()
+        val centerY = firstViewModel.y.toPx() + LOOP_CENTER_OFFSET_COEFF * DEFAULT_LOOP_RADIUS * radius.toPx()
 
-        val loopRadius = 2 * DEFAULT_LOOP_RADIUS_COEFF * radius.toPx()
+        val loopRadius = LOOP_RADIUS_COEFF * DEFAULT_LOOP_RADIUS * radius.toPx()
 
         drawArc(
             color = dirEdgeViewModel.color,
-            startAngle = 0f,
-            sweepAngle = 360f,
+            startAngle = ZERO_ANGLE,
+            sweepAngle = FULL_CIRCLE,
             useCenter = false,
-            topLeft = Offset(centerX - loopRadius, centerY - loopRadius - 30f),
+            topLeft = Offset(centerX - loopRadius, centerY - loopRadius - LOOP_LINE_THICKNESS),
             size = androidx.compose.ui.geometry.Size(loopRadius * 2, loopRadius * 2),
             style = androidx.compose.ui.graphics.drawscope.Stroke(width = dirEdgeViewModel.width.toPx())
         )
