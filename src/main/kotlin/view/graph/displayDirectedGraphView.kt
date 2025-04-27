@@ -19,6 +19,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 
+private const val EPSILON = .001f
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun <V,K> displayDirectedGraphView(
@@ -42,7 +44,7 @@ fun <V,K> displayDirectedGraphView(
         .scrollable(
             orientation = Orientation.Vertical,
             state = rememberScrollableState { delta ->
-                val scale = 1f + delta * .001f
+                val scale = 1f + delta * EPSILON
                 println(scale)
                 graphViewModel.vertices.forEach { vertex ->
                     val x = with(density) { vertex.x.toPx() }
