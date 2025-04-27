@@ -5,6 +5,7 @@ import model.Vertex
 import androidx.compose.ui.graphics.Color
 import java.awt.Color as AwtColor
 import java.util.ArrayDeque
+import java.util.Stack
 
 class SCCCalculator<V, E> {
 
@@ -19,7 +20,7 @@ class SCCCalculator<V, E> {
 		val indexMap = mutableMapOf<Vertex<V>, Int>()
 		val lowLink  = mutableMapOf<Vertex<V>, Int>()
 		val onStack  = mutableSetOf<Vertex<V>>()
-		val stack    = ArrayDeque<Vertex<V>>()
+		val stack    = Stack<Vertex<V>>()
 		var index = 0
 		val result = mutableListOf<List<Vertex<V>>>()
 
