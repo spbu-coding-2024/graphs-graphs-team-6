@@ -12,7 +12,7 @@ private const val SATURATION = 0.7f
 private const val BRIGHTNESS = 0.9f
 private const val INDEX_MULITPLIER = 137
 
-class SCCCalculator<V, K, W> {
+class SCCCalculator<V, K, W: Comparable<W>> {
 
 	var onComputeListener: ((Map<Vertex<V>, Color>) -> Unit)? = null
 	fun calculateComponents(graph: Graph<V, K, W>) {

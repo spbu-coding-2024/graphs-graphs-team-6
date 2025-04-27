@@ -16,7 +16,7 @@ private const val DEFAULT_BORDER_WIDTH = 5
 private const val DEFAULT_EDGE_WIDTH = 2
 
 
-class GraphViewModel<V, K, W>(graph: Graph<V, K, W>) {
+class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
 	private val _vertices = graph.vertices.associateWith {
 		VertexViewModel<V>(
 			Random.nextInt(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE).dp,

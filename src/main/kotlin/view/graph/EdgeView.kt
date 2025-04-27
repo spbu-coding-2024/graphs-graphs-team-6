@@ -23,7 +23,7 @@ private const val DEFAULT_LOOP_RADIUS_COEFF = 0.75f
 private const val DEFAULT_LOOP_MULTIPLIER = 3
 
 @Composable
-fun <V, K, W> EdgeView(
+fun <V, K, W: Comparable<W>> EdgeView(
 	edgeViewModel: EdgeViewModel<V, K, W>,
 	modifier: Modifier
 ) {
@@ -39,7 +39,7 @@ fun <V, K, W> EdgeView(
 }
 
 @Composable
-fun <V, K, W> drawSelfLoop(
+fun <V, K, W: Comparable<W>> drawSelfLoop(
 	edgeViewModel: EdgeViewModel<V, K, W>,
 	modifier: Modifier
 ) {
@@ -67,7 +67,7 @@ fun <V, K, W> drawSelfLoop(
 }
 
 @Composable
-fun <V, K, W> drawStraightEdge(
+fun <V, K, W: Comparable<W>> drawStraightEdge(
 	edgeViewModel: EdgeViewModel<V, K, W>,
 	modifier: Modifier
 ) {

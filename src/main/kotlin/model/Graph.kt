@@ -2,7 +2,7 @@ package model
 
 import space.kscience.kmath.operations.Ring
 
-interface Graph<V, K, W>{
+interface Graph<V, K, W: Comparable<W>>{
 	val ring: Ring<out W>
 
 	/**

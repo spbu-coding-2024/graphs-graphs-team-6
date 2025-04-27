@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.Color
 import model.DirectedGraph
 import model.Graph
 
-class MainScreenViewModel<V, K, W>(
+class MainScreenViewModel<V, K, W: Comparable<W>>(
 	val graph: Graph<V, K, W>,
 	private val graphViewModel: GraphViewModel<V, K, W>
 ) {

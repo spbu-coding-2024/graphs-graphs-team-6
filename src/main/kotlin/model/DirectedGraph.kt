@@ -2,14 +2,14 @@ package model
 
 import space.kscience.kmath.operations.Ring
 
-class DirectedGraph<V, K, W> (override val ring: Ring<W>): Graph<V, K, W>{
+class DirectedGraph<V, K, W: Comparable<W>> (override val ring: Ring<W>): Graph<V, K, W>{
 
 
 	class DirectedVertex<V>(
 		override var element: V, override val adjacencyList: MutableList<Vertex<V>> = mutableListOf()
 	) : Vertex<V>
 
-	data class DirectedEdge<V, K, W>(
+	data class DirectedEdge<V, K, W: Comparable<W>>(
 		var firstVertex: DirectedVertex<V>, var secondVertex: DirectedVertex<V>, override var key: K,
 		override var weight: W
 	) : Edge<V, K, W> {

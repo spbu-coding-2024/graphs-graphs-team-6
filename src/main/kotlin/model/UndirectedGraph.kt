@@ -2,14 +2,14 @@ package model
 
 import space.kscience.kmath.operations.Ring
 
-class UndirectedGraph<V, K, W>(override val ring: Ring<W>): Graph<V, K, W> {
+class UndirectedGraph<V, K, W: Comparable<W>>(override val ring: Ring<W>): Graph<V, K, W> {
 
 	class UndirectedVertex<V>(
 		override var element: V,
 		override val adjacencyList: MutableList<Vertex<V>> = mutableListOf()
 	) : Vertex<V>
 
-	data class UndirectedEdge<V, K, W>(
+	data class UndirectedEdge<V, K, W: Comparable<W>>(
 		override val pair: Set<Vertex<V>>,
 		override var key: K,
 		override var weight: W

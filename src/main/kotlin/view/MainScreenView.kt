@@ -8,7 +8,7 @@ import androidx.compose.material.Text
 import model.DirectedGraph
 
 @Composable
-fun <V, K, W> MainScreenView(viewModel: MainScreenViewModel<V, K, W>) {
+fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K, W>) {
 	Column {
 		if (viewModel.graph is DirectedGraph) {
 			Button (onClick = viewModel::calculateSCC){

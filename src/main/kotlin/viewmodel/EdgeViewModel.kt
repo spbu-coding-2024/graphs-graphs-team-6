@@ -7,7 +7,7 @@ import model.DirectedGraph
 import model.Edge
 import model.UndirectedGraph.UndirectedEdge
 
-class EdgeViewModel<V, K, W>(
+class EdgeViewModel<V, K, W: Comparable<W>>(
 	val firstVertexViewModel: VertexViewModel<V>,
 	val secondVertexViewModel: VertexViewModel<V>,
 	edge: Edge<V, K, W>,
