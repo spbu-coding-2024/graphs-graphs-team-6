@@ -19,6 +19,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 
+private const val DEFAULT_ZOOM_SCALE_COEF = .001f
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun <V,K> DirectedGraphView(
@@ -30,30 +32,30 @@ fun <V,K> DirectedGraphView(
         .pointerInput(Unit) {
             detectDragGestures { change, delta ->
                 change.consume()
-                graphViewModel.vertices.forEach { vertex ->
-                    vertex.x += delta.x.dp
-                    vertex.y += delta.y.dp
+                graphViewModel.vertices.forEach {
+                    it.x += delta.x.dp
+                    it.y += delta.y.dp
                 }
             }
         }
-        .onPointerEvent(PointerEventType.Scroll) { it ->
+        .onPointerEvent(PointerEventType.Scroll) {
             mouseOffset =  it.changes[0].position
         }
         .scrollable(
             orientation = Orientation.Vertical,
             state = rememberScrollableState { delta ->
-                val scale = 1f + delta * .001f
+                val scale = 1f + delta * DEFAULT_ZOOM_SCALE_COEF
                 println(scale)
-                graphViewModel.vertices.forEach { vertex ->
-                    val x = with(density) { vertex.x.toPx() }
-                    val y = with(density) { vertex.y.toPx() }
-                    vertex.x = mouseOffset.x.dp * (1 - scale) + (scale * x).dp
-                    vertex.y = mouseOffset.y.dp * (1 - scale) + (scale * y).dp
+                graphViewModel.vertices.forEach {
+                    val x = with(density) { it.x.toPx() }
+                    val y = with(density) { it.y.toPx() }
+                    it.x = mouseOffset.x.dp * (1 - scale) + (scale * x).dp
+                    it.y = mouseOffset.y.dp * (1 - scale) + (scale * y).dp
                 }
                 delta
             }
         )
 
     graphViewModel.edges.forEach { DirectedEdgeView(it, modifier = modifier) }
-    graphViewModel.vertices.forEach { VertexView( it, modifier = modifier) }
+    graphViewModel.vertices.forEach { VertexView(it, modifier = modifier) }
 }

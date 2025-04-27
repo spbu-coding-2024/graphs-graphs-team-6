@@ -37,7 +37,7 @@ val graph = DirectedGraph<String, Int>().apply {
 
 @Composable
 @Preview
-fun App() {
+fun app() {
 	MaterialTheme {
 		val graphViewModel = DirectedGraphViewModel(graph)
 		DirectedGraphView(graphViewModel)
@@ -47,6 +47,6 @@ fun App() {
 
 fun main() = application {
 		Window(onCloseRequest = ::exitApplication) {
-		App()
+		app()
 	}
 }

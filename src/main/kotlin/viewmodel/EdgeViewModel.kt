@@ -8,7 +8,7 @@ import model.Edge
 abstract class EdgeViewModel<V, K> (
     val firstVertexViewModel: VertexViewModel<V>,
     val secondVertexViewModel: VertexViewModel<V>,
-    edge: Edge<V, K>,
+//    edge: Edge<V, K>,
     color: Color,
     var width: Dp,
 ) {

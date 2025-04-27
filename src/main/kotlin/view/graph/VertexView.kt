@@ -34,7 +34,8 @@ fun <V> VertexView(
         modifier = modifier
             .offset(vertexViewModel.x, vertexViewModel.y)
             .size(radius * 2)
-            .border(border = BorderStroke(vertexViewModel.borderWidth, vertexViewModel.borderColor), shape = CircleShape)
+            .border(border = BorderStroke(vertexViewModel.borderWidth,
+                vertexViewModel.borderColor), shape = CircleShape)
             .clip(CircleShape)
             .background(vertexViewModel.color)
             .pointerHoverIcon(icon = PointerIcon.Hand, overrideDescendants = true )

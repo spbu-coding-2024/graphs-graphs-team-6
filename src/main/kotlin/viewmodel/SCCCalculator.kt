@@ -7,9 +7,10 @@ import java.awt.Color as AwtColor
 import java.util.ArrayDeque
 import java.util.Stack
 
-const val CIRCLE_GRADUS = 360
-const val SATURATION = 0.7f
-const val BRIGHTNESS = 0.9f
+private const val CIRCLE_GRADUS = 360
+private const val SATURATION = 0.7f
+private const val BRIGHTNESS = 0.9f
+private const val INDEX_MULITPLIER = 137
 
 class SCCCalculator<V, E> {
 
@@ -72,7 +73,7 @@ class SCCCalculator<V, E> {
 	}
 
 	private fun generateColor(index: Int): Color {
-		val hue = ((index * 137) % CIRCLE_GRADUS) / (CIRCLE_GRADUS).toFloat()
+		val hue = ((index * INDEX_MULITPLIER) % CIRCLE_GRADUS) / (CIRCLE_GRADUS).toFloat()
 		val rgbInt = AwtColor.HSBtoRGB(hue, SATURATION, BRIGHTNESS)
 		return Color(rgbInt)
 	}
