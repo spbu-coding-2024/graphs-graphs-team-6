@@ -20,18 +20,20 @@ val graph = DirectedGraph<String, Int>().apply {
 	addVertex("G")
 	addVertex("H")
 
-	addEdge("A", "B", 1)
-	addEdge("B", "C", 2)
-	addEdge("C", "A", 3)
-	addEdge("C", "C", 4)
+	var index = 0
 
-	addEdge("D", "E", 5)
-	addEdge("E", "F", 6)
-	addEdge("F", "D", 7)
+	addEdge("A", "B", index++)
+	addEdge("B", "C", index++)
+	addEdge("C", "A", index++)
+	addEdge("C", "C", index++)
+
+	addEdge("D", "E", index++)
+	addEdge("E", "F", index++)
+	addEdge("F", "D", index++)
 
 	// SCC #3: G ↔ H
-	addEdge("G", "H", 8)
-	addEdge("H", "G", 9)
+	addEdge("G", "H", index++)
+	addEdge("H", "G", index)
 	}
 
 @Composable
