@@ -11,6 +11,8 @@ import space.kscience.kmath.operations.IntRing
 import view.graph.GraphView
 import viewmodel.GraphViewModel
 
+const val WEIGHT = 9 * 32
+
 val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 	addVertex("A")
 	addVertex("B")
@@ -23,7 +25,7 @@ val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 
 	var index = 0
 
-	addEdge("A", "B", index++, 9 * 32)
+	addEdge("A", "B", index++, WEIGHT)
 	addEdge("B", "C", index++)
 	addEdge("C", "A", index++)
 	addEdge("C", "C", index++)
