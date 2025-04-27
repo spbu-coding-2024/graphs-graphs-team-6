@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
@@ -60,6 +61,25 @@ fun drawerShape() = object : Shape {
 
 }
 
+@Composable
+fun drawerButton(textString: String,
+                 icon: ImageVector = Icons.Default.Add,
+                 description: String = "",
+                 onClickMethod: () -> Unit) {
+	Column {
+		Button(
+			modifier = Modifier
+				.width(400.dp)
+				.height(100.dp)
+				.padding(16.dp),
+			onClick = onClickMethod,
+			shape = RectangleShape,
+		){
+			Icon(icon, description, modifier = Modifier.padding(5.dp))
+			Text(textString, fontSize = 20.sp)
+		}
+	}
+}
 
 @Composable
 fun <V, K> MainScreenView(viewModel: MainScreenViewModel<V, K>) {
@@ -79,43 +99,18 @@ fun <V, K> MainScreenView(viewModel: MainScreenViewModel<V, K>) {
 					Icon(Icons.Default.Close, "Close")
 				}
 			}
-			Column {
-				Button(
-					modifier = Modifier
-						.width(400.dp)
-						.height(100.dp)
-						.padding(16.dp),
-					onClick = { coroutine.launch { drawerState.close() } },
-					shape = RectangleShape,
-				){
-					Icon(Icons.Default.Add, "Open graph using json file", modifier = Modifier.padding(5.dp))
-					Text("Open (JSON)", fontSize = 20.sp)
-				}
+			drawerButton("Open"){
+				coroutine.launch { drawerState.close() }
 			}
-			Column {
-				Button(
-					modifier = Modifier
-						.width(400.dp)
-						.height(100.dp)
-						.padding(16.dp),
-					onClick = {
-						coroutine.launch { drawerState.close() }
-						viewModel.calculateSCC()
-					},
-					shape = RectangleShape,
-				){
-					Icon(Icons.Default.Star, "", modifier = Modifier.padding(5.dp))
-					Text("SCCC", fontSize = 20.sp)
-				}
+			drawerButton("SCCC", icon = Icons.Default.Star) {
+				coroutine.launch { drawerState.close() }
+				viewModel.calculateSCC()
 			}
 		},
         drawerState = drawerState,
 		drawerShape = drawerShape()
     ) {
-
-
 		DirectedGraphView(viewModel.graphViewModel)
-
 		Column(
 			modifier = Modifier
 				.fillMaxSize()
@@ -129,11 +124,4 @@ fun <V, K> MainScreenView(viewModel: MainScreenViewModel<V, K>) {
 		}
 
 	}
-
-//	Column(
-//	) {
-//		Button (onClick = viewModel::calculateSCC){
-//			Text("Calculate SCC")
-//		}
-//	}
 }
