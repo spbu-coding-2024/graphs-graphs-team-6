@@ -6,6 +6,10 @@ import androidx.compose.ui.graphics.Color
 import java.awt.Color as AwtColor
 import java.util.ArrayDeque
 
+const val CIRCLE_GRADUS = 360
+const val SATURATION = 0.7f
+const val BRIGHTNESS = 0.9f
+
 class SCCCalculator<V, E> {
 
 	var onComputeListener: ((Map<Vertex<V>, Color>) -> Unit)? = null
@@ -67,10 +71,8 @@ class SCCCalculator<V, E> {
 	}
 
 	private fun generateColor(index: Int): Color {
-		val hue = ((index * 137) % 360) / 360f
-		val saturation = 0.7f
-		val brightness = 0.9f
-		val rgbInt = AwtColor.HSBtoRGB(hue, saturation, brightness)
+		val hue = ((index * 137) % CIRCLE_GRADUS) / (CIRCLE_GRADUS).toFloat()
+		val rgbInt = AwtColor.HSBtoRGB(hue, SATURATION, BRIGHTNESS)
 		return Color(rgbInt)
 	}
 }
