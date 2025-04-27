@@ -11,7 +11,7 @@ class DirectedEdgeViewModel<V, K>(
     edge: DirectedEdge<V, K>,
     color: Color,
     width: Dp
-): EdgeViewModel<V, K>(firstVertexViewModel, secondVertexViewModel, edge, color, width) {
+): EdgeViewModel<V, K>(firstVertexViewModel, secondVertexViewModel, color, width) {
 
     private val _edge = mutableStateOf(edge)
     var edge: DirectedEdge<V, K>

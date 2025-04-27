@@ -20,6 +20,7 @@ import kotlin.math.sqrt
 private const val DEFAULT_ARROW_TRIANGLE_HEIGHT = 30
 private const val DEFAULT_ARROW_TRIANGLE_WIDTH = 10
 private const val DEFAULT_LOOP_RADIUS_COEFF = 0.75f
+private const val DEFAULT_LOOP_MULTIPLIER = 3
 
 @Composable
 fun <V, K> DirectedEdgeView(
@@ -48,8 +49,8 @@ fun <V, K> drawDirectedSelfLoop(
     val radius by remember { mutableStateOf(dirEdgeViewModel.firstVertexViewModel.radius) }
 
     Canvas(modifier = modifier.fillMaxSize()) {
-        val centerX = firstViewModel.x.toPx() + 3 * DEFAULT_LOOP_RADIUS_COEFF * radius.toPx()
-        val centerY = firstViewModel.y.toPx() + 3 * DEFAULT_LOOP_RADIUS_COEFF * radius.toPx()
+        val centerX = firstViewModel.x.toPx() + DEFAULT_LOOP_MULTIPLIER * DEFAULT_LOOP_RADIUS_COEFF * radius.toPx()
+        val centerY = firstViewModel.y.toPx() + DEFAULT_LOOP_MULTIPLIER * DEFAULT_LOOP_RADIUS_COEFF * radius.toPx()
 
         val loopRadius = 2 * DEFAULT_LOOP_RADIUS_COEFF * radius.toPx()
 
@@ -58,7 +59,7 @@ fun <V, K> drawDirectedSelfLoop(
             startAngle = 0f,
             sweepAngle = 360f,
             useCenter = false,
-            topLeft = Offset(centerX - loopRadius, centerY - loopRadius - 30f),
+            topLeft = Offset(centerX - loopRadius, centerY - loopRadius),
             size = androidx.compose.ui.geometry.Size(loopRadius * 2, loopRadius * 2),
             style = androidx.compose.ui.graphics.drawscope.Stroke(width = dirEdgeViewModel.width.toPx())
         )
