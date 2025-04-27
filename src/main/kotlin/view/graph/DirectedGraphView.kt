@@ -26,7 +26,7 @@ fun <V,K> DirectedGraphView(
 ) {
     val density = LocalDensity.current
     var mouseOffset by remember { mutableStateOf(Offset.Zero) }
-    var modifier = Modifier
+    val modifier = Modifier
         .pointerInput(Unit) {
             detectDragGestures { change, delta ->
                 change.consume()
@@ -36,7 +36,7 @@ fun <V,K> DirectedGraphView(
                 }
             }
         }
-        .onPointerEvent(PointerEventType.Scroll) { it ->
+        .onPointerEvent(PointerEventType.Scroll) {
             mouseOffset =  it.changes[0].position
         }
         .scrollable(

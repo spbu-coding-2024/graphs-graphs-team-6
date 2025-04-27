@@ -18,7 +18,7 @@ private const val DEFAULT_EDGE_WIDTH = 2
 class DirectedGraphViewModel<V, K>(
 	graph: DirectedGraph<V, K>
 ) {
-	private val _vertices = graph.vertices.associateWith { it ->
+	private val _vertices = graph.vertices.associateWith {
 		VertexViewModel<V>(
 			Random.nextInt(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE).dp,
 			Random.nextInt(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE).dp,
@@ -30,7 +30,7 @@ class DirectedGraphViewModel<V, K>(
 		)
 	}
 
-	private val _edges = graph.edges.associateWith { it ->
+	private val _edges = graph.edges.associateWith {
 		DirectedEdgeViewModel<V, K>(
 			_vertices[it.firstVertex] ?: error("Vertex is missing"),
 			_vertices[it.secondVertex] ?: error("Vertex is missing"),
