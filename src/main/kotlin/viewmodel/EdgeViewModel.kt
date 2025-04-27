@@ -7,17 +7,17 @@ import model.DirectedGraph
 import model.Edge
 import model.UndirectedGraph.UndirectedEdge
 
-class EdgeViewModel<V, K>(
+class EdgeViewModel<V, K, W>(
 	val firstVertexViewModel: VertexViewModel<V>,
 	val secondVertexViewModel: VertexViewModel<V>,
-	edge: Edge<V, K>,
+	edge: Edge<V, K, W>,
 	color: Color,
 	var width: Dp,
 ) {
 	private val _edge = mutableStateOf(edge)
 	val isDirected: Boolean
 		get() = edge is DirectedGraph.DirectedEdge
-	var edge: Edge<V, K>
+	var edge: Edge<V, K, W>
 		get() = _edge.value
 		set(value) { _edge.value = value}
 

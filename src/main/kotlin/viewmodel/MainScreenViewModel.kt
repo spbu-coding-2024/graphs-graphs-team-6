@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.Color
 import model.DirectedGraph
 import model.Graph
 
-class MainScreenViewModel<V, K>(
-	val graph: Graph<V, K>,
-	private val graphViewModel: GraphViewModel<V, K>
+class MainScreenViewModel<V, K, W>(
+	val graph: Graph<V, K, W>,
+	private val graphViewModel: GraphViewModel<V, K, W>
 ) {
 
-	private val calculator = SCCCalculator<V, K>()
+	private val calculator = SCCCalculator<V, K, W>()
 
 	// Current vertex colorscheme
 	var colors by mutableStateOf<Map<Vertex<V>, Color>>(emptyMap())

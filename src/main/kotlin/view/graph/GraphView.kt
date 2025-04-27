@@ -23,8 +23,8 @@ private const val DEFAULT_ZOOM_SCALE_COEF = .001f
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun <V,K> GraphView(
-    graphViewModel: GraphViewModel<K, V>,
+fun <V, K, W> GraphView(
+    graphViewModel: GraphViewModel<V, K, W>,
 ) {
     val density = LocalDensity.current
     var mouseOffset by remember { mutableStateOf(Offset.Zero) }

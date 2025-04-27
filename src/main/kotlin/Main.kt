@@ -7,10 +7,11 @@ import model.DirectedGraph
 import view.MainScreenView
 import viewmodel.MainScreenViewModel
 import model.UndirectedGraph
+import space.kscience.kmath.operations.IntRing
 import view.graph.GraphView
 import viewmodel.GraphViewModel
 
-val graph = UndirectedGraph<String, Int>().apply {
+val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 	addVertex("A")
 	addVertex("B")
 	addVertex("C")
@@ -22,7 +23,7 @@ val graph = UndirectedGraph<String, Int>().apply {
 
 	var index = 0
 
-	addEdge("A", "B", index++)
+	addEdge("A", "B", index++, 9 * 32)
 	addEdge("B", "C", index++)
 	addEdge("C", "A", index++)
 	addEdge("C", "C", index++)
