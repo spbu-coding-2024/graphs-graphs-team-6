@@ -45,7 +45,6 @@ fun <V,K> DirectedGraphView(
             orientation = Orientation.Vertical,
             state = rememberScrollableState { delta ->
                 val scale = 1f + delta * DEFAULT_ZOOM_SCALE_COEF
-                println(scale)
                 graphViewModel.vertices.forEach {
                     val x = with(density) { it.x.toPx() }
                     val y = with(density) { it.y.toPx() }

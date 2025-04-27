@@ -40,7 +40,6 @@ val graph = DirectedGraph<String, Int>().apply {
 fun app() {
 	MaterialTheme {
 		val graphViewModel = DirectedGraphViewModel(graph)
-		DirectedGraphView(graphViewModel)
 		MainScreenView(MainScreenViewModel(graph, graphViewModel))
 	}
 }
