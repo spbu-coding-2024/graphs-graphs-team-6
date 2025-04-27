@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun <V,K> DirectedGraphView(
+fun <V,K> displayDirectedGraphView(
     graphViewModel: DirectedGraphViewModel<K, V>,
 ) {
     val density = LocalDensity.current
@@ -54,6 +54,6 @@ fun <V,K> DirectedGraphView(
             }
         )
 
-    graphViewModel.edges.forEach { DirectedEdgeView(it, modifier = modifier) }
-    graphViewModel.vertices.forEach { VertexView( it, modifier = modifier) }
+    graphViewModel.edges.forEach { displayDirectedEdgeView(it, modifier = modifier) }
+    graphViewModel.vertices.forEach { displayVertexView( it, modifier = modifier) }
 }

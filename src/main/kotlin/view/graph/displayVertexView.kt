@@ -21,7 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.pointer.pointerInput
 
 @Composable
-fun <V> VertexView(
+fun <V> displayVertexView(
     vertexViewModel: VertexViewModel<V>,
     modifier: Modifier
 ) {

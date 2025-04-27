@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import model.DirectedGraph
-import view.graph.DirectedGraphView
+import view.graph.displayDirectedGraphView
 import viewmodel.DirectedGraphViewModel
-import view.MainScreenView
+import view.displayMainScreenView
 import viewmodel.MainScreenViewModel
 
 
@@ -38,17 +38,17 @@ val graph = DirectedGraph<String, Int>().apply {
 
 @Composable
 @Preview
-fun App() {
+fun app() {
 	MaterialTheme {
 		val graphViewModel = DirectedGraphViewModel(graph)
-		DirectedGraphView(graphViewModel)
-		MainScreenView(MainScreenViewModel(graph, graphViewModel))
+		displayDirectedGraphView(graphViewModel)
+		displayMainScreenView(MainScreenViewModel(graph, graphViewModel))
 	}
 }
 
 fun main() = application {
 
 		Window(onCloseRequest = ::exitApplication) {
-		App()
+		app()
 	}
 }

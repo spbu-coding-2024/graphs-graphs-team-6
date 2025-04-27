@@ -30,7 +30,7 @@ private const val FULL_CIRCLE = 360f
 
 
 @Composable
-fun <V, K> DirectedEdgeView(
+fun <V, K> displayDirectedEdgeView(
     dirEdgeViewModel: DirectedEdgeViewModel<V, K>,
     modifier: Modifier
 ) {
