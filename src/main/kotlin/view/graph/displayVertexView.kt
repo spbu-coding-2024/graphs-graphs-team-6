@@ -28,13 +28,14 @@ fun <V> displayVertexView(
     var x by remember { mutableStateOf(vertexViewModel.x) }
     var y by remember { mutableStateOf(vertexViewModel.y) }
 
-    var radius by remember { mutableStateOf(vertexViewModel.radius) }
+    val radius by remember { mutableStateOf(vertexViewModel.radius) }
+    val border = BorderStroke(vertexViewModel.borderWidth, vertexViewModel.borderColor)
 
     Canvas (
         modifier = modifier
             .offset(vertexViewModel.x, vertexViewModel.y)
             .size(radius * 2)
-            .border(border = BorderStroke(vertexViewModel.borderWidth, vertexViewModel.borderColor), shape = CircleShape)
+            .border(border = border, shape = CircleShape)
             .clip(CircleShape)
             .background(vertexViewModel.color)
             .pointerHoverIcon(icon = PointerIcon.Hand, overrideDescendants = true )
