@@ -4,13 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import model.DirectedGraph
-import view.graph.DirectedGraphView
-import viewmodel.DirectedGraphViewModel
 import view.MainScreenView
 import viewmodel.MainScreenViewModel
+import model.UndirectedGraph
+import view.graph.GraphView
+import viewmodel.GraphViewModel
 
-
-val graph = DirectedGraph<String, Int>().apply {
+val graph = UndirectedGraph<String, Int>().apply {
 	addVertex("A")
 	addVertex("B")
 	addVertex("C")
@@ -39,8 +39,8 @@ val graph = DirectedGraph<String, Int>().apply {
 @Preview
 fun app() {
 	MaterialTheme {
-		val graphViewModel = DirectedGraphViewModel(graph)
-		DirectedGraphView(graphViewModel)
+		val graphViewModel = GraphViewModel(graph)
+		GraphView(graphViewModel)
 		MainScreenView(MainScreenViewModel(graph, graphViewModel))
 	}
 }

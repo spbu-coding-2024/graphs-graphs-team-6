@@ -6,10 +6,11 @@ import androidx.compose.runtime.setValue
 import model.Vertex
 import androidx.compose.ui.graphics.Color
 import model.DirectedGraph
+import model.Graph
 
 class MainScreenViewModel<V, K>(
-	private val graph: DirectedGraph<V, K>,
-	private val graphViewModel: DirectedGraphViewModel<V, K>
+	val graph: Graph<V, K>,
+	private val graphViewModel: GraphViewModel<V, K>
 ) {
 
 	private val calculator = SCCCalculator<V, K>()

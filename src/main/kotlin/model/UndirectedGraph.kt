@@ -26,7 +26,7 @@ class UndirectedGraph<V, K>: Graph<V, K> {
 	override val vertices: Collection<Vertex<V>>
 		get() = _vertices.values
 
-	override val edges: Collection<Edge<V, K>>
+	override val edges: Collection<UndirectedEdge<V, K>>
 		get() = _edges.values
 
 	override fun addEdge(firstVertex: V, secondVertex: V, key: K): Edge<V, K> {
