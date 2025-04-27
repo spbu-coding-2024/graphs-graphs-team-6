@@ -38,8 +38,9 @@ val graph = DirectedGraph<String, Int>().apply {
 @Preview
 fun App() {
 	MaterialTheme {
-		MainScreenView(MainScreenViewModel(graph))
-		DirectedGraphView(graphViewModel = DirectedGraphViewModel(graph))
+		val graphViewModel = DirectedGraphViewModel(graph)
+		DirectedGraphView(graphViewModel)
+		MainScreenView(MainScreenViewModel(graph, graphViewModel))
 	}
 }
 
