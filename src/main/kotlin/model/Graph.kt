@@ -3,12 +3,15 @@ package model
 import space.kscience.kmath.operations.Ring
 
 interface Graph<V, K, W: Comparable<W>>{
-	val ring: Ring<out W>
+	/**
+	 * A ring, which contains arithmetic operation upon some objects
+	 */
+	val ring: Ring<W>
 
 	/**
 	 * A collection of vertices
 	 */
-	val vertices: Collection<Vertex<V>>
+	val vertices: Collection<Vertex<V,W>>
 	/**
 	 * A collection of edges
 	 */

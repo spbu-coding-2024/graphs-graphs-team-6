@@ -21,8 +21,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.pointer.pointerInput
 
 @Composable
-fun <V> VertexView(
-    vertexViewModel: VertexViewModel<V>,
+fun <V, W: Comparable<W>> VertexView(
+    vertexViewModel: VertexViewModel<V, W>,
     modifier: Modifier
 ) {
     var x by remember { mutableStateOf(vertexViewModel.x) }

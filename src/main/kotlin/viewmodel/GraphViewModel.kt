@@ -15,10 +15,10 @@ private const val DEFAULT_BORDER_WIDTH = 5
 
 private const val DEFAULT_EDGE_WIDTH = 2
 
-
+//TODO: DOCUMENT ME
 class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
 	private val _vertices = graph.vertices.associateWith {
-		VertexViewModel<V>(
+		VertexViewModel<V, W>(
 			Random.nextInt(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE).dp,
 			Random.nextInt(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE).dp,
 			Color(DEFAULT_VERTEX_COLOR),
@@ -39,7 +39,7 @@ class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
 			DEFAULT_EDGE_WIDTH.dp
 		)
 	}
-	val vertices: Collection<VertexViewModel<V>>
+	val vertices: Collection<VertexViewModel<V, W>>
 		get() = _vertices.values
 
 	val edges: Collection<EdgeViewModel<V, K, W>>

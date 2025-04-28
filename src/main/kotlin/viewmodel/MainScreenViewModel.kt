@@ -5,9 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import model.Vertex
 import androidx.compose.ui.graphics.Color
-import model.DirectedGraph
 import model.Graph
-import viewmodel.ColorUtils
+import model.utils.ColorUtils
+import model.utils.SCCCalculator
 
 class MainScreenViewModel<V, K, W: Comparable<W>>(
 	val graph: Graph<V, K, W>,
@@ -15,9 +15,8 @@ class MainScreenViewModel<V, K, W: Comparable<W>>(
 ) {
 
 	private val calculator = SCCCalculator<V, K, W>()
-
 	// Current vertex colorscheme
-	var colors by mutableStateOf<Map<Vertex<V>, Color>>(emptyMap())
+	var colors by mutableStateOf<Map<Vertex<V, W>, Color>>(emptyMap())
 		private set
 
 	init {

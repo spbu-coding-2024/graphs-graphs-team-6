@@ -3,13 +3,14 @@ package viewmodel
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
+import model.Colorable
 import model.DirectedGraph
 import model.Edge
 import model.UndirectedGraph.UndirectedEdge
 
 class EdgeViewModel<V, K, W: Comparable<W>>(
-	val firstVertexViewModel: VertexViewModel<V>,
-	val secondVertexViewModel: VertexViewModel<V>,
+	val firstVertexViewModel: VertexViewModel<V, W>,
+	val secondVertexViewModel: VertexViewModel<V, W>,
 	edge: Edge<V, K, W>,
 	color: Color,
 	var width: Dp,

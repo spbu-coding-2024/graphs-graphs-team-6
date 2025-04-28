@@ -5,16 +5,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import model.Colorable
 import model.Vertex
 
-class VertexViewModel<V>(
+class VertexViewModel<V, W: Comparable<W>>(
     x: Dp = 0.dp,
     y: Dp = 0.dp,
     color: Color,
     borderColor: Color,
     var radius: Dp,
     var borderWidth: Dp,
-    val vertex: Vertex<V>
+    val vertex: Vertex<V, W>
 ): Colorable {
     private val _x = mutableStateOf(x)
     private val _y = mutableStateOf(y)

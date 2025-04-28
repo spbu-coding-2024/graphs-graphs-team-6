@@ -8,7 +8,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import viewmodel.EdgeViewModel
 import kotlin.math.atan2
 import kotlin.math.PI
@@ -60,8 +68,8 @@ fun <V, K, W: Comparable<W>> drawSelfLoop(
 			sweepAngle = 360f,
 			useCenter = false,
 			topLeft = Offset(centerX - loopRadius, centerY - loopRadius),
-			size = androidx.compose.ui.geometry.Size(loopRadius * 2, loopRadius * 2),
-			style = androidx.compose.ui.graphics.drawscope.Stroke(width = edgeViewModel.width.toPx())
+			size = Size(loopRadius * 2, loopRadius * 2),
+			style = Stroke(width = edgeViewModel.width.toPx())
 		)
 	}
 }
@@ -74,8 +82,11 @@ fun <V, K, W: Comparable<W>> drawStraightEdge(
 
 	val firstViewModel by remember { mutableStateOf(edgeViewModel.firstVertexViewModel) }
 	val secondViewModel by remember { mutableStateOf(edgeViewModel.secondVertexViewModel) }
-
 	val radius by remember { mutableStateOf(edgeViewModel.firstVertexViewModel.radius) }
+	val textMeasurer = rememberTextMeasurer()
+	val textLayout =  remember(edgeViewModel.edge.weight.toString()) {
+		textMeasurer.measure(edgeViewModel.edge.weight.toString())
+	}
 
 	Canvas(modifier = modifier.fillMaxSize()) {
 		drawLine(
@@ -90,6 +101,7 @@ fun <V, K, W: Comparable<W>> drawStraightEdge(
 			color = edgeViewModel.color,
 			strokeWidth = edgeViewModel.width.toPx()
 		)
+
 		if (edgeViewModel.isDirected) {
 			val path = Path().apply {
 				val angle = (atan2(
@@ -128,6 +140,14 @@ fun <V, K, W: Comparable<W>> drawStraightEdge(
 			if (norm >= 2 * radius.toPx()) {
 				drawPath(path, edgeViewModel.color)
 			}
+
+			drawText(
+                textLayoutResult = textLayout,
+                topLeft = Offset(
+					(firstViewModel.x.toPx() + secondViewModel.x.toPx()) / 2,
+					(firstViewModel.y.toPx() + secondViewModel.y.toPx()) / 2,
+				),
+            )
 		}
 	}
 }
