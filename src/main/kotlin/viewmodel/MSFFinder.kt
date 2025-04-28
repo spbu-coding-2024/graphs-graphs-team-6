@@ -7,14 +7,23 @@ import kotlin.random.Random
 
 class MSFFinder<V, K, W : Comparable<W>>(val graph: UndirectedGraph<V, K, W>) {
 	private val components = mutableListOf<MutableSet<UndirectedVertex<V>>>()
-	private val belongsComponent = graph.vertices.associateWith { false }.toMutableMap()
+	private val visited = graph.vertices.associateWith { false }.toMutableMap()
 
 	private fun dfs(v: UndirectedVertex<V>) {
 		components.last().add(v)
-		belongsComponent[v] = true
+		visited[v] = true
 		for (u in v.adjacencyList) {
 			if (!components.last().contains(u))
 				dfs(u)
+		}
+	}
+
+	init {
+		graph.vertices.forEach {
+			if (!(visited[it] ?: error("Vertex is missing"))) {
+				components.add(mutableSetOf())
+				dfs(it)
+			}
 		}
 	}
 
@@ -23,13 +32,6 @@ class MSFFinder<V, K, W : Comparable<W>>(val graph: UndirectedGraph<V, K, W>) {
 	 * @return List of pairs; each pair contains: list of edges sorted by weight of the current MST & sum of edge weights
 	 */
 	fun findMSFKruscal(): List<Pair<List<UndirectedEdge<V, K, W>>, W>> {
-		graph.vertices.forEach {
-			if (!(belongsComponent[it] ?: throw IllegalStateException("Vertex is missing"))) {
-				components.add(mutableSetOf())
-				dfs(it)
-			}
-		}
-
 		val sortedEdges = graph.edges.sortedBy { it.weight }
 		val res = mutableListOf<Pair<List<UndirectedEdge<V, K, W>>, W>>()
 
@@ -40,11 +42,11 @@ class MSFFinder<V, K, W : Comparable<W>>(val graph: UndirectedGraph<V, K, W>) {
 			fun leaderDSU(v: UndirectedVertex<V>): UndirectedVertex<V> {
 				return if (p[v] === v) v
 				else leaderDSU(
-					p[v] ?: throw IllegalStateException("DSU violation: $v vertex not found")
+					p[v] ?: error("DSU violation: $v vertex not found")
 				).also { p[v] = it }
 			}
 
-			fun uniteDSU(a: UndirectedVertex<V>, b: UndirectedVertex<V>, edgeWeight: W) {
+			fun uniteDSU(a: UndirectedVertex<V>, b: UndirectedVertex<V>) {
 				var aLeader = leaderDSU(a)
 				var bLeader = leaderDSU(b)
 				if (Random.nextBoolean()) {
@@ -62,7 +64,7 @@ class MSFFinder<V, K, W : Comparable<W>>(val graph: UndirectedGraph<V, K, W>) {
 				val lu = leaderDSU(u)
 				if (lv != lu) {
 					mst.add(edge)
-					uniteDSU(v, u, edge.weight)
+					uniteDSU(v, u)
 					sumWeight = graph.ring.add(sumWeight, edge.weight)
 				}
 			}

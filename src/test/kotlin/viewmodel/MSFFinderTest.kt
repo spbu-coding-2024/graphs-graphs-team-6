@@ -1,21 +1,19 @@
 package viewmodel
 
 import model.UndirectedGraph
-import model.UndirectedGraph.UndirectedEdge
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import space.kscience.kmath.operations.IntRing
 
-/**
- * Unit tests for MSFFinder, verifying minimal spanning forest computation
- */
 class MSFFinderTest {
 
  @Test
  fun testEmptyGraph() {
   val graph = UndirectedGraph<String, Int, Int>(IntRing)
   val result = MSFFinder(graph).findMSFKruscal()
-  assertTrue(result.isEmpty(), "Пустой граф должен давать пустой лес")
+  assertTrue(result.isEmpty(), "Empty graph should produce an empty forest")
  }
 
  @Test
@@ -24,10 +22,10 @@ class MSFFinderTest {
   graph.addVertex("A")
   val result = MSFFinder(graph).findMSFKruscal()
 
-  assertEquals(1, result.size, "Граф с одной вершиной должен дать один компонент")
+  assertEquals(1, result.size, "Graph with one vertex should yield one component")
   val (mst, totalWeight) = result[0]
-  assertTrue(mst.isEmpty(), "В МНФ одиночной вершины нет рёбер")
-  assertEquals(IntRing.zero, totalWeight, "Вес МНФ одиночной вершины должен быть ring.zero")
+  assertTrue(mst.isEmpty(), "Single vertex MST should have no edges")
+  assertEquals(IntRing.zero, totalWeight, "Single vertex MST weight should be zero")
  }
 
  @Test
@@ -36,18 +34,17 @@ class MSFFinderTest {
   graph.addVertex("A")
   graph.addVertex("B")
   graph.addVertex("C")
-  // ключ и вес совпадают для простоты теста
   graph.addEdge("A", "B", 5, 5)
   graph.addEdge("B", "C", 3, 3)
 
   val result = MSFFinder(graph).findMSFKruscal()
 
-  assertEquals(1, result.size, "Дерево из трёх вершин должно быть одним компонентом")
+  assertEquals(1, result.size, "Tree graph should yield one component")
   val (mst, totalWeight) = result[0]
-  assertEquals(2, mst.size, "В МНФ дерева из трёх вершин должно быть 2 ребра")
-  assertTrue(mst.any { it.weight == 5 }, "Должно присутствовать ребро весом 5")
-  assertTrue(mst.any { it.weight == 3 }, "Должно присутствовать ребро весом 3")
-  assertEquals(8, totalWeight, "Суммарный вес МНФ должен быть 5 + 3 = 8")
+  assertEquals(2, mst.size, "Tree MST should contain two edges")
+  assertTrue(mst.any { it.weight == 5 }, "MST should include edge of weight 5")
+  assertTrue(mst.any { it.weight == 3 }, "MST should include edge of weight 3")
+  assertEquals(8, totalWeight, "MST total weight should be 8")
  }
 
  @Test
@@ -62,13 +59,13 @@ class MSFFinderTest {
 
   val result = MSFFinder(graph).findMSFKruscal()
 
-  assertEquals(1, result.size, "Цикл из трёх вершин даёт один компонент")
+  assertEquals(1, result.size, "Cycle graph should yield one component")
   val (mst, totalWeight) = result[0]
-  assertEquals(2, mst.size, "В МНФ цикла должно быть 2 ребра")
-  assertTrue(mst.any { it.weight == 1 }, "Должно быть ребро весом 1")
-  assertTrue(mst.any { it.weight == 2 }, "Должно быть ребро весом 2")
-  assertFalse(mst.any { it.weight == 3 }, "Не должно быть ребра весом 3")
-  assertEquals(3, totalWeight, "Суммарный вес МНФ должен быть 1 + 2 = 3")
+  assertEquals(2, mst.size, "Cycle MST should contain two edges")
+  assertTrue(mst.any { it.weight == 1 }, "MST should include edge of weight 1")
+  assertTrue(mst.any { it.weight == 2 }, "MST should include edge of weight 2")
+  assertFalse(mst.any { it.weight == 3 }, "MST should not include edge of weight 3")
+  assertEquals(3, totalWeight, "MST total weight should be 3")
  }
 
  @Test
@@ -83,20 +80,17 @@ class MSFFinderTest {
 
   val result = MSFFinder(graph).findMSFKruscal()
 
-  assertEquals(2, result.size, "Должно быть два компонента")
-  // Сортируем компоненты по суммарному весу для предсказуемости
+  assertEquals(2, result.size, "Disconnected graph should yield two components")
   val sorted = result.sortedBy { it.second }
   val (mst1, weight1) = sorted[0]
   val (mst2, weight2) = sorted[1]
 
-  // Первый компонент вес 7 -> ребро весом 7
-  assertEquals(1, mst1.size)
-  assertEquals(4, mst1[0].weight)
-  assertEquals(4, weight1)
+  assertEquals(1, mst1.size, "Each component MST should contain one edge")
+  assertEquals(4, mst1[0].weight, "First component edge weight should be 4")
+  assertEquals(4, weight1, "First component total weight should be 4")
 
-  // Второй компонент вес 7
-  assertEquals(1, mst2.size)
-  assertEquals(7, mst2[0].weight)
-  assertEquals(7, weight2)
+  assertEquals(1, mst2.size, "Each component MST should contain one edge")
+  assertEquals(7, mst2[0].weight, "Second component edge weight should be 7")
+  assertEquals(7, weight2, "Second component total weight should be 7")
  }
 }
