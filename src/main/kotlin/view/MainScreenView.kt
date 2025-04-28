@@ -46,8 +46,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import view.graph.DirectedGraphView
-import viewmodel.DirectedGraphViewModel
+import view.graph.GraphView
 
 fun drawerShape() = object : Shape {
 	override fun createOutline(
@@ -82,7 +81,7 @@ fun drawerButton(textString: String,
 }
 
 @Composable
-fun <V, K> MainScreenView(viewModel: MainScreenViewModel<V, K>) {
+fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K, W>) {
 	val drawerState = rememberDrawerState(DrawerValue.Closed)
 	val coroutine = rememberCoroutineScope()
 	ModalDrawer(
@@ -110,7 +109,7 @@ fun <V, K> MainScreenView(viewModel: MainScreenViewModel<V, K>) {
         drawerState = drawerState,
 		drawerShape = drawerShape()
     ) {
-		DirectedGraphView(viewModel.graphViewModel)
+		GraphView(viewModel.graphViewModel)
 		Column(
 			modifier = Modifier
 				.fillMaxSize()

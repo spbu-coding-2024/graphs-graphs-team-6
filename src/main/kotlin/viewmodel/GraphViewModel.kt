@@ -1,10 +1,10 @@
 package viewmodel
 
-import androidx.compose.ui.unit.dp
-import kotlin.random.Random
 import androidx.compose.ui.graphics.Color
-import model.DirectedGraph
+import androidx.compose.ui.unit.dp
+import model.Graph
 import model.Vertex
+import kotlin.random.Random
 
 private const val MIN_RANDOM_VALUE = 0
 private const val MAX_RANDOM_VALUE = 500
@@ -15,9 +15,8 @@ private const val DEFAULT_BORDER_WIDTH = 5
 
 private const val DEFAULT_EDGE_WIDTH = 2
 
-class DirectedGraphViewModel<V, K>(
-	graph: DirectedGraph<V, K>
-) {
+
+class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
 	private val _vertices = graph.vertices.associateWith {
 		VertexViewModel<V>(
 			Random.nextInt(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE).dp,
@@ -31,9 +30,10 @@ class DirectedGraphViewModel<V, K>(
 	}
 
 	private val _edges = graph.edges.associateWith {
-		DirectedEdgeViewModel<V, K>(
-			_vertices[it.firstVertex] ?: throw error("Vertex is missing"),
-			_vertices[it.secondVertex] ?: throw error("Vertex is missing"),
+		EdgeViewModel<V, K, W>(
+			_vertices[it.pair.toList()[0]] ?: throw error("Vertex is missing"),
+			_vertices[it.pair.toList()[if (it.pair.size == 2) 1 else 0]]
+				?: throw error("Vertex is missing"),
 			it,
 			Color.Black,
 			DEFAULT_EDGE_WIDTH.dp
@@ -42,14 +42,6 @@ class DirectedGraphViewModel<V, K>(
 	val vertices: Collection<VertexViewModel<V>>
 		get() = _vertices.values
 
-	val edges: Collection<DirectedEdgeViewModel<V, K>>
+	val edges: Collection<EdgeViewModel<V, K, W>>
 		get() = _edges.values
-
-	internal fun updateVertexColors(colorMap: Map<Vertex<V>, Color>) {
-		_vertices.forEach { (modelVertex, vm) ->
-			vm.color = colorMap[modelVertex]
-				?: throw error("Missing color for $modelVertex")
-		}
-	}
-
 }
