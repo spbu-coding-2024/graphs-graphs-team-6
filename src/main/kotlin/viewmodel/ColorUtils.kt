@@ -18,6 +18,15 @@ class ColorUtils {
 			}
 			return mapping
 		}
+
+		fun <T>	assignColorsAll(elements: Collection<T>): Map<T, Color> {
+			val mapping = mutableMapOf<T, Color>()
+			elements.forEachIndexed { idx, elem ->
+				mapping[elem]= generateColor(idx)
+			}
+			return mapping
+		}
+
 		fun generateColor(index: Int): Color {
 			val hue = ((index * COLOR_OFFSET) % CIRCLE_GRADUS) / (CIRCLE_GRADUS).toFloat()
 			val rgbInt = java.awt.Color.HSBtoRGB(hue, SATURATION, BRIGHTNESS)

@@ -44,6 +44,8 @@ val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
 fun app() {
 	MaterialTheme {
 		val graphViewModel = GraphViewModel(graph)
+		val colormap = ColorUtils.assignColorsAll(graph.edges)
+		ColorUtils.applyColors(colormap, graphViewModel.edges)
 		GraphView(graphViewModel)
 		MainScreenView(MainScreenViewModel(graph, graphViewModel))
 	}
