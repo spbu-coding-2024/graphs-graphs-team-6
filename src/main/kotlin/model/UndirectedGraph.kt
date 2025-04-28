@@ -6,7 +6,7 @@ class UndirectedGraph<V, K, W: Comparable<W>>(override val ring: Ring<W>): Graph
 
 	class UndirectedVertex<V>(
 		override var element: V,
-		override val adjacencyList: MutableList<Vertex<V>> = mutableListOf()
+		override val adjacencyList: MutableList<UndirectedVertex<V>> = mutableListOf()
 	) : Vertex<V>
 
 	data class UndirectedEdge<V, K, W: Comparable<W>>(
