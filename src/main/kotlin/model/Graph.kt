@@ -1,6 +1,10 @@
 package model
 
-interface Graph<V, K>{
+import space.kscience.kmath.operations.Ring
+
+interface Graph<V, K, W: Comparable<W>>{
+	val ring: Ring<out W>
+
 	/**
 	 * A collection of vertices
 	 */
@@ -8,7 +12,7 @@ interface Graph<V, K>{
 	/**
 	 * A collection of edges
 	 */
-	val edges: Collection<Edge<V, K>>
+	val edges: Collection<Edge<V, K, W>>
 
 	/**
 	 * Adds edge to graph
@@ -20,7 +24,7 @@ interface Graph<V, K>{
 	 * @param key a key of edge
 	 * @return Added edge
 	 */
-	fun addEdge(firstVertex: V, secondVertex: V, key: K): Edge<V, K>
+	fun addEdge(firstVertex: V, secondVertex: V, key: K, weight: W = ring.one): Edge<V, K, W>
 	/**
 	 * Adds vertex to graph
 	 *

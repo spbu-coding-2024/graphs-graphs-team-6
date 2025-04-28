@@ -1,7 +1,6 @@
 package view.graph
 
 import androidx.compose.runtime.Composable
-import viewmodel.DirectedGraphViewModel
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -18,13 +17,14 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import viewmodel.GraphViewModel
 
 private const val DEFAULT_ZOOM_SCALE_COEF = .001f
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun <V,K> DirectedGraphView(
-    graphViewModel: DirectedGraphViewModel<K, V>,
+fun <V, K, W: Comparable<W>> GraphView(
+    graphViewModel: GraphViewModel<V, K, W>,
 ) {
     val density = LocalDensity.current
     var mouseOffset by remember { mutableStateOf(Offset.Zero) }
@@ -56,6 +56,6 @@ fun <V,K> DirectedGraphView(
             }
         )
 
-    graphViewModel.edges.forEach { DirectedEdgeView(it, modifier = modifier) }
+    graphViewModel.edges.forEach { EdgeView(it, modifier = modifier) }
     graphViewModel.vertices.forEach { VertexView(it, modifier = modifier) }
 }

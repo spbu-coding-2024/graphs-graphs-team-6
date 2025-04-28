@@ -12,6 +12,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
 	mavenCentral()
+	maven("https://repo.kotlin.link")
 	maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 	google()
 }
@@ -50,6 +51,7 @@ dependencies {
 	detekt("io.gitlab.arturbosch.detekt:detekt-cli:1.23.8")
 	testImplementation(kotlin("test"))
 	testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+	implementation("space.kscience:kmath-core:0.4.2")
 }
 
 tasks.test {

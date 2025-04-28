@@ -4,13 +4,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import model.DirectedGraph
-import view.graph.DirectedGraphView
-import viewmodel.DirectedGraphViewModel
 import view.MainScreenView
 import viewmodel.MainScreenViewModel
+import model.UndirectedGraph
+import space.kscience.kmath.operations.IntRing
+import view.graph.GraphView
+import viewmodel.ColorUtils
+import viewmodel.GraphViewModel
 
+const val WEIGHT = 9 * 32
 
-val graph = DirectedGraph<String, Int>().apply {
+val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
 	addVertex("A")
 	addVertex("B")
 	addVertex("C")
@@ -22,7 +26,7 @@ val graph = DirectedGraph<String, Int>().apply {
 
 	var index = 0
 
-	addEdge("A", "B", index++)
+	addEdge("A", "B", index++, WEIGHT)
 	addEdge("B", "C", index++)
 	addEdge("C", "A", index++)
 	addEdge("C", "C", index++)
@@ -39,8 +43,12 @@ val graph = DirectedGraph<String, Int>().apply {
 @Preview
 fun app() {
 	MaterialTheme {
-		val graphViewModel = DirectedGraphViewModel(graph)
-		DirectedGraphView(graphViewModel)
+		val graphViewModel = GraphViewModel(graph)
+
+		val colormap = ColorUtils.assignColorsAll(graph.edges)
+		ColorUtils.applyColors(colormap, graphViewModel.edges)
+
+		GraphView(graphViewModel)
 		MainScreenView(MainScreenViewModel(graph, graphViewModel))
 	}
 }
