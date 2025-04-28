@@ -7,6 +7,7 @@ import model.Vertex
 import androidx.compose.ui.graphics.Color
 import model.DirectedGraph
 import model.Graph
+import viewmodel.ColorUtils
 
 class MainScreenViewModel<V, K, W: Comparable<W>>(
 	val graph: Graph<V, K, W>,
@@ -27,7 +28,7 @@ class MainScreenViewModel<V, K, W: Comparable<W>>(
 
 	fun calculateSCC() {
 		calculator.calculateComponents(graph)
-		graphViewModel.updateVertexColors(colors)
+		ColorUtils.applyColors(colors, graphViewModel.vertices)
 	}
 
 }

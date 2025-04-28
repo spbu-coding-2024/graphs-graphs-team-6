@@ -10,7 +10,7 @@ class UndirectedGraph<V, K, W: Comparable<W>>(override val ring: Ring<W>): Graph
 	) : Vertex<V>
 
 	data class UndirectedEdge<V, K, W: Comparable<W>>(
-		override val pair: Set<Vertex<V>>,
+		override val pair: Set<UndirectedVertex<V>>,
 		override var key: K,
 		override var weight: W
 	) : Edge<V, K, W> {
@@ -23,7 +23,7 @@ class UndirectedGraph<V, K, W: Comparable<W>>(override val ring: Ring<W>): Graph
 	private val _vertices = HashMap<V, UndirectedVertex<V>>()
 	private val _edges = HashMap<K, UndirectedEdge<V, K, W>>()
 
-	override val vertices: Collection<Vertex<V>>
+	override val vertices: Collection<UndirectedVertex<V>>
 		get() = _vertices.values
 
 	override val edges: Collection<UndirectedEdge<V, K, W>>

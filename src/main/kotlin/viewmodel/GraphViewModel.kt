@@ -44,11 +44,4 @@ class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
 
 	val edges: Collection<EdgeViewModel<V, K, W>>
 		get() = _edges.values
-
-	internal fun updateVertexColors(colorMap: Map<Vertex<V>, Color>) {
-		_vertices.forEach { (modelVertex, vm) ->
-			vm.color = colorMap[modelVertex]
-				?: throw error("Missing color for $modelVertex")
-		}
-	}
 }

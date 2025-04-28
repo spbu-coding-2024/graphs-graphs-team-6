@@ -6,18 +6,13 @@ import androidx.compose.ui.graphics.Color
 import java.awt.Color as AwtColor
 import java.util.ArrayDeque
 import java.util.Stack
-
-private const val CIRCLE_GRADUS = 360
-private const val SATURATION = 0.7f
-private const val BRIGHTNESS = 0.9f
-private const val INDEX_MULITPLIER = 137
-
+import viewmodel.ColorUtils
 class SCCCalculator<V, K, W: Comparable<W>> {
 
 	var onComputeListener: ((Map<Vertex<V>, Color>) -> Unit)? = null
 	fun calculateComponents(graph: Graph<V, K, W>) {
 		val sccs = tarjanSCC(graph)
-		val colors = assignColors(sccs)
+		val colors = ColorUtils.assignColorsGrouped(sccs)
 		onComputeListener?.invoke(colors)
 	}
 
@@ -61,20 +56,5 @@ class SCCCalculator<V, K, W: Comparable<W>> {
 			if (!indexMap.containsKey(v)) dfs(v)
 		}
 		return result
-	}
-
-	private fun assignColors(components: List<List<Vertex<V>>>): Map<Vertex<V>, Color> {
-		val mapping = mutableMapOf<Vertex<V>, Color>()
-		components.forEachIndexed { idx, comp ->
-			val color = generateColor(idx)
-			comp.forEach { node -> mapping[node] = color }
-		}
-		return mapping
-	}
-
-	private fun generateColor(index: Int): Color {
-		val hue = ((index * INDEX_MULITPLIER) % CIRCLE_GRADUS) / (CIRCLE_GRADUS).toFloat()
-		val rgbInt = AwtColor.HSBtoRGB(hue, SATURATION, BRIGHTNESS)
-		return Color(rgbInt)
 	}
 }

@@ -15,13 +15,13 @@ class VertexViewModel<V>(
     var radius: Dp,
     var borderWidth: Dp,
     val vertex: Vertex<V>
-) {
+): Colorable {
     private val _x = mutableStateOf(x)
     private val _y = mutableStateOf(y)
     private val _color = mutableStateOf(color)
     private val _borderColor = mutableStateOf(borderColor)
 
-    var color: Color
+    override var color: Color
         get() = _color.value
         set(value) { _color.value = value }
 

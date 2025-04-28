@@ -13,7 +13,7 @@ class EdgeViewModel<V, K, W: Comparable<W>>(
 	edge: Edge<V, K, W>,
 	color: Color,
 	var width: Dp,
-) {
+): Colorable {
 	private val _edge = mutableStateOf(edge)
 	val isDirected: Boolean
 		get() = edge is DirectedGraph.DirectedEdge
@@ -22,7 +22,7 @@ class EdgeViewModel<V, K, W: Comparable<W>>(
 		set(value) { _edge.value = value}
 
 	private val _color = mutableStateOf(color)
-	var color: Color
+	override var color: Color
 		get() = _color.value
 		set(value) {
 			_color.value = value

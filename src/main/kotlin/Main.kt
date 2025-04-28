@@ -9,11 +9,12 @@ import viewmodel.MainScreenViewModel
 import model.UndirectedGraph
 import space.kscience.kmath.operations.IntRing
 import view.graph.GraphView
+import viewmodel.ColorUtils
 import viewmodel.GraphViewModel
 
 const val WEIGHT = 9 * 32
 
-val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
+val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
 	addVertex("A")
 	addVertex("B")
 	addVertex("C")
