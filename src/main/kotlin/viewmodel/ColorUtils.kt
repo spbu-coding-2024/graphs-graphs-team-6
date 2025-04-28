@@ -34,7 +34,7 @@ object ColorUtils {
 	internal fun <T, C : Colorable> applyColors(colorMap: Map<T, Color>, colorable: Collection<C>) {
 		colorMap.keys.zip(colorable).forEach { (model, viewmodel) ->
 			viewmodel.color = colorMap[model]
-				?: throw error("Missing color for $model")
+				?: error("Missing color for $model")
 		}
 	}
 }
