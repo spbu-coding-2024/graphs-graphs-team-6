@@ -54,7 +54,7 @@ class MSFFinder<V, K, W : Comparable<W>>(val graph: UndirectedGraph<V, K, W>) {
 			}
 
 			var sumWeight = graph.ring.zero
-			for (edge in graph.edges) {
+			for (edge in sortedEdges) {
 				if ((comp intersect edge.pair).isEmpty())
 					continue
 				val (v, u) = edge.pair.toList()
