@@ -1,7 +1,6 @@
 package viewmodel
 
 import androidx.compose.ui.graphics.Color
-import model.Vertex
 
 private const val CIRCLE_GRADUS = 360
 private const val SATURATION = 0.7f
