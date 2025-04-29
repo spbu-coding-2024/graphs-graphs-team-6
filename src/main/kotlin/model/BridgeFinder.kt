@@ -1,7 +1,17 @@
 package model
 
 
+/**
+ * Class for bridge finding algorithm implementation
+ */
 class BridgeFinder {
+    /**
+     * Bridge finding algorithm
+     *
+     * @param graph receives graph where needed to find bridges
+     *
+     * @return set of pairs, which represents bridge edges
+     */
     fun <V, K, W: Comparable<W>> runOn(graph: UndirectedGraph<V, K, W>): Set<Pair<Vertex<V>, Vertex<V>>> {
         val bridges: MutableSet<Pair<Vertex<V>, Vertex<V>>> = mutableSetOf()
         val usedVertices: MutableSet<Vertex<V>> = mutableSetOf()
@@ -17,19 +27,11 @@ class BridgeFinder {
             for (next in current.adjacencyList) {
                 if (next == previous || next == current) continue
                 if (next in usedVertices) {
-                    lowLink[current] =
-                        minOf(
-                            lowLink[current] ?: error("Cannot find current vertex(next is used)"),
-                            timeIn[next] ?: error("Cannot find next vertex(next is used)")
-                        )
+                    lowLink[current] = safeMin(lowLink[current], timeIn[next])
                 }
                 else {
                     dfs(next, current)
-                    lowLink[current] =
-                        minOf(
-                            lowLink[current] ?: error("Cannot find current vertex(next is not used)"),
-                            lowLink[next] ?: error("Cannot find next vertex(next is not used)")
-                        )
+                    lowLink[current] = safeMin(lowLink[current], lowLink[next])
                     if (
                         (lowLink[next] ?: error("Cannot find next vertex(next is not used)"))
                         >
@@ -47,7 +49,13 @@ class BridgeFinder {
             }
         }
 
-
         return bridges
+    }
+
+    private fun safeMin(first: Int?, second: Int?): Int {
+        return minOf(
+            first ?: error("Cannot find current vertex(next is used)"),
+            second ?: error("Cannot find next vertex(next is used)")
+        )
     }
 }
