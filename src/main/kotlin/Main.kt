@@ -26,17 +26,15 @@ val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 	addEdge("E", "F", index, index); index++
 	addEdge("F", "D", index, index); index++
 
-	addEdge("G", "H", index, index); index++
-	addEdge("H", "G", index, index)
+	addEdge("G", "H", index, 9493); index++
+	addEdge("H", "G", index, 23404)
 }
 
 @Composable
 @Preview
 fun app() {
 	MaterialTheme {
-		val graphViewModel = GraphViewModel(graph)
-		GraphView(graphViewModel)
-		MainScreenView(MainScreenViewModel(graph, graphViewModel))
+		MainScreenView(MainScreenViewModel(graph))
 	}
 }
 

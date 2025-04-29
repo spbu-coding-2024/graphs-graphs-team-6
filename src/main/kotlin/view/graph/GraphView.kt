@@ -1,10 +1,11 @@
 package view.graph
 
-import androidx.compose.runtime.Composable
-import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,11 +25,13 @@ private const val DEFAULT_ZOOM_SCALE_COEF = .001f
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun <V, K, W: Comparable<W>> GraphView(
-    graphViewModel: GraphViewModel<V, K, W>,
+    graphViewModel: GraphViewModel<V, K, W>
 ) {
     val density = LocalDensity.current
     var mouseOffset by remember { mutableStateOf(Offset.Zero) }
-    var modifier = Modifier
+
+    // Modifier handling pan and zoom for the entire graph
+    val viewportModifier = Modifier
         .pointerInput(Unit) {
             detectDragGestures { change, delta ->
                 change.consume()
@@ -39,23 +42,30 @@ fun <V, K, W: Comparable<W>> GraphView(
             }
         }
         .onPointerEvent(PointerEventType.Scroll) {
-            mouseOffset =  it.changes[0].position
+            mouseOffset = it.changes[0].position
         }
         .scrollable(
-            orientation = Orientation.Vertical,
+            orientation = androidx.compose.foundation.gestures.Orientation.Vertical,
             state = rememberScrollableState { delta ->
                 val scale = 1f + delta * DEFAULT_ZOOM_SCALE_COEF
-                println(scale)
                 graphViewModel.vertices.forEach {
-                    val x = with(density) { it.x.toPx() }
-                    val y = with(density) { it.y.toPx() }
-                    it.x = mouseOffset.x.dp * (1 - scale) + (scale * x).dp
-                    it.y = mouseOffset.y.dp * (1 - scale) + (scale * y).dp
+                    val xPx = with(density) { it.x.toPx() }
+                    val yPx = with(density) { it.y.toPx() }
+                    it.x = (mouseOffset.x + (xPx - mouseOffset.x) * scale).dp
+                    it.y = (mouseOffset.y + (yPx - mouseOffset.y) * scale).dp
                 }
                 delta
             }
         )
 
-    graphViewModel.edges.forEach { EdgeView(it, modifier = modifier) }
-    graphViewModel.vertices.forEach { VertexView(it, modifier = modifier) }
+    Box(modifier = viewportModifier.fillMaxSize()) {
+        // Draw edges using full-viewport canvas in EdgeView
+        graphViewModel.edges.forEach { edge ->
+            EdgeView(edge)
+        }
+        // Draw vertices with local offset and size in VertexView
+        graphViewModel.vertices.forEach { vertex ->
+            VertexView(vertex)
+        }
+    }
 }

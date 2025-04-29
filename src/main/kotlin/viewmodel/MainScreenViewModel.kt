@@ -12,10 +12,19 @@ import viewmodel.ColorUtils
 
 const val SEMI_BLACK = 0x50_00_00_00
 
-class MainScreenViewModel<V, K, W: Comparable<W>>(
+class MainScreenViewModel<V, K, W : Comparable<W>>(
 	val graph: Graph<V, K, W>,
-	private val graphViewModel: GraphViewModel<V, K, W>
 ) {
+	private var _showEdgesWeights = mutableStateOf(false)
+
+	var showEdgesWeights
+		get() = _showEdgesWeights.value
+		set(value) {
+			_showEdgesWeights.value = value
+		}
+
+	val graphViewModel = GraphViewModel(graph, _showEdgesWeights)
+
 	// Current vertex colorscheme
 	var vertexColors by mutableStateOf(mapOf<Vertex<V>, Color>())
 		private set
@@ -25,13 +34,15 @@ class MainScreenViewModel<V, K, W: Comparable<W>>(
 
 	private val calculator = SCCCalculator<V, K, W>()
 	fun calculateSCC() {
-		vertexColors  = calculator.calculateComponents(graph)
+		vertexColors = calculator.calculateComponents(graph)
 		ColorUtils.applyColors(vertexColors, graphViewModel.vertices)
 	}
 
 	private val msfFinder = MSFFinder(graph)
 	fun findMSF() {
-		edgeColors = msfFinder.findMSF()
+		val msf = msfFinder.findMSF()
+		edgeColors = msf
+
 		ColorUtils.applyColors(edgeColors, graphViewModel.edges.sortedBy { it.model.weight }, Color(SEMI_BLACK))
 	}
 

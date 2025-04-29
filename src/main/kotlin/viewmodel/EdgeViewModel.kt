@@ -1,5 +1,6 @@
 package viewmodel
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -13,10 +14,10 @@ class EdgeViewModel<V, K, W: Comparable<W>>(
 	model: Edge<V, K, W>,
 	color: Color,
 	var width: Dp,
+	private val _weightLabelVisie: State<Boolean>
 ): Colorable<Edge<V, K, W>> {
+
 	private val _model = mutableStateOf(model)
-	val isDirected: Boolean
-		get() = model is DirectedGraph.DirectedEdge
 	override var model: Edge<V, K, W>
 		get() = _model.value
 		set(value) { _model.value = value}
@@ -27,4 +28,10 @@ class EdgeViewModel<V, K, W: Comparable<W>>(
 		set(value) {
 			_color.value = value
 		}
+
+	val weightLabel
+		get() = model.weight.toString()
+
+	val weightLabelVisible
+		get() = _weightLabelVisie.value
 }

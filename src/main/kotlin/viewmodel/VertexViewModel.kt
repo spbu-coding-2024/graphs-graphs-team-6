@@ -37,8 +37,6 @@ class VertexViewModel<V>(
 		get() = _y.value
 		set(value) { _y.value = value }
 
-	var interaction: (Unit) -> Unit = {}
-
 	fun move(offset: Offset) {
 		_x.value += offset.x.dp
 		_y.value += offset.y.dp
