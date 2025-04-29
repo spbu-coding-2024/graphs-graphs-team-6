@@ -12,7 +12,6 @@ private const val DEFAULT_VERTEX_COLOR = 0xFF2979FF
 private const val DEFAULT_VERTEX_BORDER_COLOR = 0xFF2962FF
 private const val DEFAULT_WIDTH = 25
 private const val DEFAULT_BORDER_WIDTH = 5
-
 private const val DEFAULT_EDGE_WIDTH = 2
 
 //TODO: DOCUMENT ME
@@ -23,6 +22,7 @@ class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
 			Random.nextInt(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE).dp,
 			Color(DEFAULT_VERTEX_COLOR),
 			Color(DEFAULT_VERTEX_BORDER_COLOR),
+			graph.ring.zero,
 			DEFAULT_WIDTH.dp,
 			DEFAULT_BORDER_WIDTH.dp,
 			it

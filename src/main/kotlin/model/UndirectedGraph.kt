@@ -4,13 +4,13 @@ import space.kscience.kmath.operations.Ring
 
 class UndirectedGraph<V, K, W: Comparable<W>>(override val ring: Ring<W>): Graph<V, K, W> {
 
-	class UndirectedVertex<V, W: Comparable<W>>(
+	class UndirectedVertex<V>(
 		override var element: V,
-		override val adjacencyList: MutableList<Pair<Vertex<V, W>, W>> = mutableListOf()
-	) : Vertex<V, W>
+		override val adjacencyList: MutableList<Vertex<V>> = mutableListOf()
+	) : Vertex<V>
 
 	data class UndirectedEdge<V, K, W: Comparable<W>>(
-		override val pair: Set<UndirectedVertex<V, W>>,
+		override val pair: Set<UndirectedVertex<V>>,
 		override var key: K,
 		override var weight: W
 	) : Edge<V, K, W> {
@@ -20,10 +20,10 @@ class UndirectedGraph<V, K, W: Comparable<W>>(override val ring: Ring<W>): Graph
 		}
 	}
 
-	private val _vertices = HashMap<V, UndirectedVertex<V, W>>()
+	private val _vertices = HashMap<V, UndirectedVertex<V>>()
 	private val _edges = HashMap<K, UndirectedEdge<V, K, W>>()
 
-	override val vertices: Collection<UndirectedVertex<V, W>>
+	override val vertices: Collection<UndirectedVertex<V>>
 		get() = _vertices.values
 
 	override val edges: Collection<UndirectedEdge<V, K, W>>
@@ -34,8 +34,8 @@ class UndirectedGraph<V, K, W: Comparable<W>>(override val ring: Ring<W>): Graph
 			?: throw NoSuchElementException("Vertex not found")
 		val secondV = _vertices[secondVertex]
 			?: throw NoSuchElementException("Vertex not found")
-		firstV.adjacencyList.add(secondV to weight)
-		secondV.adjacencyList.add(firstV to weight)
+		firstV.adjacencyList.add(secondV)
+		secondV.adjacencyList.add(firstV)
 		return _edges.getOrPut(key) {
 			UndirectedEdge<V, K, W>(
 				setOf(firstV, secondV),

@@ -11,7 +11,7 @@ interface Graph<V, K, W: Comparable<W>>{
 	/**
 	 * A collection of vertices
 	 */
-	val vertices: Collection<Vertex<V,W>>
+	val vertices: Collection<Vertex<V>>
 	/**
 	 * A collection of edges
 	 */

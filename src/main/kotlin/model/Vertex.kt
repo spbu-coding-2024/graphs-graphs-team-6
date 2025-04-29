@@ -1,8 +1,6 @@
 package model
 
-import space.kscience.kmath.operations.Ring
-
-interface Vertex<V, W: Comparable<W>> {
+interface Vertex<V> {
     var element: V
-    val adjacencyList: MutableList<Pair<Vertex<V, W>, W>>
+    val adjacencyList: MutableList<Vertex<V>>
 }

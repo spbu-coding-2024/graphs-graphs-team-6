@@ -16,7 +16,7 @@ class MainScreenViewModel<V, K, W: Comparable<W>>(
 
 	private val calculator = SCCCalculator<V, K, W>()
 	// Current vertex colorscheme
-	var colors by mutableStateOf<Map<Vertex<V, W>, Color>>(emptyMap())
+	var colors by mutableStateOf<Map<Vertex<V>, Color>>(emptyMap())
 		private set
 
 	init {

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import model.DirectedGraph
 import model.utils.SSSPCalculator
 import view.graph.GraphView
 
@@ -93,8 +94,15 @@ fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K,
 			}
 			drawerButton("SSSP", icon = Icons.Default.Star) {
 				coroutine.launch { drawerState.close() }
-				val (pred, map) = SSSPCalculator.bellmanFordAlgorithm(viewModel.graph, viewModel.graph.vertices.first().element)
-
+				if (viewModel.graph is DirectedGraph) {
+					val (pred, distance) = SSSPCalculator.bellmanFordAlgorithm(viewModel.graph, viewModel.graph.vertices.first().element)
+					println(distance)
+					viewModel.graphViewModel.vertices.forEach { vertexVM ->
+						distance[vertexVM.vertex.element]?.let {
+							vertexVM.number = it
+						}
+					}
+				}
 			}
 		},
         drawerState = drawerState,

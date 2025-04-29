@@ -15,29 +15,7 @@ import viewmodel.GraphViewModel
 const val WEIGHT = 9 * 32
 
 val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
-	addVertex("A")
-	addVertex("B")
-	addVertex("C")
-	addVertex("D")
-	addVertex("E")
-	addVertex("F")
-	addVertex("G")
-	addVertex("H")
-
-	var index = 0
-
-	addEdge("A", "B", index++, 5)
-	addEdge("B", "C", index++, 2)
-	addEdge("C", "A", index++, 1)
-	addEdge("C", "C", index++, -1)
-
-	addEdge("D", "E", index++, 4)
-	addEdge("E", "F", index++, 2)
-	addEdge("F", "D", index++, 0)
-
-	addEdge("G", "H", index++, 1)
-	addEdge("H", "G", index, 100)
-	}
+}
 
 @Composable
 @Preview

@@ -19,6 +19,10 @@ import viewmodel.VertexViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun <V, W: Comparable<W>> VertexView(
@@ -29,6 +33,11 @@ fun <V, W: Comparable<W>> VertexView(
     var y by remember { mutableStateOf(vertexViewModel.y) }
 
     var radius by remember { mutableStateOf(vertexViewModel.radius) }
+
+    val textMeasurer = rememberTextMeasurer()
+    val vertexNumber =  remember(vertexViewModel.number.toString()) {
+        textMeasurer.measure(vertexViewModel.number.toString())
+    }
 
     Canvas (
         modifier = modifier
@@ -45,9 +54,18 @@ fun <V, W: Comparable<W>> VertexView(
                     vertexViewModel.move(offset)
                 }
             }
-
     ) {
 
     }
+    Canvas(modifier) {
+        drawText(
+            textLayoutResult = vertexNumber,
+            topLeft = Offset(
+                x = vertexViewModel.x.toPx() + vertexViewModel.radius.toPx() - vertexNumber.size.width / 2,
+                y = vertexViewModel.y.toPx() + vertexViewModel.radius.toPx() - vertexNumber.size.height / 2,
+            ),
+        )
+    }
+
 }
 
