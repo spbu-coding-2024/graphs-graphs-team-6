@@ -10,16 +10,16 @@ import model.UndirectedGraph.UndirectedEdge
 class EdgeViewModel<V, K, W: Comparable<W>>(
 	val firstVertexViewModel: VertexViewModel<V>,
 	val secondVertexViewModel: VertexViewModel<V>,
-	edge: Edge<V, K, W>,
+	model: Edge<V, K, W>,
 	color: Color,
 	var width: Dp,
-): Colorable {
-	private val _edge = mutableStateOf(edge)
+): Colorable<Edge<V, K, W>> {
+	private val _model = mutableStateOf(model)
 	val isDirected: Boolean
-		get() = edge is DirectedGraph.DirectedEdge
-	var edge: Edge<V, K, W>
-		get() = _edge.value
-		set(value) { _edge.value = value}
+		get() = model is DirectedGraph.DirectedEdge
+	override var model: Edge<V, K, W>
+		get() = _model.value
+		set(value) { _model.value = value}
 
 	private val _color = mutableStateOf(color)
 	override var color: Color

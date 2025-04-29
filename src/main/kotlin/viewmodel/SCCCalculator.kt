@@ -10,10 +10,10 @@ import viewmodel.ColorUtils
 class SCCCalculator<V, K, W: Comparable<W>> {
 
 	var onComputeListener: ((Map<Vertex<V>, Color>) -> Unit)? = null
-	fun calculateComponents(graph: Graph<V, K, W>) {
+	fun calculateComponents(graph: Graph<V, K, W>): Map<Vertex<V>, Color> {
 		val sccs = tarjanSCC(graph)
 		val colors = ColorUtils.assignColorsGrouped(sccs)
-		onComputeListener?.invoke(colors)
+		return colors
 	}
 
 	private fun tarjanSCC(graph: Graph<V, K, W>): List<List<Vertex<V>>> {
@@ -34,7 +34,7 @@ class SCCCalculator<V, K, W: Comparable<W>> {
 			v.adjacencyList.forEach { w ->
 				if (!indexMap.containsKey(w)) {
 					dfs(w)
-					lowLink[v] = minOf(lowLink[v]!!, lowLink[w]!!)
+					lowLink[v] = minOf(lowLink[v]!!, lowLink[w]!!) //TODO: remove !!
 				} else if (w in onStack) {
 					lowLink[v] = minOf(lowLink[v]!!, indexMap[w]!!)
 				}

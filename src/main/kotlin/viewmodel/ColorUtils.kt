@@ -31,10 +31,9 @@ object ColorUtils {
 		return Color(rgbInt)
 	}
 
-	internal fun <T, C : Colorable> applyColors(colorMap: Map<T, Color>, colorable: Collection<C>) {
-		colorMap.keys.zip(colorable).forEach { (model, viewmodel) ->
-			viewmodel.color = colorMap[model]
-				?: error("Missing color for $model")
+	internal fun <T, C : Colorable<T>> applyColors(colorMap: Map<T, Color>, colorable: Collection<C>, defaultColor: Color = Color.Black) {
+		for (viewModel in colorable) {
+			viewModel.color = colorMap[viewModel.model] ?: defaultColor
 		}
 	}
 }

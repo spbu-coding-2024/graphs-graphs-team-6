@@ -14,8 +14,8 @@ class VertexViewModel<V>(
     borderColor: Color,
     var radius: Dp,
     var borderWidth: Dp,
-    val vertex: Vertex<V>
-): Colorable {
+    override val model: Vertex<V>
+): Colorable<Vertex<V>> {
     private val _x = mutableStateOf(x)
     private val _y = mutableStateOf(y)
     private val _color = mutableStateOf(color)

@@ -1,15 +1,23 @@
 package viewmodel
 
-import model.UndirectedGraph
-import model.UndirectedGraph.UndirectedEdge
-import model.UndirectedGraph.UndirectedVertex
+import androidx.compose.ui.graphics.Color
+import model.Edge
+import model.Graph
+import model.Vertex
 import kotlin.random.Random
 
-class MSFFinder<V, K, W : Comparable<W>>(val graph: UndirectedGraph<V, K, W>) {
-	private val components = mutableListOf<MutableSet<UndirectedVertex<V>>>()
+class MSFFinder<V, K, W : Comparable<W>>(val graph: Graph<V, K, W>) {
+
+	fun findMSF(): Map<Edge<V, K, W>, Color> {
+		val msf = findMSFKruscal()
+		val colors = ColorUtils.assignColorsGrouped(msf.first)
+		return colors
+	}
+
+	private val components = mutableListOf<MutableSet<Vertex<V>>>()
 	private val visited = graph.vertices.associateWith { false }.toMutableMap()
 
-	private fun dfs(v: UndirectedVertex<V>) {
+	private fun dfs(v: Vertex<V>) {
 		components.last().add(v)
 		visited[v] = true
 		for (u in v.adjacencyList) {
@@ -28,25 +36,25 @@ class MSFFinder<V, K, W : Comparable<W>>(val graph: UndirectedGraph<V, K, W>) {
 	}
 
 	/**
-	 * Finds the minimal spanning forest of the [UndirectedGraph].
+	 * Finds the minimal spanning forest of the [Graph].
 	 * @return List of pairs; each pair contains: list of edges sorted by weight of the current MST & sum of edge weights
 	 */
-	fun findMSFKruscal(): List<Pair<List<UndirectedEdge<V, K, W>>, W>> {
+	fun findMSFKruscal(): Pair<List<List<Edge<V, K, W>>>, List<W>> {
 		val sortedEdges = graph.edges.sortedBy { it.weight }
-		val res = mutableListOf<Pair<List<UndirectedEdge<V, K, W>>, W>>()
+		val res = mutableListOf<MutableList<Edge<V, K, W>>>() to mutableListOf<W>()
 
 		for (comp in components) {
-			val mst = mutableListOf<UndirectedEdge<V, K, W>>()
+			val mst = mutableListOf<Edge<V, K, W>>()
 			val p = comp.associateWith { it }.toMutableMap()
 
-			fun leaderDSU(v: UndirectedVertex<V>): UndirectedVertex<V> {
+			fun leaderDSU(v: Vertex<V>): Vertex<V> {
 				return if (p[v] === v) v
 				else leaderDSU(
 					p[v] ?: error("DSU violation: $v vertex not found")
 				).also { p[v] = it }
 			}
 
-			fun uniteDSU(a: UndirectedVertex<V>, b: UndirectedVertex<V>) {
+			fun uniteDSU(a: Vertex<V>, b: Vertex<V>) {
 				var aLeader = leaderDSU(a)
 				var bLeader = leaderDSU(b)
 				if (Random.nextBoolean()) {
@@ -55,10 +63,11 @@ class MSFFinder<V, K, W : Comparable<W>>(val graph: UndirectedGraph<V, K, W>) {
 				p[aLeader] = bLeader
 			}
 
-			var sumWeight = graph.ring.zero
+			var sumWeight: W = graph.ring.zero
 			for (edge in sortedEdges) {
-				if ((comp intersect edge.pair).isEmpty())
+				if ((comp intersect edge.pair.toSet()).isEmpty() || edge.pair.size == 1)
 					continue
+
 				val (v, u) = edge.pair.toList()
 				val lv = leaderDSU(v)
 				val lu = leaderDSU(u)
@@ -68,7 +77,7 @@ class MSFFinder<V, K, W : Comparable<W>>(val graph: UndirectedGraph<V, K, W>) {
 					sumWeight = graph.ring.add(sumWeight, edge.weight)
 				}
 			}
-			res.add(mst to sumWeight)
+			res.first.add(mst); res.second.add(sumWeight)
 		}
 		return res
 	}
