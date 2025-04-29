@@ -20,14 +20,14 @@ val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 	addEdge("A", "B", index, index); index++
 	addEdge("B", "C", index, index); index++
 	addEdge("C", "A", index, index); index++
-	addEdge("C", "C", index, index); index++   // петля — будет проигнорирована в MSF
+	addEdge("C", "C", index, index); index++
 
 	addEdge("D", "E", index, index); index++
 	addEdge("E", "F", index, index); index++
 	addEdge("F", "D", index, index); index++
 
 	addEdge("G", "H", index, index); index++
-	addEdge("H", "G", index, index)            // вес = ключ последнего индекса
+	addEdge("H", "G", index, index)
 }
 
 @Composable
