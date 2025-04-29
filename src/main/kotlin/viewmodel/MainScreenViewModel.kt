@@ -10,6 +10,8 @@ import model.Graph
 import model.Edge
 import viewmodel.ColorUtils
 
+const val SEMI_BLACK = 0x50_00_00_00
+
 class MainScreenViewModel<V, K, W: Comparable<W>>(
 	val graph: Graph<V, K, W>,
 	private val graphViewModel: GraphViewModel<V, K, W>
@@ -30,7 +32,7 @@ class MainScreenViewModel<V, K, W: Comparable<W>>(
 	private val msfFinder = MSFFinder(graph)
 	fun findMSF() {
 		edgeColors = msfFinder.findMSF()
-		ColorUtils.applyColors(edgeColors, graphViewModel.edges.sortedBy { it.model.weight }, Color(0x50_00_00_00))
+		ColorUtils.applyColors(edgeColors, graphViewModel.edges.sortedBy { it.model.weight }, Color(SEMI_BLACK))
 	}
 
 }

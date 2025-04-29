@@ -7,7 +7,8 @@ import java.awt.Color as AwtColor
 import java.util.ArrayDeque
 import java.util.Stack
 import viewmodel.ColorUtils
-class SCCCalculator<V, K, W: Comparable<W>> {
+
+class SCCCalculator<V, K, W : Comparable<W>> {
 
 	var onComputeListener: ((Map<Vertex<V>, Color>) -> Unit)? = null
 	fun calculateComponents(graph: Graph<V, K, W>): Map<Vertex<V>, Color> {
@@ -18,9 +19,9 @@ class SCCCalculator<V, K, W: Comparable<W>> {
 
 	private fun tarjanSCC(graph: Graph<V, K, W>): List<List<Vertex<V>>> {
 		val indexMap = mutableMapOf<Vertex<V>, Int>()
-		val lowLink  = mutableMapOf<Vertex<V>, Int>()
-		val onStack  = mutableSetOf<Vertex<V>>()
-		val stack    = Stack<Vertex<V>>()
+		val lowLink = mutableMapOf<Vertex<V>, Int>()
+		val onStack = mutableSetOf<Vertex<V>>()
+		val stack = Stack<Vertex<V>>()
 		var index = 0
 		val result = mutableListOf<List<Vertex<V>>>()
 
@@ -34,9 +35,15 @@ class SCCCalculator<V, K, W: Comparable<W>> {
 			v.adjacencyList.forEach { w ->
 				if (!indexMap.containsKey(w)) {
 					dfs(w)
-					lowLink[v] = minOf(lowLink[v]!!, lowLink[w]!!) //TODO: remove !!
+					lowLink[v] = minOf(
+						lowLink[v] ?: error("Vertex is missing"),
+						lowLink[w] ?: error("Vertex is missing")
+					)
 				} else if (w in onStack) {
-					lowLink[v] = minOf(lowLink[v]!!, indexMap[w]!!)
+					lowLink[v] = minOf(
+						lowLink[v] ?: error("Vertex is missing"),
+						indexMap[w] ?: error("Vertex is missing")
+					)
 				}
 			}
 

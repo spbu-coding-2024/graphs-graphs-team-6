@@ -3,7 +3,8 @@ package viewmodel
 import model.UndirectedGraph
 import model.Edge
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.assertEquals
 import space.kscience.kmath.operations.IntRing
 
 class MSFFinderTest {
