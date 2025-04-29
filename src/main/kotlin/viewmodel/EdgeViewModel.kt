@@ -14,7 +14,7 @@ class EdgeViewModel<V, K, W: Comparable<W>>(
 	model: Edge<V, K, W>,
 	color: Color,
 	var width: Dp,
-	private val _weightLabelVisie: State<Boolean>
+	private val weightLabelVisieState: State<Boolean>
 ): Colorable<Edge<V, K, W>> {
 
 	private val _model = mutableStateOf(model)
@@ -33,5 +33,5 @@ class EdgeViewModel<V, K, W: Comparable<W>>(
 		get() = model.weight.toString()
 
 	val weightLabelVisible
-		get() = _weightLabelVisie.value
+		get() = weightLabelVisieState.value
 }

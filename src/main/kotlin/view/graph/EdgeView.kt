@@ -10,13 +10,34 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import model.DirectedGraph
 import viewmodel.EdgeViewModel
-import kotlin.math.*
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.PI
+import kotlin.math.sqrt
+import kotlin.math.sin
 import kotlin.random.Random
 
 private const val DEFAULT_ARROW_TRIANGLE_HEIGHT = 30
 private const val DEFAULT_ARROW_TRIANGLE_WIDTH = 10
 private const val DEFAULT_LOOP_RADIUS_COEFF = 0.75f
 private const val DEFAULT_LOOP_MULTIPLIER = 3
+
+@Composable
+fun <V, K, W: Comparable<W>> showLabel(edgeViewModel: EdgeViewModel<V, K, W>) {
+	if (edgeViewModel.weightLabelVisible) {
+		Text(
+			text = edgeViewModel.weightLabel,
+			modifier = Modifier.offset(
+				x = edgeViewModel.firstVertexViewModel.x +
+					(edgeViewModel.secondVertexViewModel.x -
+						edgeViewModel.firstVertexViewModel.x)  / 2,
+				y = edgeViewModel.firstVertexViewModel.y +
+					(edgeViewModel.secondVertexViewModel.y -
+						edgeViewModel.firstVertexViewModel.y) / 2
+			)
+		)
+	}
+}
 
 /**
  * Draws an edge (straight line or self-loop) over the full viewport.
@@ -80,18 +101,5 @@ fun <V, K, W : Comparable<W>> EdgeView(
 			)
 		}
 	}
-
-	if (edgeViewModel.weightLabelVisible) {
-		Text(
-			text = edgeViewModel.weightLabel,
-			modifier = Modifier.offset(
-				x = edgeViewModel.firstVertexViewModel.x +
-					(edgeViewModel.secondVertexViewModel.x -
-						edgeViewModel.firstVertexViewModel.x)  / 2,
-				y = edgeViewModel.firstVertexViewModel.y +
-					(edgeViewModel.secondVertexViewModel.y -
-						edgeViewModel.firstVertexViewModel.y) / 2
-			)
-		)
-	}
+	showLabel(edgeViewModel)
 }

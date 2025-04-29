@@ -12,6 +12,9 @@ import view.graph.GraphView
 import viewmodel.ColorUtils
 import viewmodel.GraphViewModel
 
+const val BIG_NUMBER_1 = 9000
+const val BIG_NUMBER_2 = 5555
+
 val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 	listOf("A","B","C","D","E","F","G","H").forEach { addVertex(it) }
 
@@ -26,8 +29,8 @@ val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 	addEdge("E", "F", index, index); index++
 	addEdge("F", "D", index, index); index++
 
-	addEdge("G", "H", index, 9493); index++
-	addEdge("H", "G", index, 23404)
+	addEdge("G", "H", index, BIG_NUMBER_1); index++
+	addEdge("H", "G", index, BIG_NUMBER_2)
 }
 
 @Composable
