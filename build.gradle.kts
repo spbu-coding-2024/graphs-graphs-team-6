@@ -52,6 +52,7 @@ dependencies {
 	testImplementation(kotlin("test"))
 	testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 	implementation("space.kscience:kmath-core:0.4.2")
+	implementation("com.github.Jetbrains-Research:louvain:main-SNAPSHOT")
 }
 
 tasks.test {
