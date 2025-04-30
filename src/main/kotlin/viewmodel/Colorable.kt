@@ -1,4 +1,4 @@
-package model
+package viewmodel
 
 import androidx.compose.ui.graphics.Color
 

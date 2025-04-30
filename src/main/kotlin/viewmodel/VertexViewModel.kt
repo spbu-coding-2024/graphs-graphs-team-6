@@ -5,7 +5,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import model.Colorable
+import viewmodel.Colorable
 import model.Vertex
 
 class VertexViewModel<V, W: Comparable<W>>(

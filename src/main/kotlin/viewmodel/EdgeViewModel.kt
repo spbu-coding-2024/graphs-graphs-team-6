@@ -3,7 +3,7 @@ package viewmodel
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
-import model.Colorable
+import viewmodel.Colorable
 import model.DirectedGraph
 import model.Edge
 import model.UndirectedGraph.UndirectedEdge
