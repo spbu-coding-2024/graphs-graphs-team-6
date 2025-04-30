@@ -3,6 +3,7 @@ package view
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,59 +53,6 @@ import model.utils.SSSPCalculator
 import view.graph.GraphView
 import viewmodel.GraphViewModel
 
-enum class Algorithm {
-	Tarjan,
-	BellmanFord
-}
-
-fun <V, K, W: Comparable<W>>applyAlgorithm(algoNum: Int, viewModel: MainScreenViewModel<V, K, W>) {
-	when (algoNum) {
-		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
-
-		Algorithm.BellmanFord.ordinal -> {
-			val (_, distance) = SSSPCalculator.bellmanFordAlgorithm(
-				viewModel.graph,
-				viewModel.graph.vertices.first().element
-			)
-			viewModel.graphViewModel.vertices.forEach { vertexVM ->
-				distance[vertexVM.vertex.element]?.let {
-					vertexVM.number = it
-				}
-			}
-		}
-	}
-}
-
-fun drawerShape() = object : Shape {
-	override fun createOutline(
-		size: Size,
-		layoutDirection: LayoutDirection,
-		density: Density
-	): Outline {
-		return Outline.Rectangle(Rect(0f, 0f, size.width / 2,size.height))
-	}
-
-}
-
-@Composable
-fun drawerButton(textString: String,
-                 icon: ImageVector = Icons.Default.Add,
-                 description: String = "",
-                 onClickMethod: () -> Unit) {
-	Column {
-		Button(
-			modifier = Modifier
-				.width(400.dp)
-				.height(100.dp)
-				.padding(16.dp),
-			onClick = onClickMethod,
-			shape = RectangleShape,
-		){
-			Icon(icon, description, modifier = Modifier.padding(5.dp))
-			Text(textString, fontSize = 20.sp)
-		}
-	}
-}
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -112,18 +60,8 @@ fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K,
 	val drawerState = rememberDrawerState(DrawerValue.Closed)
 	val coroutine = rememberCoroutineScope()
 
-	var currentAlgorithm: Int = Algorithm.BellmanFord.ordinal
-
-	val algorithms = Array<String>(Algorithm.entries.size) {
-		when(it) {
-			Algorithm.BellmanFord.ordinal -> "Bellman-Ford"
-			Algorithm.Tarjan.ordinal -> "Tarjan Strong Connected Component"
-			else -> error("No string for enum")
-		}
-	}
-
 	var actionWindowVisibility by remember { mutableStateOf(false) }
-	var menuIsExpanded by remember { mutableStateOf(false) }
+
 
 	ModalDrawer(
 		drawerContent = {
@@ -168,60 +106,132 @@ fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K,
 				Icon(if (actionWindowVisibility == true) Icons.Default.Close else Icons.Default.Menu, "")
 			}
 		}
-		AnimatedVisibility(
-			visible = actionWindowVisibility,
-			enter = EnterTransition.None,
-			exit = ExitTransition.None
-		) {
-			Row(
-				modifier = Modifier
-					.fillMaxSize()
-					.padding(20.dp)
-					.width(300.dp)
-					.height(300.dp),
-				horizontalArrangement = Arrangement.Start,
-				verticalAlignment = Alignment.Bottom,
+		actionMenu(actionWindowVisibility, viewModel)
+	}
+}
 
-				) {
-				ExposedDropdownMenuBox(
+fun returnArrayOfAlgorithmLabels(): Array<String> {
+	return Array<String>(Algorithm.entries.size) {
+		when(it) {
+			Algorithm.BellmanFord.ordinal -> "Bellman-Ford"
+			Algorithm.Tarjan.ordinal -> "Tarjan Strong Connected Component"
+			else -> error("No string for enum")
+		}
+	}
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun <V, K, W: Comparable<W>>actionMenu(actionWindowVisibility: Boolean, viewModel: MainScreenViewModel<V, K, W>) {
+	var currentAlgorithm: Int = Algorithm.BellmanFord.ordinal
+	val algorithms = returnArrayOfAlgorithmLabels()
+	var menuIsExpanded by remember { mutableStateOf(false) }
+
+	AnimatedVisibility(
+		visible = actionWindowVisibility,
+		enter = EnterTransition.None,
+		exit = ExitTransition.None
+	) {
+		Row(
+			modifier = Modifier
+				.fillMaxSize()
+				.padding(20.dp)
+				.width(300.dp)
+				.height(300.dp),
+			horizontalArrangement = Arrangement.Start,
+			verticalAlignment = Alignment.Bottom,
+			) {
+			ExposedDropdownMenuBox(
+				expanded = menuIsExpanded,
+				onExpandedChange = {
+					menuIsExpanded = !menuIsExpanded
+				},
+			) {
+				TextField(
+					value = algorithms[currentAlgorithm],
+					onValueChange = {},
+					readOnly = true,
+					trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = menuIsExpanded) }
+				)
+				ExposedDropdownMenu(
 					expanded = menuIsExpanded,
-					onExpandedChange = {
-						menuIsExpanded = !menuIsExpanded
-					},
+					onDismissRequest = { menuIsExpanded = false },
 				) {
-					TextField(
-						value = algorithms[currentAlgorithm],
-						onValueChange = {},
-						readOnly = true,
-						trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = menuIsExpanded) }
-					)
-					ExposedDropdownMenu(
-						expanded = menuIsExpanded,
-						onDismissRequest = { menuIsExpanded = false },
-					) {
-						algorithms.forEachIndexed { ordinal, string ->
-							DropdownMenuItem(
-								onClick = {
-									currentAlgorithm = ordinal
-									menuIsExpanded = false
-								}
-							) {
-								Text(text = string)
+					algorithms.forEachIndexed { ordinal, string ->
+						DropdownMenuItem(
+							onClick = {
+								currentAlgorithm = ordinal
+								menuIsExpanded = false
 							}
+						) {
+							Text(text = string)
 						}
-
 					}
-				}
-				Button(
-					modifier = Modifier
-						.padding(5.dp),
-					onClick = {
-						applyAlgorithm(currentAlgorithm, viewModel)
-					}
-				) {
-					Icon(Icons.Default.Check, "")
 				}
 			}
+			Button(
+				modifier = Modifier
+					.padding(5.dp),
+				onClick = {
+					applyAlgorithm(currentAlgorithm, viewModel)
+				}
+			) {
+				Icon(Icons.Default.Check, "")
+			}
+		}
+	}
+}
+
+enum class Algorithm {
+	Tarjan,
+	BellmanFord
+}
+
+fun <V, K, W: Comparable<W>>applyAlgorithm(algoNum: Int, viewModel: MainScreenViewModel<V, K, W>) {
+	when (algoNum) {
+		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
+
+		Algorithm.BellmanFord.ordinal -> {
+			val (_, distance) = SSSPCalculator.bellmanFordAlgorithm(
+				viewModel.graph,
+				viewModel.graph.vertices.first().element
+			)
+			viewModel.graphViewModel.vertices.forEach { vertexVM ->
+				distance[vertexVM.vertex.element]?.let {
+					vertexVM.number = it
+				}
+			}
+		}
+	}
+}
+
+fun drawerShape() = object : Shape {
+	override fun createOutline(
+		size: Size,
+		layoutDirection: LayoutDirection,
+		density: Density
+	): Outline {
+		return Outline.Rectangle(Rect(0f, 0f, size.width / 2,size.height))
+	}
+
+}
+
+@Composable
+fun drawerButton(textString: String,
+				 icon: ImageVector = Icons.Default.Add,
+				 description: String = "",
+				 onClickMethod: () -> Unit) {
+	Column {
+		Button(
+			modifier = Modifier
+				.width(400.dp)
+				.height(100.dp)
+				.padding(16.dp),
+			onClick = onClickMethod,
+			shape = RectangleShape,
+		){
+			Icon(icon, description, modifier = Modifier.padding(5.dp))
+			Text(textString, fontSize = 20.sp)
 		}
 	}
 }

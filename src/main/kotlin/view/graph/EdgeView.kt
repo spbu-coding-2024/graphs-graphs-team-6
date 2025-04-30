@@ -18,6 +18,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import viewmodel.EdgeViewModel
+import viewmodel.VertexViewModel
 import kotlin.math.atan2
 import kotlin.math.PI
 import kotlin.math.cos
@@ -74,6 +75,46 @@ fun <V, K, W: Comparable<W>> drawSelfLoop(
 	}
 }
 
+fun path(
+	firstX: Float,
+	firstY: Float,
+	secondX: Float,
+	secondY: Float,
+	radius: Float
+): Path {
+	val path = Path().apply {
+		val angle = (atan2(
+			secondX - firstX,
+			-secondY + firstY
+		) - PI / 2).toFloat()
+		val sin = sin(angle)
+		val cos = cos(angle)
+		moveTo(
+			secondX + radius * (1 - cos),
+			secondY + radius * (1 - sin)
+		)
+		val firstCornerX = -DEFAULT_ARROW_TRIANGLE_HEIGHT * cos -
+				DEFAULT_ARROW_TRIANGLE_WIDTH * sin - radius * cos
+		val firstCornerY = -DEFAULT_ARROW_TRIANGLE_HEIGHT * sin +
+				DEFAULT_ARROW_TRIANGLE_WIDTH * cos - radius * sin
+		val secondCornerX = -DEFAULT_ARROW_TRIANGLE_HEIGHT * cos +
+				DEFAULT_ARROW_TRIANGLE_WIDTH * sin - radius * cos
+		val secondCornerY = -DEFAULT_ARROW_TRIANGLE_HEIGHT * sin -
+				DEFAULT_ARROW_TRIANGLE_WIDTH * cos - radius * sin
+
+		lineTo(
+			secondX + radius + firstCornerX,
+			secondY + radius + firstCornerY
+		)
+		lineTo(
+			secondX + radius + secondCornerX,
+			secondY + radius + secondCornerY
+		)
+		close()
+	}
+	return path
+}
+
 @Composable
 fun <V, K, W: Comparable<W>> drawStraightEdge(
 	edgeViewModel: EdgeViewModel<V, K, W>,
@@ -103,39 +144,16 @@ fun <V, K, W: Comparable<W>> drawStraightEdge(
 		)
 
 		if (edgeViewModel.isDirected) {
-			val path = Path().apply {
-				val angle = (atan2(
-					secondViewModel.x.toPx() - firstViewModel.x.toPx(),
-					-secondViewModel.y.toPx() + firstViewModel.y.toPx()
-				) - PI / 2).toFloat()
-				val sin = sin(angle)
-				val cos = cos(angle)
-				moveTo(
-					secondViewModel.x.toPx() + radius.toPx() - radius.toPx() * cos,
-					secondViewModel.y.toPx() + radius.toPx() - radius.toPx() * sin
-				)
-				val firstCornerX = -DEFAULT_ARROW_TRIANGLE_HEIGHT * cos -
-					DEFAULT_ARROW_TRIANGLE_WIDTH * sin - radius.toPx() * cos
-				val firstCornerY = -DEFAULT_ARROW_TRIANGLE_HEIGHT * sin +
-					DEFAULT_ARROW_TRIANGLE_WIDTH * cos - radius.toPx() * sin
-				val secondCornerX = -DEFAULT_ARROW_TRIANGLE_HEIGHT * cos +
-					DEFAULT_ARROW_TRIANGLE_WIDTH * sin - radius.toPx() * cos
-				val secondCornerY = -DEFAULT_ARROW_TRIANGLE_HEIGHT * sin -
-					DEFAULT_ARROW_TRIANGLE_WIDTH * cos - radius.toPx() * sin
-
-				lineTo(
-					secondViewModel.x.toPx() + radius.toPx() + firstCornerX,
-					secondViewModel.y.toPx() + radius.toPx() + firstCornerY
-				)
-				lineTo(
-					secondViewModel.x.toPx() + radius.toPx() + secondCornerX,
-					secondViewModel.y.toPx() + radius.toPx() + secondCornerY
-				)
-				close()
-			}
+			val path = path(
+				firstViewModel.x.toPx(),
+				firstViewModel.y.toPx(),
+				secondViewModel.x.toPx(),
+				secondViewModel.y.toPx(),
+				radius.toPx()
+			)
 			val norm = sqrt(
 				(secondViewModel.x.toPx() - firstViewModel.x.toPx()).pow(2)
-					+ (secondViewModel.y.toPx() - firstViewModel.y.toPx()).pow(2)
+						+ (secondViewModel.y.toPx() - firstViewModel.y.toPx()).pow(2)
 			)
 			if (norm >= 2 * radius.toPx()) {
 				drawPath(path, edgeViewModel.color)

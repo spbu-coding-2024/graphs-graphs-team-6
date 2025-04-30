@@ -24,22 +24,23 @@ val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
 	addVertex("H")
 
 	var index = 0
+	val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) {it * 2}
 
-	addEdge("A", "B", index++, 3)
-	addEdge("B", "C", index++, 2)
-	addEdge("C", "A", index++, 61)
-	addEdge("C", "C", index++, 12)
+	addEdge("A", "B", index, weight[index]); index++
+	addEdge("B", "C", index, weight[index]); index++
+	addEdge("C", "A", index, weight[index]); index++
+	addEdge("C", "C", index, weight[index]); index++
 
-	addEdge("C", "F", index++, 23)
+	addEdge("C", "F", index, weight[index]); index++
 
-	addEdge("D", "E", index++, 1)
-	addEdge("E", "F", index++, -1)
-	addEdge("F", "D", index++, 5)
+	addEdge("D", "E", index, weight[index]); index++
+	addEdge("E", "F", index, weight[index]); index++
+	addEdge("F", "D", index, weight[index]); index++
 
-	addEdge("H", "D", index++, 5)
+	addEdge("H", "D", index, weight[index]); index++
 
-	addEdge("G", "H", index++, 12)
-	addEdge("H", "G", index, 0)
+	addEdge("G", "H", index, weight[index]); index++
+	addEdge("H", "G", index, weight[index]); index++
 }
 
 @Composable
