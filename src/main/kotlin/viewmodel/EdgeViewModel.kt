@@ -8,8 +8,6 @@ import model.DirectedGraph
 import model.Edge
 import model.UndirectedGraph.UndirectedEdge
 
-private const val COLLISION_FIX = 5000
-
 class EdgeViewModel<V, K, W : Comparable<W>>(
 	val firstVertexViewModel: VertexViewModel<V>,
 	val secondVertexViewModel: VertexViewModel<V>,
@@ -38,12 +36,4 @@ class EdgeViewModel<V, K, W : Comparable<W>>(
 
 	val weightLabelVisible
 		get() = weightLabelVisieState.value
-
-	override fun hashCode(): Int {
-		return ((firstVertexViewModel.hashCode() - secondVertexViewModel.hashCode())).rem(COLLISION_FIX)
-	}
-
-	override fun equals(other: Any?): Boolean {
-		return super.equals(other)
-	}
 }

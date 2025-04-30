@@ -7,15 +7,16 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import model.DirectedGraph
 import viewmodel.EdgeViewModel
+import kotlin.math.absoluteValue
+import kotlin.math.sqrt
 import kotlin.math.atan2
+import kotlin.math.sin
 import kotlin.math.cos
 import kotlin.math.PI
-import kotlin.math.sqrt
-import kotlin.math.sin
-import kotlin.random.Random
 
 private const val DEFAULT_ARROW_TRIANGLE_HEIGHT = 30
 private const val DEFAULT_ARROW_TRIANGLE_WIDTH = 10
@@ -25,16 +26,29 @@ private const val DEFAULT_LOOP_MULTIPLIER = 3
 @Composable
 fun <V, K, W : Comparable<W>> showLabel(edgeViewModel: EdgeViewModel<V, K, W>) {
 	if (edgeViewModel.weightLabelVisible) {
+		val x1 = edgeViewModel.firstVertexViewModel.x
+		val y1 = edgeViewModel.firstVertexViewModel.y
+		val x2 = edgeViewModel.secondVertexViewModel.x
+		val y2 = edgeViewModel.secondVertexViewModel.y
+
+		val midX = (x1 + x2) / 2f
+		val midY = (y1 + y2) / 2f
+
+		val shift: Dp = 8.dp
+		val sign = if (edgeViewModel.model.hashCode().absoluteValue % 2 == 0) 1f else -1f
+
+		val dx = (x2 - x1).value
+		val dy = (y2 - y1).value
+		val len = sqrt(dx*dx + dy*dy).coerceAtLeast(1f)
+		val ux = -dy/len * sign
+		val uy =  dx/len * sign
+
 		Text(
 			text = edgeViewModel.weightLabel,
 			color = edgeViewModel.color,
 			modifier = Modifier.offset(
-				x = edgeViewModel.firstVertexViewModel.x +
-					(edgeViewModel.secondVertexViewModel.x -
-						edgeViewModel.firstVertexViewModel.x) / 2,
-				y = edgeViewModel.firstVertexViewModel.y +
-					(edgeViewModel.secondVertexViewModel.y -
-						edgeViewModel.firstVertexViewModel.y) / 2 - (edgeViewModel.hashCode() * 0.01).dp
+				x = midX + (ux * shift.value).dp,
+				y = midY + (uy * shift.value).dp
 			)
 		)
 	}

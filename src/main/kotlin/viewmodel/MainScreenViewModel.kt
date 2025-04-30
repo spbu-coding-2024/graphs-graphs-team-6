@@ -23,7 +23,7 @@ class MainScreenViewModel<V, K, W : Comparable<W>>(
 			_showEdgesWeights.value = value
 		}
 
-	val graphViewModel = GraphViewModel(graph, mutableStateOf(true)) //TODO
+	val graphViewModel = GraphViewModel(graph, _showEdgesWeights) //TODO
 
 	// Current vertex colorscheme
 	var vertexColors by mutableStateOf(mapOf<Vertex<V>, Color>())
