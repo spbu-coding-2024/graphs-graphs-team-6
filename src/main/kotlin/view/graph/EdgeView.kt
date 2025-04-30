@@ -2,20 +2,21 @@ package view.graph
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import model.DirectedGraph
 import viewmodel.EdgeViewModel
-import kotlin.math.atan2
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
+import kotlin.math.absoluteValue
 import kotlin.math.sqrt
+import kotlin.math.atan2
+import kotlin.math.sin
+import kotlin.math.cos
+import kotlin.math.PI
 
 private const val DEFAULT_ARROW_TRIANGLE_HEIGHT = 30
 private const val DEFAULT_ARROW_TRIANGLE_WIDTH = 10
@@ -23,111 +24,97 @@ private const val DEFAULT_LOOP_RADIUS_COEFF = 0.75f
 private const val DEFAULT_LOOP_MULTIPLIER = 3
 
 @Composable
-fun <V, K, W: Comparable<W>> EdgeView(
-	edgeViewModel: EdgeViewModel<V, K, W>,
-	modifier: Modifier
-) {
+fun <V, K, W : Comparable<W>> showLabel(edgeViewModel: EdgeViewModel<V, K, W>) {
+	if (edgeViewModel.weightLabelVisible) {
+		val x1 = edgeViewModel.firstVertexViewModel.x
+		val y1 = edgeViewModel.firstVertexViewModel.y
+		val x2 = edgeViewModel.secondVertexViewModel.x
+		val y2 = edgeViewModel.secondVertexViewModel.y
 
-	val firstViewModel by remember { mutableStateOf(edgeViewModel.firstVertexViewModel) }
-	val secondViewModel by remember { mutableStateOf(edgeViewModel.secondVertexViewModel) }
+		val midX = (x1 + x2) / 2f
+		val midY = (y1 + y2) / 2f
 
-	if (firstViewModel != secondViewModel) {
-		drawStraightEdge(edgeViewModel, modifier)
-	} else {
-		drawSelfLoop(edgeViewModel, modifier)
-	}
-}
+		val shift: Dp = 8.dp
+		val sign = if (edgeViewModel.model.hashCode().absoluteValue % 2 == 0) 1f else -1f
 
-@Composable
-fun <V, K, W: Comparable<W>> drawSelfLoop(
-	edgeViewModel: EdgeViewModel<V, K, W>,
-	modifier: Modifier
-) {
+		val dx = (x2 - x1).value
+		val dy = (y2 - y1).value
+		val len = sqrt(dx*dx + dy*dy).coerceAtLeast(1f)
+		val ux = -dy/len * sign
+		val uy =  dx/len * sign
 
-	val firstViewModel by remember { mutableStateOf(edgeViewModel.firstVertexViewModel) }
-
-	val radius by remember { mutableStateOf(edgeViewModel.firstVertexViewModel.radius) }
-
-	Canvas(modifier = modifier.fillMaxSize()) {
-		val centerX = firstViewModel.x.toPx() + DEFAULT_LOOP_MULTIPLIER * DEFAULT_LOOP_RADIUS_COEFF * radius.toPx()
-		val centerY = firstViewModel.y.toPx() + DEFAULT_LOOP_MULTIPLIER * DEFAULT_LOOP_RADIUS_COEFF * radius.toPx()
-
-		val loopRadius = 2 * DEFAULT_LOOP_RADIUS_COEFF * radius.toPx()
-
-		drawArc(
+		Text(
+			text = edgeViewModel.weightLabel,
 			color = edgeViewModel.color,
-			startAngle = 0f,
-			sweepAngle = 360f,
-			useCenter = false,
-			topLeft = Offset(centerX - loopRadius, centerY - loopRadius),
-			size = androidx.compose.ui.geometry.Size(loopRadius * 2, loopRadius * 2),
-			style = androidx.compose.ui.graphics.drawscope.Stroke(width = edgeViewModel.width.toPx())
-		)
-	}
-}
-
-@Composable
-fun <V, K, W: Comparable<W>> drawStraightEdge(
-	edgeViewModel: EdgeViewModel<V, K, W>,
-	modifier: Modifier
-) {
-
-	val firstViewModel by remember { mutableStateOf(edgeViewModel.firstVertexViewModel) }
-	val secondViewModel by remember { mutableStateOf(edgeViewModel.secondVertexViewModel) }
-
-	val radius by remember { mutableStateOf(edgeViewModel.firstVertexViewModel.radius) }
-
-	Canvas(modifier = modifier.fillMaxSize()) {
-		drawLine(
-			start = Offset(
-				firstViewModel.x.toPx() + radius.toPx(),
-				firstViewModel.y.toPx() + radius.toPx()
-			),
-			end = Offset(
-				secondViewModel.x.toPx() + radius.toPx(),
-				secondViewModel.y.toPx() + radius.toPx()
-			),
-			color = edgeViewModel.color,
-			strokeWidth = edgeViewModel.width.toPx()
-		)
-		if (edgeViewModel.isDirected) {
-			val path = Path().apply {
-				val angle = (atan2(
-					secondViewModel.x.toPx() - firstViewModel.x.toPx(),
-					-secondViewModel.y.toPx() + firstViewModel.y.toPx()
-				) - PI / 2).toFloat()
-				val sin = sin(angle)
-				val cos = cos(angle)
-				moveTo(
-					secondViewModel.x.toPx() + radius.toPx() - radius.toPx() * cos,
-					secondViewModel.y.toPx() + radius.toPx() - radius.toPx() * sin
-				)
-				val firstCornerX = -DEFAULT_ARROW_TRIANGLE_HEIGHT * cos -
-					DEFAULT_ARROW_TRIANGLE_WIDTH * sin - radius.toPx() * cos
-				val firstCornerY = -DEFAULT_ARROW_TRIANGLE_HEIGHT * sin +
-					DEFAULT_ARROW_TRIANGLE_WIDTH * cos - radius.toPx() * sin
-				val secondCornerX = -DEFAULT_ARROW_TRIANGLE_HEIGHT * cos +
-					DEFAULT_ARROW_TRIANGLE_WIDTH * sin - radius.toPx() * cos
-				val secondCornerY = -DEFAULT_ARROW_TRIANGLE_HEIGHT * sin -
-					DEFAULT_ARROW_TRIANGLE_WIDTH * cos - radius.toPx() * sin
-
-				lineTo(
-					secondViewModel.x.toPx() + radius.toPx() + firstCornerX,
-					secondViewModel.y.toPx() + radius.toPx() + firstCornerY
-				)
-				lineTo(
-					secondViewModel.x.toPx() + radius.toPx() + secondCornerX,
-					secondViewModel.y.toPx() + radius.toPx() + secondCornerY
-				)
-				close()
-			}
-			val norm = sqrt(
-				(secondViewModel.x.toPx() - firstViewModel.x.toPx()).pow(2)
-					+ (secondViewModel.y.toPx() - firstViewModel.y.toPx()).pow(2)
+			modifier = Modifier.offset(
+				x = midX + (ux * shift.value).dp,
+				y = midY + (uy * shift.value).dp
 			)
-			if (norm >= 2 * radius.toPx()) {
-				drawPath(path, edgeViewModel.color)
+		)
+	}
+}
+
+/**
+ * Draws an edge (straight line or self-loop) over the full viewport.
+ * The passed modifier should handle viewport transformations (drag/zoom).
+ */
+@Composable
+fun <V, K, W : Comparable<W>> EdgeView(
+	edgeViewModel: EdgeViewModel<V, K, W>,
+	modifier: Modifier = Modifier
+) {
+	Canvas(modifier = modifier.fillMaxSize()) {
+		val first = edgeViewModel.firstVertexViewModel
+		val second = edgeViewModel.secondVertexViewModel
+		val r = first.radius.toPx()
+
+		if (first != second) {
+			val start = Offset(first.x.toPx() + r, first.y.toPx() + r)
+			val end = Offset(second.x.toPx() + r, second.y.toPx() + r)
+			drawLine(
+				start = start,
+				end = end,
+				color = edgeViewModel.color,
+				strokeWidth = edgeViewModel.width.toPx()
+			)
+			// Draw arrowhead for directed edges
+			if (edgeViewModel.model is DirectedGraph.DirectedEdge) {
+				val dx = end.x - start.x
+				val dy = end.y - start.y
+				val angle = atan2(dx, -dy) - PI.toFloat() / 2f
+				val sinA = sin(angle)
+				val cosA = cos(angle)
+				val baseX = end.x - r * cosA
+				val baseY = end.y - r * sinA
+				val path = androidx.compose.ui.graphics.Path().apply {
+					moveTo(baseX, baseY)
+					lineTo(
+						baseX + -DEFAULT_ARROW_TRIANGLE_HEIGHT * cosA - DEFAULT_ARROW_TRIANGLE_WIDTH * sinA,
+						baseY + -DEFAULT_ARROW_TRIANGLE_HEIGHT * sinA + DEFAULT_ARROW_TRIANGLE_WIDTH * cosA
+					)
+					lineTo(
+						baseX + -DEFAULT_ARROW_TRIANGLE_HEIGHT * cosA + DEFAULT_ARROW_TRIANGLE_WIDTH * sinA,
+						baseY + -DEFAULT_ARROW_TRIANGLE_HEIGHT * sinA - DEFAULT_ARROW_TRIANGLE_WIDTH * cosA
+					)
+					close()
+				}
+				val norm = sqrt(dx * dx + dy * dy)
+				if (norm >= 2 * r) drawPath(path, edgeViewModel.color)
 			}
+		} else {
+			val centerX = first.x.toPx() + DEFAULT_LOOP_MULTIPLIER * DEFAULT_LOOP_RADIUS_COEFF * r
+			val centerY = first.y.toPx() + DEFAULT_LOOP_MULTIPLIER * DEFAULT_LOOP_RADIUS_COEFF * r
+			val loopR = 2 * DEFAULT_LOOP_RADIUS_COEFF * r
+			drawArc(
+				color = edgeViewModel.color,
+				startAngle = 0f,
+				sweepAngle = 360f,
+				useCenter = false,
+				topLeft = Offset(centerX - loopR, centerY - loopR),
+				size = androidx.compose.ui.geometry.Size(loopR * 2, loopR * 2),
+				style = androidx.compose.ui.graphics.drawscope.Stroke(width = edgeViewModel.width.toPx())
+			)
 		}
 	}
+	showLabel(edgeViewModel)
 }
