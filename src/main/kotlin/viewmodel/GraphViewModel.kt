@@ -3,8 +3,8 @@ package viewmodel
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import model.Graph
-import model.Vertex
 import kotlin.random.Random
+import androidx.compose.runtime.State
 
 private const val MIN_RANDOM_VALUE = 0
 private const val MAX_RANDOM_VALUE = 500
@@ -15,8 +15,7 @@ private const val DEFAULT_BORDER_WIDTH = 5
 
 private const val DEFAULT_EDGE_WIDTH = 2
 
-
-class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
+class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>, showEdgesWeights: State<Boolean>) {
 	private val _vertices = graph.vertices.associateWith {
 		VertexViewModel<V>(
 			Random.nextInt(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE).dp,
@@ -31,12 +30,13 @@ class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
 
 	private val _edges = graph.edges.associateWith {
 		EdgeViewModel<V, K, W>(
-			_vertices[it.pair.toList()[0]] ?: throw error("Vertex is missing"),
+			_vertices[it.pair.toList()[0]] ?: error("Vertex is missing"),
 			_vertices[it.pair.toList()[if (it.pair.size == 2) 1 else 0]]
-				?: throw error("Vertex is missing"),
+				?: error("Vertex is missing"),
 			it,
 			Color.Black,
-			DEFAULT_EDGE_WIDTH.dp
+			DEFAULT_EDGE_WIDTH.dp,
+			showEdgesWeights
 		)
 	}
 	val vertices: Collection<VertexViewModel<V>>
