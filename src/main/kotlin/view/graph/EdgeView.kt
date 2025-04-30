@@ -27,13 +27,14 @@ fun <V, K, W: Comparable<W>> showLabel(edgeViewModel: EdgeViewModel<V, K, W>) {
 	if (edgeViewModel.weightLabelVisible) {
 		Text(
 			text = edgeViewModel.weightLabel,
+			color = edgeViewModel.color,
 			modifier = Modifier.offset(
 				x = edgeViewModel.firstVertexViewModel.x +
 					(edgeViewModel.secondVertexViewModel.x -
 						edgeViewModel.firstVertexViewModel.x)  / 2,
 				y = edgeViewModel.firstVertexViewModel.y +
 					(edgeViewModel.secondVertexViewModel.y -
-						edgeViewModel.firstVertexViewModel.y) / 2
+						edgeViewModel.firstVertexViewModel.y) / 2 - ((edgeViewModel.hashCode().rem(7) + 1) * 4.5).dp
 			)
 		)
 	}
