@@ -3,12 +3,12 @@ package viewmodel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import model.Vertex
 import androidx.compose.ui.graphics.Color
-import model.DirectedGraph
 import model.Graph
+import model.Vertex
 import model.Edge
-import viewmodel.ColorUtils
+import model.SCCCalculator
+import model.MSFFinder
 
 const val SEMI_BLACK = 0x50_00_00_00
 
@@ -23,7 +23,7 @@ class MainScreenViewModel<V, K, W : Comparable<W>>(
 			_showEdgesWeights.value = value
 		}
 
-	val graphViewModel = GraphViewModel(graph, _showEdgesWeights)
+	val graphViewModel = GraphViewModel(graph, mutableStateOf(true)) //TODO
 
 	// Current vertex colorscheme
 	var vertexColors by mutableStateOf(mapOf<Vertex<V>, Color>())

@@ -1,6 +1,6 @@
 package viewmodel
 
-import model.Edge
+import model.MSFFinder
 import model.UndirectedGraph
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.assertEquals

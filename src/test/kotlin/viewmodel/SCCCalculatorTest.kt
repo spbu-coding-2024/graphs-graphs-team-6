@@ -1,9 +1,9 @@
 package viewmodel
 
 import model.DirectedGraph
-import model.Graph
 import model.Vertex
 import androidx.compose.ui.graphics.Color
+import model.SCCCalculator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import space.kscience.kmath.operations.IntRing

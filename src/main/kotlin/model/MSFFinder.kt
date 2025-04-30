@@ -1,9 +1,7 @@
-package viewmodel
+package model
 
 import androidx.compose.ui.graphics.Color
-import model.Edge
-import model.Graph
-import model.Vertex
+import viewmodel.ColorUtils
 import kotlin.random.Random
 
 class MSFFinder<V, K, W : Comparable<W>>(val graph: Graph<V, K, W>) {

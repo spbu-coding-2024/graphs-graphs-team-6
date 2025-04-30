@@ -1,10 +1,6 @@
-package viewmodel
+package model
 
-import model.Graph
-import model.Vertex
 import androidx.compose.ui.graphics.Color
-import java.awt.Color as AwtColor
-import java.util.ArrayDeque
 import java.util.Stack
 import viewmodel.ColorUtils
 

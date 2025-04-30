@@ -22,9 +22,6 @@ private const val DEFAULT_ARROW_TRIANGLE_WIDTH = 10
 private const val DEFAULT_LOOP_RADIUS_COEFF = 0.75f
 private const val DEFAULT_LOOP_MULTIPLIER = 3
 
-private const val COLLISION_FIX = 7
-private const val COLLISION_MULTIPLIER = 4.5
-
 @Composable
 fun <V, K, W : Comparable<W>> showLabel(edgeViewModel: EdgeViewModel<V, K, W>) {
 	if (edgeViewModel.weightLabelVisible) {
@@ -37,8 +34,7 @@ fun <V, K, W : Comparable<W>> showLabel(edgeViewModel: EdgeViewModel<V, K, W>) {
 						edgeViewModel.firstVertexViewModel.x) / 2,
 				y = edgeViewModel.firstVertexViewModel.y +
 					(edgeViewModel.secondVertexViewModel.y -
-						edgeViewModel.firstVertexViewModel.y) / 2 - ((edgeViewModel.hashCode()
-					.rem(COLLISION_FIX) + 1) * COLLISION_MULTIPLIER).dp
+						edgeViewModel.firstVertexViewModel.y) / 2 - (edgeViewModel.hashCode() * 0.01).dp
 			)
 		)
 	}
