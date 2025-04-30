@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import model.Vertex
 import androidx.compose.ui.graphics.Color
 import model.Graph
-import model.utils.ColorUtils
+import viewmodel.ColorUtils
 import model.utils.SCCCalculator
 
 class MainScreenViewModel<V, K, W: Comparable<W>>(

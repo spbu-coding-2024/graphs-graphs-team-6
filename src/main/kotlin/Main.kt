@@ -9,12 +9,37 @@ import viewmodel.MainScreenViewModel
 import model.UndirectedGraph
 import space.kscience.kmath.operations.IntRing
 import view.graph.GraphView
-import model.utils.ColorUtils
+import viewmodel.ColorUtils
 import viewmodel.GraphViewModel
 
-const val WEIGHT = 9 * 32
 
 val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
+	addVertex("A")
+	addVertex("B")
+	addVertex("C")
+	addVertex("D")
+	addVertex("E")
+	addVertex("F")
+	addVertex("G")
+	addVertex("H")
+
+	var index = 0
+
+	addEdge("A", "B", index++, 3)
+	addEdge("B", "C", index++, 2)
+	addEdge("C", "A", index++, 61)
+	addEdge("C", "C", index++, 12)
+
+	addEdge("C", "F", index++, 23)
+
+	addEdge("D", "E", index++, 1)
+	addEdge("E", "F", index++, -1)
+	addEdge("F", "D", index++, 5)
+
+	addEdge("H", "D", index++, 5)
+
+	addEdge("G", "H", index++, 12)
+	addEdge("H", "G", index, 0)
 }
 
 @Composable
@@ -22,8 +47,6 @@ val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
 fun app() {
 	MaterialTheme {
 		val graphViewModel = GraphViewModel(graph)
-		val colorMap = ColorUtils.assignColorsAll(graph.edges)
-		ColorUtils.applyColors(colorMap, graphViewModel.edges)
 		MainScreenView<String, Int, Int>(MainScreenViewModel(graph, graphViewModel))
 	}
 }

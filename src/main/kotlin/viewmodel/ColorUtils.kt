@@ -1,4 +1,4 @@
-package model.utils
+package viewmodel
 
 import androidx.compose.ui.graphics.Color
 import model.Colorable

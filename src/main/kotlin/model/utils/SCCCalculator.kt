@@ -3,7 +3,7 @@ package model.utils
 import androidx.compose.ui.graphics.Color
 import model.Graph
 import model.Vertex
-import model.utils.ColorUtils
+import viewmodel.ColorUtils
 import java.util.Stack
 
 class SCCCalculator<V, K, W: Comparable<W>> {
