@@ -12,24 +12,29 @@ class BridgeFinder {
      *
      * @return set of pairs, which represents bridge edges
      */
-    fun <V, K, W: Comparable<W>> runOn(graph: UndirectedGraph<V, K, W>): Set<Pair<Vertex<V>, Vertex<V>>> {
-        val bridges: MutableSet<Pair<Vertex<V>, Vertex<V>>> = mutableSetOf()
+    fun <V, K, W: Comparable<W>> runOn(graph: UndirectedGraph<V, K, W>): Set<Set<Vertex<V>>> {
+        val bridges: MutableSet<Set<Vertex<V>>> = mutableSetOf()
         val usedVertices: MutableSet<Vertex<V>> = mutableSetOf()
         val timeIn: MutableMap<Vertex<V>, Int> = mutableMapOf()
         val lowLink: MutableMap<Vertex<V>, Int> = mutableMapOf()
-        var timer: Int = 0
+        var timer = 0
 
         fun dfs(current: Vertex<V>, previous: Vertex<V>? = null) {
+            var firstReturn = true
             usedVertices.add(current)
             timeIn[current] = timer
             lowLink[current] = timer
             timer++
             for (next in current.adjacencyList) {
-                if (next == previous || next == current) continue
+                if (next == previous && firstReturn || next == current) {
+                    firstReturn = false
+                    continue
+                }
                 if (next in usedVertices) {
                     lowLink[current] = safeMin(lowLink[current], timeIn[next])
                 }
                 else {
+
                     dfs(next, current)
                     lowLink[current] = safeMin(lowLink[current], lowLink[next])
                     if (
@@ -37,7 +42,7 @@ class BridgeFinder {
                         >
                         (timeIn[current] ?: error("Cannot find current vertex(next is not used)"))
                     ) {
-                        bridges.add(if (current.hashCode() < next.hashCode()) current to next else next to current)
+                        bridges.add(setOf(current, next))
                     }
                 }
             }

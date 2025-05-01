@@ -20,16 +20,27 @@ import view.graph.GraphView
 fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K, W>) {
 	Row {
 		Column {
-			if (viewModel.graph is DirectedGraph) {
-				Button (onClick = viewModel::calculateSCC){
-					Text("Calculate SCC")
+			Row(verticalAlignment = Alignment.CenterVertically) {
+				if (viewModel.graph is DirectedGraph) {
+					Button(onClick = viewModel::calculateSCC) {
+						Text("Calculate SCC")
+					}
+				}
+				if (viewModel.graph is UndirectedGraph) {
+					Button(onClick = viewModel::findMSF) {
+						Text("Find MSF")
+					}
 				}
 			}
+
 			if (viewModel.graph is UndirectedGraph) {
-				Button(onClick = viewModel::findMSF) {
-					Text("Find MSF")
+				Row(verticalAlignment = Alignment.CenterVertically) {
+					Button(onClick = viewModel::findBridges) {
+						Text("Find Bridges")
+					}
 				}
 			}
+
 			Row(verticalAlignment = Alignment.CenterVertically) {
 				Checkbox(checked = viewModel.showEdgesWeights, onCheckedChange = {viewModel.showEdgesWeights = it})
 				Text(text = "Show weights", modifier = Modifier.padding(2.dp))
