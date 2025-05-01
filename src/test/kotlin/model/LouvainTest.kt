@@ -1,5 +1,6 @@
 package model
 
+import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -11,6 +12,8 @@ import space.kscience.kmath.structures.Buffer
 import space.kscience.kmath.structures.MutableBuffer
 import space.kscience.kmath.structures.MutableBufferFactory
 import kotlin.test.assertFailsWith
+import model.UndirectedGraph.UndirectedEdge
+import model.UndirectedGraph.UndirectedVertex
 
 class LouvainTest {
 	@Test
@@ -137,24 +140,56 @@ class LouvainTest {
 		assertTrue(exception.message!!.contains("Не удалось преобразовать вес"))
 	}
 
-//	@Test
-//	fun `throws when vertex mapping is missing`() {
-//		val graph = UndirectedGraph<String, String, Double>(Float64Field)
-//		graph.addVertex("A")
-//		// B not added to vertices, but used in edge
-//		graph.edges += object : Edge<String, String, Double> {
-//			override val pair: Collection<Vertex<String>>
-//				get() = listOf(object : Vertex<String> {
-//					override var element: String = "B"
-//					override val adjacencyList: MutableList<out Vertex<String>> = mutableListOf()
-//				})
-//			override val key: String get() = "e1"
-//			override var weight: Double get() = 1.0; set(_) {}
-//		}
-//
-//		val exception = assertThrows(IllegalStateException::class.java) {
-//			Louvain(graph).detectCommunities()
-//		}
-//		assertTrue(exception.message!!.contains("Vertex is missing"))
-//	}
+	@Test
+	fun `throws when second vertex mapping is missing`() {
+		val graph = mockk<UndirectedGraph<String, String, Double>>()
+
+		val vertexA = UndirectedVertex("A")
+
+		every { graph.vertices } returns listOf(vertexA)
+		val vertexB = UndirectedVertex("B")
+		val edge = UndirectedEdge(setOf(vertexA, vertexB), "e1", 1.0)
+
+		every { graph.edges } returns listOf(edge)
+
+		val exception = assertFailsWith<IllegalStateException> {
+			Louvain(graph).detectCommunities()
+		}
+
+		assertTrue(exception.message!!.contains("Vertex is missing"))
+	}
+
+	@Test
+	fun `throws when first vertex mapping is missing`() {
+		val graph = mockk<UndirectedGraph<String, String, Double>>()
+
+		val vertexA = UndirectedVertex("A")
+
+		every { graph.vertices } returns listOf(vertexA)
+		val vertexB = UndirectedVertex("B")
+		val edge = UndirectedEdge(setOf(vertexB, vertexA), "e1", 1.0)
+
+		every { graph.edges } returns listOf(edge)
+
+		val exception = assertFailsWith<IllegalStateException> {
+			Louvain(graph).detectCommunities()
+		}
+
+		assertTrue(exception.message!!.contains("Vertex is missing"))
+	}
+
+	@Test
+	fun `graph with self-loop yields single community`() {
+		val graph = UndirectedGraph<String, String, Double>(Float64Field)
+		// Add vertex A and a self-loop on A
+		graph.addVertex("A")
+		graph.addEdge("A", "A", "loop", 2.0)
+
+		val communities = Louvain(graph).detectCommunities()
+		// Self-loop should not create extra communities
+		assertEquals(1, communities.size)
+		val community = communities.single()
+		assertEquals(1, community.size)
+		assertEquals("A", community.single().element)
+	}
 }
