@@ -52,7 +52,7 @@ class MainScreenViewModel<V, K, W : Comparable<W>>(
 	private val bridgeFinder = BridgeFinder()
 	private fun convertPairsToColorMap(pairs: Set<Set<Vertex<V>>>): Map<Edge<V, K, W>, Color> {
 		return graph.edges
-			.filterIsInstance<UndirectedGraph.UndirectedEdge<V, K, W>>() // фильтруем только неориентированные рёбра
+			.filterIsInstance<UndirectedGraph.UndirectedEdge<V, K, W>>()
 			.filter { edge -> edge.pair in pairs }
 			.associateWith { Color(BRIGHT_RED) }
 	}
