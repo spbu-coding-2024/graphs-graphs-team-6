@@ -26,6 +26,9 @@ fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K,
 				}
 			}
 			if (viewModel.graph is UndirectedGraph) {
+				Button(onClick = viewModel::assignCommunities) {
+					Text("Detect Communities")
+				}
 				Button(onClick = viewModel::findMSF) {
 					Text("Find MSF")
 				}
