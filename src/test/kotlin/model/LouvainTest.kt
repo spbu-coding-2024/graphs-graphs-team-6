@@ -140,7 +140,7 @@ class LouvainTest {
 		val exception = assertFailsWith<IllegalArgumentException> {
 			Louvain(graph).detectCommunities()
 		}
-		assertTrue(exception.message!!.contains("Не удалось преобразовать вес"))
+		assertTrue(exception.message!!.contains("Incompatible weight type"))
 	}
 
 	@Test
