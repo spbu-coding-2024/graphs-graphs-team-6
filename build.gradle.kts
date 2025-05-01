@@ -55,6 +55,7 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 	implementation("space.kscience:kmath-core:0.4.2")
 	implementation("com.github.JetBrains-Research:louvain:main-SNAPSHOT")
+	testImplementation("io.mockk:mockk:1.14.2")
 }
 
 tasks.test {

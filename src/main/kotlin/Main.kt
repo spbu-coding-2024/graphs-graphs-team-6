@@ -8,12 +8,6 @@ import view.MainScreenView
 import viewmodel.MainScreenViewModel
 import model.UndirectedGraph
 import space.kscience.kmath.operations.IntRing
-import view.graph.GraphView
-import viewmodel.ColorUtils
-import viewmodel.GraphViewModel
-
-const val BIG_NUMBER_1 = 9000
-const val BIG_NUMBER_2 = 5555
 
 val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 	listOf("A","B","C","D","E","F","G","H","I","J","K","L")
@@ -41,7 +35,7 @@ val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 
 	addEdge("D", "E", idx++, 1)   // 1 <-> 2
 	addEdge("H", "I", idx++, 1)   // 2 <-> 3
-	addEdge("L", "A", idx++, 1)   // 3 <-> 1
+	addEdge("L", "A", idx, 1)   // 3 <-> 1
 }
 
 @Composable

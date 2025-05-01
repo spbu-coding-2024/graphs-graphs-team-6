@@ -1,55 +1,21 @@
 package model
 
+import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import space.kscience.attributes.SafeType
+import space.kscience.kmath.operations.Float64BufferOps.Companion.buffer
 import space.kscience.kmath.operations.Float64Field
 import space.kscience.kmath.operations.Ring
+import space.kscience.kmath.structures.Buffer
+import space.kscience.kmath.structures.MutableBuffer
+import space.kscience.kmath.structures.MutableBufferFactory
+import kotlin.test.assertFailsWith
 
 class LouvainTest {
-
-	private class TestVertex<V>(override var element: V) : Vertex<V> {
-		override val adjacencyList: MutableList<out Vertex<V>> = mutableListOf()
-	}
-
-	private class TestEdge<V, K, W : Comparable<W>>(
-		private val v1: Vertex<V>,
-		private val v2: Vertex<V>,
-		override val key: K,
-		override var weight: W
-	) : Edge<V, K, W> {
-		override val pair: Collection<Vertex<V>>
-			get() = listOf(v1, v2)
-	}
-
-	private class TestGraph<V, K, W : Comparable<W>>(
-		override val ring: Ring<W>
-	) : Graph<V, K, W> {
-		override val vertices: MutableList<Vertex<V>> = mutableListOf()
-		override val edges: MutableList<Edge<V, K, W>> = mutableListOf()
-
-		override fun addVertex(vertex: V) {
-			vertices.add(TestVertex(vertex))
-		}
-
-		override fun addEdge(
-			firstVertex: V,
-			secondVertex: V,
-			key: K,
-			weight: W
-		): Edge<V, K, W> {
-			val v1 = vertices.firstOrNull { it.element == firstVertex }
-				?: TestVertex(firstVertex).also { vertices.add(it) }
-			val v2 = vertices.firstOrNull { it.element == secondVertex }
-				?: TestVertex(secondVertex).also { vertices.add(it) }
-			val edge = TestEdge(v1, v2, key, weight)
-			edges.add(edge)
-			return edge
-		}
-	}
-
 	@Test
 	fun `single vertex yields one community`() {
-		val graph = TestGraph<String, String, Double>(Float64Field)
+		val graph = UndirectedGraph<String, String, Double>(Float64Field)
 		graph.addVertex("A")
 		val communities = Louvain(graph).detectCommunities()
 
@@ -61,11 +27,12 @@ class LouvainTest {
 
 	@Test
 	fun `two disconnected vertices yield separate communities`() {
-		val graph = TestGraph<String, String, Double>(Float64Field)
+		val graph = UndirectedGraph<String, String, Double>(Float64Field)
 		graph.addVertex("A")
 		graph.addVertex("B")
 		val communities = Louvain(graph).detectCommunities()
 
+		// Expect two separate communities for A and B
 		assertEquals(1, communities.size)
 		val labels = communities.flatten().map { it.element }.toSet()
 		assertEquals(setOf("A", "B"), labels)
@@ -73,7 +40,9 @@ class LouvainTest {
 
 	@Test
 	fun `connected vertices yield one community`() {
-		val graph = TestGraph<String, String, Double>(Float64Field)
+		val graph = UndirectedGraph<String, String, Double>(Float64Field)
+		graph.addVertex("A")
+		graph.addVertex("B")
 		graph.addEdge("A", "B", "e1", 1.0)
 		val communities = Louvain(graph).detectCommunities()
 
@@ -84,7 +53,12 @@ class LouvainTest {
 
 	@Test
 	fun `mixed graph yields correct number of communities`() {
-		val graph = TestGraph<String, String, Double>(Float64Field)
+		val graph = UndirectedGraph<String, String, Double>(Float64Field)
+		graph.addVertex("A")
+		graph.addVertex("B")
+		graph.addVertex("C")
+		graph.addVertex("D")
+		graph.addVertex("E")
 		// component 1
 		graph.addEdge("A", "B", "e1", 1.0)
 		// isolated vertex
@@ -95,7 +69,92 @@ class LouvainTest {
 		val communities = Louvain(graph).detectCommunities()
 		assertEquals(3, communities.size) // [A,B], [C], [D,E]
 
-		val sortedCommunities = communities.map { it.map { v -> v.element }.sorted() }.sortedBy { it.first() }
-		assertEquals(listOf(listOf("A", "B"), listOf("C"), listOf("D", "E")), sortedCommunities)
+		val sortedCommunities = communities
+			.map { it.map { v -> v.element }.sorted() }
+			.sortedBy { it.first() }
+		assertEquals(
+			listOf(listOf("A", "B"), listOf("C"), listOf("D", "E")),
+			sortedCommunities
+		)
 	}
+
+	@Test
+	fun `connected graph with multiple communities`() {
+
+		val graph = UndirectedGraph<String, Int, Double>(Float64Field).apply {
+			listOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L")
+				.forEach { addVertex(it) }
+
+			var idx = 0
+
+			addEdge("A", "B", idx++, 10.0)
+			addEdge("A", "C", idx++, 10.0)
+			addEdge("B", "C", idx++, 10.0)
+			addEdge("B", "D", idx++, 10.0)
+			addEdge("C", "D", idx++, 10.0)
+
+			addEdge("E", "F", idx++, 10.0)
+			addEdge("E", "G", idx++, 10.0)
+			addEdge("F", "G", idx++, 10.0)
+			addEdge("F", "H", idx++, 10.0)
+			addEdge("G", "H", idx++, 10.0)
+
+			addEdge("I", "J", idx++, 10.0)
+			addEdge("I", "K", idx++, 10.0)
+			addEdge("J", "K", idx++, 10.0)
+			addEdge("J", "L", idx++, 10.0)
+			addEdge("K", "L", idx++, 10.0)
+
+			addEdge("D", "E", idx++, 1.0)   // 1 <-> 2
+			addEdge("H", "I", idx++, 1.0)   // 2 <-> 3
+			addEdge("L", "A", idx, 1.0)   // 3 <-> 1
+		}
+
+		val communities = Louvain(graph).detectCommunities().toList()
+		assertEquals(3, communities.size)
+
+		val sortedCommunities = communities
+			.map { it.map { v -> v.element }.sorted() }
+			.sortedBy { it.first() }
+		assertEquals(
+			listOf(listOf("A", "B", "C", "D"), listOf("E", "F", "G", "H"), listOf("I", "J", "K", "L")),
+			sortedCommunities
+		)
+	}
+
+	@Test
+	fun `throws when weight is non-numeric`() {
+		val stringRing = mockk<Ring<String>>()
+		val graph = UndirectedGraph<String, String, String>(stringRing)
+
+		graph.addVertex("A")
+		graph.addVertex("B")
+		graph.addEdge("A", "B", "e1", "nonNumeric")
+
+		val exception = assertFailsWith<IllegalArgumentException> {
+			Louvain(graph).detectCommunities()
+		}
+		assertTrue(exception.message!!.contains("Не удалось преобразовать вес"))
+	}
+
+//	@Test
+//	fun `throws when vertex mapping is missing`() {
+//		val graph = UndirectedGraph<String, String, Double>(Float64Field)
+//		graph.addVertex("A")
+//		// B not added to vertices, but used in edge
+//		graph.edges += object : Edge<String, String, Double> {
+//			override val pair: Collection<Vertex<String>>
+//				get() = listOf(object : Vertex<String> {
+//					override var element: String = "B"
+//					override val adjacencyList: MutableList<out Vertex<String>> = mutableListOf()
+//				})
+//			override val key: String get() = "e1"
+//			override var weight: Double get() = 1.0; set(_) {}
+//		}
+//
+//		val exception = assertThrows(IllegalStateException::class.java) {
+//			Louvain(graph).detectCommunities()
+//		}
+//		assertTrue(exception.message!!.contains("Vertex is missing"))
+//	}
 }
