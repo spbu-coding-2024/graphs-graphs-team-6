@@ -1,12 +1,6 @@
 package view
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,18 +9,13 @@ import androidx.compose.runtime.Composable
 import viewmodel.MainScreenViewModel
 import androidx.compose.material.Button
 import androidx.compose.material.DrawerValue
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ExposedDropdownMenuBox
-import androidx.compose.material.ExposedDropdownMenuDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.ModalDrawer
-import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Star
@@ -35,7 +24,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -49,13 +37,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import model.DirectedGraph
-import model.Edge
 import model.utils.SSSPCalculator
 import view.graph.GraphView
 import viewmodel.ColorUtils
-import viewmodel.EdgeViewModel
-import viewmodel.GraphViewModel
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -110,109 +94,10 @@ fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K,
 				Icon(if (actionWindowVisibility == true) Icons.Default.Close else Icons.Default.Menu, "")
 			}
 		}
-		actionMenu(actionWindowVisibility, viewModel)
+		actionMenuView(actionWindowVisibility, viewModel)
 	}
 }
 
-fun returnArrayOfAlgorithmLabels(): Array<String> {
-	return Array<String>(Algorithm.entries.size) {
-		when(it) {
-			Algorithm.BellmanFord.ordinal -> "Bellman-Ford"
-			Algorithm.Tarjan.ordinal -> "Tarjan Strong Connected Component"
-			else -> error("No string for enum")
-		}
-	}
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun <V, K, W: Comparable<W>>actionMenu(actionWindowVisibility: Boolean, viewModel: MainScreenViewModel<V, K, W>) {
-	var currentAlgorithm: Int = Algorithm.BellmanFord.ordinal
-	val algorithms = returnArrayOfAlgorithmLabels()
-	var menuIsExpanded by remember { mutableStateOf(false) }
-
-	AnimatedVisibility(
-		visible = actionWindowVisibility,
-		enter = EnterTransition.None,
-		exit = ExitTransition.None
-	) {
-		Row(
-			modifier = Modifier
-				.fillMaxSize()
-				.padding(20.dp)
-				.width(300.dp)
-				.height(300.dp),
-			horizontalArrangement = Arrangement.Start,
-			verticalAlignment = Alignment.Bottom,
-			) {
-			ExposedDropdownMenuBox(
-				expanded = menuIsExpanded,
-				onExpandedChange = {
-					menuIsExpanded = !menuIsExpanded
-				},
-			) {
-				TextField(
-					value = algorithms[currentAlgorithm],
-					onValueChange = {},
-					readOnly = true,
-					trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = menuIsExpanded) }
-				)
-				ExposedDropdownMenu(
-					expanded = menuIsExpanded,
-					onDismissRequest = { menuIsExpanded = false },
-				) {
-					algorithms.forEachIndexed { ordinal, string ->
-						DropdownMenuItem(
-							onClick = {
-								currentAlgorithm = ordinal
-								menuIsExpanded = false
-							}
-						) {
-							Text(text = string)
-						}
-					}
-				}
-			}
-			Button(
-				modifier = Modifier
-					.padding(5.dp),
-				onClick = {
-					applyAlgorithm(currentAlgorithm, viewModel)
-				}
-			) {
-				Icon(Icons.Default.Check, "")
-			}
-		}
-	}
-}
-
-enum class Algorithm {
-	Tarjan,
-	BellmanFord
-}
-
-fun <V, K, W: Comparable<W>>applyAlgorithm(algoNum: Int, viewModel: MainScreenViewModel<V, K, W>) {
-	when (algoNum) {
-		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
-
-		Algorithm.BellmanFord.ordinal -> {
-			val (predecessors, distance) = SSSPCalculator.bellmanFordAlgorithm(
-				viewModel.graph,
-				viewModel.graph.vertices.first().element
-			)
-			val path = SSSPCalculator.constructPath(predecessors, viewModel.graph.vertices.last().element)
-				.map {viewModel.graphViewModel.getEdgeViewModel(it)}
-			ColorUtils.applyOneColor(path, Color.Red)
-			
-			viewModel.graphViewModel.vertices.forEach { vertexVM ->
-				distance[vertexVM.vertex.element]?.let {
-					vertexVM.number = it
-				}
-			}
-		}
-
-	}
-}
 
 fun drawerShape() = object : Shape {
 	override fun createOutline(

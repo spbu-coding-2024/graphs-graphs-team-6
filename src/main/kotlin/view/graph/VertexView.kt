@@ -35,8 +35,8 @@ fun <V, W: Comparable<W>> VertexView(
     var radius by remember { mutableStateOf(vertexViewModel.radius) }
 
     val textMeasurer = rememberTextMeasurer()
-    val vertexNumber =  remember(vertexViewModel.number.toString()) {
-        textMeasurer.measure(vertexViewModel.number.toString())
+    val vertexElement =  remember(vertexViewModel.vertex.element.toString()) {
+        textMeasurer.measure(vertexViewModel.vertex.element.toString())
     }
 
     Canvas (
@@ -59,10 +59,10 @@ fun <V, W: Comparable<W>> VertexView(
     }
     Canvas(modifier) {
         drawText(
-            textLayoutResult = vertexNumber,
+            textLayoutResult = vertexElement,
             topLeft = Offset(
-                x = vertexViewModel.x.toPx() + vertexViewModel.radius.toPx() - vertexNumber.size.width / 2,
-                y = vertexViewModel.y.toPx() + vertexViewModel.radius.toPx() - vertexNumber.size.height / 2,
+                x = vertexViewModel.x.toPx() + vertexViewModel.radius.toPx() - vertexElement.size.width / 2,
+                y = vertexViewModel.y.toPx() + vertexViewModel.radius.toPx() - vertexElement.size.height / 2,
             ),
         )
     }

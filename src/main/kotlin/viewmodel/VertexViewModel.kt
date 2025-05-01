@@ -13,7 +13,6 @@ class VertexViewModel<V, W: Comparable<W>>(
     y: Dp = 0.dp,
     color: Color,
     borderColor: Color,
-    number: W,
     var radius: Dp,
     var borderWidth: Dp,
     val vertex: Vertex<V>
@@ -22,15 +21,10 @@ class VertexViewModel<V, W: Comparable<W>>(
     private val _y = mutableStateOf(y)
     private val _color = mutableStateOf(color)
     private val _borderColor = mutableStateOf(borderColor)
-    private val _number = mutableStateOf(number)
 
     override var color: Color
         get() = _color.value
         set(value) { _color.value = value }
-
-    var number: W
-        get() = _number.value
-        set(value) { _number.value = value }
 
     var borderColor: Color
         get() = _borderColor.value

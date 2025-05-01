@@ -23,7 +23,6 @@ class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
 			Random.nextInt(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE).dp,
 			Color(DEFAULT_VERTEX_COLOR),
 			Color(DEFAULT_VERTEX_BORDER_COLOR),
-			graph.ring.zero,
 			DEFAULT_WIDTH.dp,
 			DEFAULT_BORDER_WIDTH.dp,
 			it
