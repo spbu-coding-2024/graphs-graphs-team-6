@@ -90,7 +90,7 @@ fun <V, K, W: Comparable<W>>actionMenuView(actionWindowVisibility: Boolean, view
                     applyAlgorithm(currentAlgorithm, viewModel)
                 }
             ) {
-                Icon(Icons.Default.Check, "")
+                Icon(Icons.Default.Check, "Apply algorithm")
             }
         }
     }

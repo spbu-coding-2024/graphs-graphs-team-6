@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -55,6 +56,7 @@ fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K,
 		drawerContent = {
 			Column(
 				modifier = Modifier
+					.testTag("ModalDrawer")
 					.padding(16.dp)
 			) {
 				Button(
@@ -65,10 +67,10 @@ fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K,
 					Icon(Icons.Default.Close, "Close")
 				}
 			}
-			drawerButton("Open") {
+			drawerButton("Open", description = "OpenButton") {
 				coroutine.launch { drawerState.close() }
 			}
-			drawerButton("Action", icon = Icons.Default.Star) {
+			drawerButton("Action", icon = Icons.Default.Star, description = "ActionButton") {
 				coroutine.launch { drawerState.close() }
 				actionWindowVisibility = true
 			}
@@ -81,6 +83,7 @@ fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K,
 			modifier = Modifier
 				.fillMaxSize()
 				.padding(16.dp)
+				.testTag("MainButton")
 		) {
 			Button(
 				onClick = {
@@ -91,7 +94,7 @@ fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K,
 					}
 				}
 			) {
-				Icon(if (actionWindowVisibility == true) Icons.Default.Close else Icons.Default.Menu, "")
+				Icon(if (actionWindowVisibility == true) Icons.Default.Close else Icons.Default.Menu, "Main button")
 			}
 		}
 		actionMenuView(actionWindowVisibility, viewModel)
@@ -113,14 +116,15 @@ fun drawerShape() = object : Shape {
 @Composable
 fun drawerButton(textString: String,
 				 icon: ImageVector = Icons.Default.Add,
-				 description: String = "",
+				 description: String,
 				 onClickMethod: () -> Unit) {
 	Column {
 		Button(
 			modifier = Modifier
 				.width(400.dp)
 				.height(100.dp)
-				.padding(16.dp),
+				.padding(16.dp)
+				.testTag(description),
 			onClick = onClickMethod,
 			shape = RectangleShape,
 		){

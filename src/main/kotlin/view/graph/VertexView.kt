@@ -22,6 +22,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -41,6 +42,7 @@ fun <V, W: Comparable<W>> VertexView(
 
     Canvas (
         modifier = modifier
+            .testTag(vertexViewModel.vertex.element.toString())
             .offset(vertexViewModel.x, vertexViewModel.y)
             .size(radius * 2)
             .border(border = BorderStroke(vertexViewModel.borderWidth,
