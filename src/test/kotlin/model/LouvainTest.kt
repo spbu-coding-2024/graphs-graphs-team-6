@@ -3,17 +3,10 @@ package model
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
-
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import space.kscience.attributes.SafeType
-import space.kscience.kmath.operations.Float64BufferOps.Companion.buffer
 import space.kscience.kmath.operations.Float64Field
 import space.kscience.kmath.operations.Ring
-import space.kscience.kmath.structures.Buffer
-import space.kscience.kmath.structures.MutableBuffer
-import space.kscience.kmath.structures.MutableBufferFactory
 import kotlin.test.assertFailsWith
 import model.UndirectedGraph.UndirectedEdge
 import model.UndirectedGraph.UndirectedVertex
@@ -129,6 +122,20 @@ class LouvainTest {
 	}
 
 	@Test
+	fun `graph with self-loop yields single community`() {
+		val graph = UndirectedGraph<String, String, Double>(Float64Field)
+		graph.addVertex("A")
+		graph.addEdge("A", "A", "loop", 2.0)
+
+		val communities = Louvain(graph).detectCommunities()
+
+		assertEquals(1, communities.size)
+		val community = communities.single()
+		assertEquals(1, community.size)
+		assertEquals("A", community.single().element)
+	}
+
+	@Test
 	fun `throws when weight is non-numeric`() {
 		val stringRing = mockk<Ring<String>>()
 		val graph = UndirectedGraph<String, String, String>(stringRing)
@@ -179,19 +186,5 @@ class LouvainTest {
 		}
 
 		assertTrue(exception.message!!.contains("Vertex is missing"))
-	}
-
-	@Test
-	fun `graph with self-loop yields single community`() {
-		val graph = UndirectedGraph<String, String, Double>(Float64Field)
-		graph.addVertex("A")
-		graph.addEdge("A", "A", "loop", 2.0)
-
-		val communities = Louvain(graph).detectCommunities()
-
-		assertEquals(1, communities.size)
-		val community = communities.single()
-		assertEquals(1, community.size)
-		assertEquals("A", community.single().element)
 	}
 }

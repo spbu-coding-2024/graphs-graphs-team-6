@@ -41,10 +41,13 @@ fun <V, K, W : Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K
 							viewModel.showIncompatibleWeightTypeDialog = false
 						},
 						title = { Text("Incompatible Edge Weight Type") },
-						text = { Text("Your graph uses edge weight weight type that is not supported yet. " +
-							"Please try exploring graph with numerical weight" +
-							"\n${viewModel.exceptionMessage}"
-						) },
+						text = {
+							Text(
+								"Your graph uses edge weight weight type that is not supported yet. " +
+									"Please try exploring graph with numerical weight" +
+									"\n${viewModel.exceptionMessage}"
+							)
+						},
 						confirmButton = {
 							TextButton(onClick = {
 								viewModel.showIncompatibleWeightTypeDialog = false
