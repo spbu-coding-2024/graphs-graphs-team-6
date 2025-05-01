@@ -2,6 +2,7 @@ package viewmodel
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import model.Edge
 import model.Graph
 import model.Vertex
 import kotlin.random.Random
@@ -39,6 +40,21 @@ class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
 			DEFAULT_EDGE_WIDTH.dp
 		)
 	}
+
+	/**
+	 * Given [edge], return its corresponding view model
+	 */
+	fun getEdgeViewModel(edge: Edge<V, K, W>): EdgeViewModel<V, K, W> {
+		return _edges[edge] ?: error("Edge does not have its viewmodel")
+	}
+
+	/**
+	 * Given [vertex], return its corresponding view model
+	 */
+	fun getVertexViewModel(vertex: Vertex<V>): VertexViewModel<V, W> {
+		return _vertices[vertex] ?: error("Vertex does not have its viewmodel")
+	}
+
 	val vertices: Collection<VertexViewModel<V, W>>
 		get() = _vertices.values
 

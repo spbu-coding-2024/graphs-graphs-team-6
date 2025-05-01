@@ -1,6 +1,7 @@
 package viewmodel
 
 import androidx.compose.ui.graphics.Color
+import model.Edge
 import viewmodel.Colorable
 
 private const val CIRCLE_GRADUS = 360
@@ -32,14 +33,14 @@ object ColorUtils {
 		return Color(rgbInt)
 	}
 
-	fun <V, C: Colorable> paintPath(path: List<V>, color: C) {
-
-	}
-
 	internal fun <T, C : Colorable> applyColors(colorMap: Map<T, Color>, colorable: Collection<C>) {
 		colorMap.keys.zip(colorable).forEach { (model, viewmodel) ->
 			viewmodel.color = colorMap[model]
 				?: throw error("Missing color for $model")
 		}
+	}
+
+	internal fun <C : Colorable> applyOneColor(colorable: Collection<C>, color: Color) {
+		colorable.forEach { it.color = color }
 	}
 }

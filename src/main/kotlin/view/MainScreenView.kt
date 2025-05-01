@@ -50,9 +50,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import model.DirectedGraph
+import model.Edge
 import model.utils.SSSPCalculator
 import view.graph.GraphView
 import viewmodel.ColorUtils
+import viewmodel.EdgeViewModel
 import viewmodel.GraphViewModel
 
 
@@ -198,6 +200,10 @@ fun <V, K, W: Comparable<W>>applyAlgorithm(algoNum: Int, viewModel: MainScreenVi
 				viewModel.graph,
 				viewModel.graph.vertices.first().element
 			)
+			val path = SSSPCalculator.constructPath(predecessors, viewModel.graph.vertices.last().element)
+				.map {viewModel.graphViewModel.getEdgeViewModel(it)}
+			ColorUtils.applyOneColor(path, Color.Red)
+			
 			viewModel.graphViewModel.vertices.forEach { vertexVM ->
 				distance[vertexVM.vertex.element]?.let {
 					vertexVM.number = it
