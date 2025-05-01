@@ -48,10 +48,18 @@ class MainScreenViewModel<V, K, W : Comparable<W>>(
 	}
 
 	private val louvainDetector = Louvain(graph)
-	fun assignCommunities() {
-		val grouping = louvainDetector.detectCommunities()
-		val colorMap = ColorUtils.assignColorsGrouped(grouping)
+	var exceptionMessage: String? = null
+	var showIncompatibleWeightTypeDialog by mutableStateOf(false)
 
-		ColorUtils.applyColors(colorMap, graphViewModel.vertices)
+	fun assignCommunities() {
+		try {
+			val grouping = louvainDetector.detectCommunities()
+			val colorMap = ColorUtils.assignColorsGrouped(grouping)
+			ColorUtils.applyColors(colorMap, graphViewModel.vertices)
+		}
+		catch (e: IllegalArgumentException){
+			showIncompatibleWeightTypeDialog = true
+			exceptionMessage = e.message
+		}
 	}
 }

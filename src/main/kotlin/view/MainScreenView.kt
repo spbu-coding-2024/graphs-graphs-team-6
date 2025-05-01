@@ -15,13 +15,15 @@ import androidx.compose.ui.unit.dp
 import model.DirectedGraph
 import model.UndirectedGraph
 import view.graph.GraphView
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.TextButton
 
 @Composable
-fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K, W>) {
+fun <V, K, W : Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K, W>) {
 	Row {
 		Column {
 			if (viewModel.graph is DirectedGraph) {
-				Button (onClick = viewModel::calculateSCC){
+				Button(onClick = viewModel::calculateSCC) {
 					Text("Calculate SCC")
 				}
 			}
@@ -32,9 +34,31 @@ fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K,
 				Button(onClick = viewModel::findMSF) {
 					Text("Find MSF")
 				}
+
+				if (viewModel.showIncompatibleWeightTypeDialog) {
+					AlertDialog(
+						onDismissRequest = {
+							viewModel.showIncompatibleWeightTypeDialog = false
+						},
+						title = { Text("Incompatible Edge Weight Type") },
+						text = { Text("Your graph uses edge weight weight type that is not supported yet. " +
+							"Please try exploring graph with numerical weight" +
+							"\n${viewModel.exceptionMessage}"
+						) },
+						confirmButton = {
+							TextButton(onClick = {
+								viewModel.showIncompatibleWeightTypeDialog = false
+							}) {
+								Text("ОК")
+							}
+						}
+					)
+				}
 			}
 			Row(verticalAlignment = Alignment.CenterVertically) {
-				Checkbox(checked = viewModel.showEdgesWeights, onCheckedChange = {viewModel.showEdgesWeights = it})
+				Checkbox(
+					checked = viewModel.showEdgesWeights,
+					onCheckedChange = { viewModel.showEdgesWeights = it })
 				Text(text = "Show weights", modifier = Modifier.padding(2.dp))
 			}
 		}
