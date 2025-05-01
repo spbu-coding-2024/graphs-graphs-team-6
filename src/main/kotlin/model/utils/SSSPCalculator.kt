@@ -1,13 +1,17 @@
 package model.utils
 
 import model.DirectedGraph
+import model.DirectedGraph.DirectedEdge
+import model.Edge
 import model.Graph
 import model.UndirectedGraph
+import model.UndirectedGraph.UndirectedEdge
+import model.Vertex
 import org.jetbrains.skia.FontWeight
 
 object SSSPCalculator {
     fun <V, K, W: Comparable<W>> bellmanFordAlgorithm(graph: Graph<V, K, W>, startVertex: V):
-            Pair<Map<V, V>, Map<V, W>>{
+            Pair<Map<V, Edge<V, K, W>>, Map<V, W>>{
         return if (graph is DirectedGraph) {
             bellmanFordAlgorithmForDirected(graph, startVertex)
         } else if (graph is UndirectedGraph) {
@@ -17,10 +21,10 @@ object SSSPCalculator {
         }
     }
     private fun <V, K, W: Comparable<W>> bellmanFordAlgorithmForDirected(graph: DirectedGraph<V, K, W>, startVertex: V):
-            Pair<Map<V, V>, Map<V, W>> {
+            Pair<Map<V, DirectedEdge<V, K, W>>, Map<V, W>> {
 
         var distance = mutableMapOf<V, W>()
-        var predecessor = mutableMapOf<V, V>()
+        var predecessorEdge = mutableMapOf<V, DirectedEdge<V, K, W>>()
         distance[startVertex] = graph.ring.zero
         for (j in 0..(graph.vertices.size - 1)) {
             var any = false
@@ -35,25 +39,25 @@ object SSSPCalculator {
                     distance[secondVertex]?.let { distSecond ->
                         if (distSecond > newDistance) {
                             distance[secondVertex] = newDistance
-                            predecessor[secondVertex] = firstVertex
+                            predecessorEdge[secondVertex] = edge
                             any = true
                         }
                     } ?:let {
                         distance[secondVertex] = newDistance
-                        predecessor[secondVertex] = firstVertex
+                        predecessorEdge[secondVertex] = edge
                         any = true
                     }
                 }
             }
             if (any == false) break
         }
-        return predecessor.toMap() to distance.toMap()
+        return predecessorEdge.toMap() to distance.toMap()
     }
     private fun <V, K, W: Comparable<W>> bellmanFordAlgorithmForUndirected(graph: UndirectedGraph<V, K, W>, startVertex: V):
-            Pair<Map<V, V>, Map<V, W>> {
+            Pair<Map<V, UndirectedEdge<V, K, W>>, Map<V, W>> {
 
         var distance = mutableMapOf<V, W>()
-        var predecessor = mutableMapOf<V, V>()
+        var predecessorEdge = mutableMapOf<V, UndirectedEdge<V, K, W>>()
         distance[startVertex] = graph.ring.zero
         for (j in 0..(graph.vertices.size - 1)) {
             var any = false
@@ -68,34 +72,35 @@ object SSSPCalculator {
                         distance[vertices[1-i]]?.let { distSecond ->
                             if (distSecond > newDistance) {
                                 distance[vertices[1-i]] = newDistance
-                                predecessor[vertices[1-i]] = vertices[i]
+                                predecessorEdge[vertices[1-i]] = edge
                                 any = true
                             }
                         } ?:let {
                             distance[vertices[1-i]] = newDistance
-                            predecessor[vertices[1-i]] = vertices[i]
+                            predecessorEdge[vertices[1-i]] = edge
                             any = true
                         }
-
-
                     }
                 }
             }
             if (any == false) break
         }
-        return predecessor.toMap() to distance.toMap()
+        return predecessorEdge.toMap() to distance.toMap()
     }
 
-    fun <V, W> constructPath(weights: Map<V, W>, predecessors: Map<V, V>, endVertex: V): List<V> {
-        require(weights[endVertex] != null)
+    fun <V, K, W: Comparable<W>> constructPath(predecessors: Map<V, Edge<V, K, W>>,
+                                               endVertex: V): List<Edge<V, K, W>> {
         var current = predecessors[endVertex]
+        var acknowledged = endVertex
+        val array = ArrayList<Edge<V, K, W>>(predecessors.size)
 
-        val array = ArrayList<V>(predecessors.size)
-        array.addLast(endVertex)
         while (current != null) {
+            require(current.pair.size == 2)
             array.addLast(current)
-            current = predecessors[current]
+            acknowledged = current.opposite(acknowledged)
+            current = predecessors[acknowledged]
         }
+
         return array.reversed()
     }
 }

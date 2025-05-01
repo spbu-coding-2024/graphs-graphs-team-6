@@ -32,6 +32,10 @@ object ColorUtils {
 		return Color(rgbInt)
 	}
 
+	fun <V, C: Colorable> paintPath(path: List<V>, color: C) {
+
+	}
+
 	internal fun <T, C : Colorable> applyColors(colorMap: Map<T, Color>, colorable: Collection<C>) {
 		colorMap.keys.zip(colorable).forEach { (model, viewmodel) ->
 			viewmodel.color = colorMap[model]

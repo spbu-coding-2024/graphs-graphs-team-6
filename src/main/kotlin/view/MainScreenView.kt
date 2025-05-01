@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
@@ -51,6 +52,7 @@ import kotlinx.coroutines.launch
 import model.DirectedGraph
 import model.utils.SSSPCalculator
 import view.graph.GraphView
+import viewmodel.ColorUtils
 import viewmodel.GraphViewModel
 
 
@@ -192,7 +194,7 @@ fun <V, K, W: Comparable<W>>applyAlgorithm(algoNum: Int, viewModel: MainScreenVi
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
 
 		Algorithm.BellmanFord.ordinal -> {
-			val (_, distance) = SSSPCalculator.bellmanFordAlgorithm(
+			val (predecessors, distance) = SSSPCalculator.bellmanFordAlgorithm(
 				viewModel.graph,
 				viewModel.graph.vertices.first().element
 			)
@@ -202,6 +204,7 @@ fun <V, K, W: Comparable<W>>applyAlgorithm(algoNum: Int, viewModel: MainScreenVi
 				}
 			}
 		}
+
 	}
 }
 

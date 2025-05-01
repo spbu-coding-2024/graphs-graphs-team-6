@@ -51,12 +51,8 @@ class SSSPCalculatorTest {
 
         }
         val (pred, weight) = SSSPCalculator.bellmanFordAlgorithm<String, Int, Int>(testGraph, "A")
-        val path = SSSPCalculator.constructPath(weight, pred, "E")
-        assertEquals("A", path[0])
-        assertEquals("B", path[1])
-        assertEquals("C", path[2])
-        assertEquals("D", path[3])
-        assertEquals("E", path[4])
+        val path = SSSPCalculator.constructPath(pred, "E")
+        for (i in 0..3) assertEquals(i, path[i].key)
     }
     @Test
     fun `BellmanFord with symmetric edge`() {
@@ -128,11 +124,10 @@ class SSSPCalculatorTest {
             addEdge("z", "s", index++, 2)
         }
         val (pred, weight) = SSSPCalculator.bellmanFordAlgorithm<String, Int, Int>(testGraph, "s")
-        val path = SSSPCalculator.constructPath(weight, pred, "z")
-        assertEquals("s", path[0])
-        assertEquals("y", path[1])
-        assertEquals("x", path[2])
-        assertEquals("t", path[3])
-        assertEquals("z", path[4])
+        val path = SSSPCalculator.constructPath(pred, "z")
+        assertEquals(1, path[0].key)
+        assertEquals(7, path[1].key)
+        assertEquals(4, path[2].key)
+        assertEquals(8, path[3].key)
     }
 }
