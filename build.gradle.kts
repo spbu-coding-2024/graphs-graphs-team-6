@@ -74,8 +74,6 @@ licenseReport {
 	copySpec {
 		val jars = runtimeClasspath.filter { it.name.endsWith(".jar") }
 
-		// вместо одного from(*array) — делаем from() N раз,
-		// чтобы не создавать большой временный Array
 		jars
 			.map { zipTree(it) }
 			.forEach { from(it) }
@@ -89,7 +87,6 @@ licenseReport {
 	}
 }
 
-// Добавление в JAR
 tasks.named<Jar>("jar") {
 	dependsOn("generateLicenseReport")
 	from("$buildDir/licenses") {

@@ -65,11 +65,11 @@ class LouvainTest {
 		graph.addVertex("C")
 		graph.addVertex("D")
 		graph.addVertex("E")
-		// component 1
+
 		graph.addEdge("A", "B", "e1", 1.0)
-		// isolated vertex
+
 		graph.addVertex("C")
-		// component 2
+
 		graph.addEdge("D", "E", "e2", 1.0)
 
 		val communities = Louvain(graph).detectCommunities()
@@ -184,12 +184,11 @@ class LouvainTest {
 	@Test
 	fun `graph with self-loop yields single community`() {
 		val graph = UndirectedGraph<String, String, Double>(Float64Field)
-		// Add vertex A and a self-loop on A
 		graph.addVertex("A")
 		graph.addEdge("A", "A", "loop", 2.0)
 
 		val communities = Louvain(graph).detectCommunities()
-		// Self-loop should not create extra communities
+
 		assertEquals(1, communities.size)
 		val community = communities.single()
 		assertEquals(1, community.size)

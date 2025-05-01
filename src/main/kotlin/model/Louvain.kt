@@ -11,9 +11,9 @@ class Louvain<V, K, W : Comparable<W>>(val graph: Graph<V, K, W>) {
 		val vertexToID: Map<Vertex<V>, Int>
 	) :
 		Link {
-		override fun source() = vertexToID[edge.pair.toList()[0]] 
+		override fun source() = vertexToID[edge.pair.toList()[0]]
 			?: error("Vertex is missing")
-		override fun target() = vertexToID[edge.pair.toList()[if (edge.pair.size > 1) 1 else 0]] 
+		override fun target() = vertexToID[edge.pair.toList()[if (edge.pair.size > 1) 1 else 0]]
 			?: error("Vertex is missing")
 
 		override fun weight() = toDouble(edge.weight)
@@ -22,12 +22,11 @@ class Louvain<V, K, W : Comparable<W>>(val graph: Graph<V, K, W>) {
 			when (ringElem) {
 				is Number -> ringElem.toDouble()
 				else -> throw IllegalArgumentException(
-					"Не удалось преобразовать вес `$ringElem` " +
-						"типа ${ringElem::class.simpleName} в Double"
+					"Incompatible weight type"
 				)
 			}
 	}
-	
+
 	fun detectCommunities(): Collection<Collection<Vertex<V>>> {
 		val vertexToID = graph.vertices.withIndex().associate { it.value to it.index }
 		val idToVertex = graph.vertices
