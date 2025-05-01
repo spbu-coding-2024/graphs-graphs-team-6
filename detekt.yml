@@ -754,7 +754,7 @@ style:
     allowedNames: ''
   UnusedPrivateProperty:
     active: true
-    allowedNames: '_|ignored|expected|serialVersionUID'
+    allowedNames: '_|i|ignored|expected|serialVersionUID'
   UseAnyOrNoneInsteadOfFind:
     active: true
   UseArrayLiteralsInAnnotations:

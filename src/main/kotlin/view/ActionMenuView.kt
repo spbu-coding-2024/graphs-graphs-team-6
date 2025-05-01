@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -35,7 +34,6 @@ import model.Constants.DEFAULT_EDGE_WIDTH
 import model.Constants.DEFAULT_VERTEX_BORDER_COLOR
 import model.Constants.DEFAULT_VERTEX_COLOR
 import model.Constants.DEFAULT_VERTEX_RADIUS
-import model.Graph
 import model.utils.SSSPCalculator
 import viewmodel.ColorUtils
 import viewmodel.GraphViewModel
@@ -51,9 +49,8 @@ fun <V, K, W: Comparable<W>>actionMenuView(actionWindowVisibility: Boolean, view
     val algorithms = returnArrayOfAlgorithmLabels()
     val arrayOfVertexNames by remember {
         mutableStateOf(viewModel.graphViewModel.vertices.map
-        { it -> it.vertex.element.toString() }.toTypedArray())
+        { it.vertex.element.toString() }.toTypedArray())
     }
-    var menuIsExpanded by remember { mutableStateOf(false) }
     var startVertex by remember { mutableStateOf(viewModel.graphViewModel.vertices.first()) }
     var endVertex by remember { mutableStateOf(viewModel.graphViewModel.vertices.last()) }
 
@@ -71,33 +68,12 @@ fun <V, K, W: Comparable<W>>actionMenuView(actionWindowVisibility: Boolean, view
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.Bottom,
         ) {
-            ExposedDropdownMenuBox(
-                expanded = menuIsExpanded,
-                onExpandedChange = {
-                    menuIsExpanded = !menuIsExpanded
-                },
-            ) {
-                TextField(
-                    value = algorithms[currentAlgorithm],
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = menuIsExpanded) }
-                )
-                ExposedDropdownMenu(
-                    expanded = menuIsExpanded,
-                    onDismissRequest = { menuIsExpanded = false },
-                ) {
-                    algorithms.forEachIndexed { ordinal, string ->
-                        DropdownMenuItem(
-                            onClick = {
-                                currentAlgorithm = ordinal
-                                menuIsExpanded = false
-                            }
-                        ) {
-                            Text(text = string)
-                        }
-                    }
-                }
+            menuBox(
+                firstTextField = algorithms[currentAlgorithm],
+                collection = algorithms,
+                arrayOfNames = algorithms.toTypedArray(),
+            ) { i, _ ->
+                currentAlgorithm = i
             }
             Button(
                 modifier = Modifier
@@ -111,20 +87,20 @@ fun <V, K, W: Comparable<W>>actionMenuView(actionWindowVisibility: Boolean, view
             if (currentAlgorithm == Algorithm.BellmanFord.ordinal) {
                 menuBox(startVertex.vertex.element.toString(),
                     viewModel.graphViewModel.vertices,
-                    arrayOfVertexNames) { vertex ->
+                    arrayOfVertexNames) { _, vertex ->
                     startVertex = vertex
                 }
                 menuBox(endVertex.vertex.element.toString(),
                     viewModel.graphViewModel.vertices,
-                    arrayOfVertexNames) { vertex ->
+                    arrayOfVertexNames) { _, vertex ->
                     endVertex = vertex
                 }
             }
         }
     }
 }
-fun returnArrayOfAlgorithmLabels(): Array<String> {
-    return Array<String>(Algorithm.entries.size) {
+fun returnArrayOfAlgorithmLabels(): List<String> {
+    return List<String>(Algorithm.entries.size) {
         when(it) {
             Algorithm.BellmanFord.ordinal -> "Bellman-Ford"
             Algorithm.Tarjan.ordinal -> "Tarjan Strong Connected Component"
@@ -160,7 +136,8 @@ fun <V, K, W: Comparable<W>>applyAlgorithm(algoNum: Int,
 }
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun <T> menuBox(firstTextField: String, collection: Collection<T>, arrayOfNames: Array<String>, onClick: (T) -> Unit) {
+fun <T> menuBox(firstTextField: String, collection: Collection<T>,
+                arrayOfNames: Array<String>, onClick: (Int, T) -> Unit) {
     var isExpanded by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         expanded = isExpanded,
@@ -182,7 +159,7 @@ fun <T> menuBox(firstTextField: String, collection: Collection<T>, arrayOfNames:
                 DropdownMenuItem(
                     onClick = {
                         isExpanded = false
-                        onClick(item)
+                        onClick(i, item)
                     }
                 ) {
                     Text(text = arrayOfNames[i])

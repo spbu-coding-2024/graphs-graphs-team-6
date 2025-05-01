@@ -20,67 +20,64 @@ object SSSPCalculator {
             error("Different graph type detected")
         }
     }
-    private fun <V, K, W: Comparable<W>> bellmanFordAlgorithmForDirected(graph: DirectedGraph<V, K, W>, startVertex: V):
+    private fun <V, K, W: Comparable<W>> bellmanFordAlgorithmForDirected
+                (graph: DirectedGraph<V, K, W>, startVertex: V):
             Pair<Map<V, DirectedEdge<V, K, W>>, Map<V, W>> {
 
         var distance = mutableMapOf<V, W>()
         var predecessorEdge = mutableMapOf<V, DirectedEdge<V, K, W>>()
         distance[startVertex] = graph.ring.zero
-        for (j in 0..(graph.vertices.size - 1)) {
+        for (i in 0..(graph.vertices.size - 1)) {
             var any = false
             graph.edges.forEach { edge ->
-                val firstVertex = edge.firstVertex.element
-                val secondVertex = edge.secondVertex.element
                 require(edge.pair.size <= 2)
+                val secondVertex = edge.secondVertex.element
+                val firstDist = distance[edge.firstVertex.element]
+                val secondDist = distance[secondVertex]
+                if (firstDist == null) return@forEach
+                val newDistance = graph.ring.add(firstDist, edge.weight)
 
-                distance[firstVertex]?.let { distFirst ->
-                    val newDistance = graph.ring.add(distFirst, edge.weight)
-
-                    distance[secondVertex]?.let { distSecond ->
-                        if (distSecond > newDistance) {
-                            distance[secondVertex] = newDistance
-                            predecessorEdge[secondVertex] = edge
-                            any = true
-                        }
-                    } ?:let {
-                        distance[secondVertex] = newDistance
-                        predecessorEdge[secondVertex] = edge
-                        any = true
-                    }
+                if (secondDist == null || secondDist > newDistance) {
+                    distance[secondVertex] = newDistance
+                    predecessorEdge[secondVertex] = edge
+                    any = true
                 }
             }
             if (any == false) break
         }
         return predecessorEdge.toMap() to distance.toMap()
     }
-    private fun <V, K, W: Comparable<W>> bellmanFordAlgorithmForUndirected(graph: UndirectedGraph<V, K, W>, startVertex: V):
+    private fun <V, K, W: Comparable<W>> bellmanFordAlgorithmForUndirected
+                (graph: UndirectedGraph<V, K, W>, startVertex: V):
             Pair<Map<V, UndirectedEdge<V, K, W>>, Map<V, W>> {
 
         var distance = mutableMapOf<V, W>()
         var predecessorEdge = mutableMapOf<V, UndirectedEdge<V, K, W>>()
         distance[startVertex] = graph.ring.zero
-        for (j in 0..(graph.vertices.size - 1)) {
+        for (i in 0..(graph.vertices.size - 1)) {
             var any = false
             graph.edges.forEach { edge ->
                 require(edge.pair.size <= 2)
                 if (edge.pair.size == 1) null
-                val vertices = edge.pair.map { it.element }.toList()
-                for (i in 0..1) {
-                    distance[vertices[i]]?.let { distFirst ->
-                        val newDistance = graph.ring.add(distFirst, edge.weight)
+                val (firstVertex , secondVertex) = edge.pair.map { it.element }.toList()
+                val distFirst = distance[firstVertex]
+                val distSecond = distance[secondVertex]
 
-                        distance[vertices[1-i]]?.let { distSecond ->
-                            if (distSecond > newDistance) {
-                                distance[vertices[1-i]] = newDistance
-                                predecessorEdge[vertices[1-i]] = edge
-                                any = true
-                            }
-                        } ?:let {
-                            distance[vertices[1-i]] = newDistance
-                            predecessorEdge[vertices[1-i]] = edge
-                            any = true
-                        }
-                    }
+
+                if (distFirst == null) return@forEach
+                var newDistance = graph.ring.add(distFirst, edge.weight)
+                if (distSecond == null || distSecond > newDistance) {
+                    distance[firstVertex] = newDistance
+                    predecessorEdge[firstVertex] = edge
+                    any = true
+                }
+
+                if (distSecond == null) return@forEach
+                newDistance = graph.ring.add(distFirst, edge.weight)
+                if (distSecond > newDistance) {
+                    distance[secondVertex] = newDistance
+                    predecessorEdge[secondVertex] = edge
+                    any = true
                 }
             }
             if (any == false) break

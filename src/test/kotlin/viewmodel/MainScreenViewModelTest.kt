@@ -1,8 +1,12 @@
 package viewmodel
 
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.runComposeUiTest
 import kotlin.test.Test
 
-import androidx.compose.ui.test.*
+
 import model.DirectedGraph
 import space.kscience.kmath.operations.IntRing
 import view.MainScreenView
