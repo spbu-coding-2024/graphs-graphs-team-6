@@ -16,21 +16,32 @@ const val BIG_NUMBER_1 = 9000
 const val BIG_NUMBER_2 = 5555
 
 val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
-	listOf("A","B","C","D","E","F","G","H").forEach { addVertex(it) }
+	listOf("A","B","C","D","E","F","G","H","I","J","K","L")
+		.forEach { addVertex(it) }
 
-	var index = 0
+	var idx = 0
 
-	addEdge("A", "B", index, index); index++
-	addEdge("B", "C", index, index); index++
-	addEdge("C", "A", index, index); index++
-	addEdge("C", "C", index, index); index++
+	addEdge("A", "B", idx++, 10)
+	addEdge("A", "C", idx++, 10)
+	addEdge("B", "C", idx++, 10)
+	addEdge("B", "D", idx++, 10)
+	addEdge("C", "D", idx++, 10)
 
-	addEdge("D", "E", index, index); index++
-	addEdge("E", "F", index, index); index++
-	addEdge("F", "D", index, index); index++
+	addEdge("E", "F", idx++, 10)
+	addEdge("E", "G", idx++, 10)
+	addEdge("F", "G", idx++, 10)
+	addEdge("F", "H", idx++, 10)
+	addEdge("G", "H", idx++, 10)
 
-	addEdge("G", "H", index, BIG_NUMBER_1); index++
-	addEdge("H", "G", index, BIG_NUMBER_2)
+	addEdge("I", "J", idx++, 10)
+	addEdge("I", "K", idx++, 10)
+	addEdge("J", "K", idx++, 10)
+	addEdge("J", "L", idx++, 10)
+	addEdge("K", "L", idx++, 10)
+
+	addEdge("D", "E", idx++, 1)   // 1 <-> 2
+	addEdge("H", "I", idx++, 1)   // 2 <-> 3
+	addEdge("L", "A", idx++, 1)   // 3 <-> 1
 }
 
 @Composable
