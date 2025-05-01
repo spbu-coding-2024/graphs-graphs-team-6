@@ -5,6 +5,7 @@ plugins {
 	kotlin("jvm")
 	id("org.jetbrains.compose")
 	id("org.jetbrains.kotlin.plugin.compose")
+	id("com.github.jk1.dependency-license-report") version "2.0"
 }
 
 group = "org.example"
@@ -15,6 +16,7 @@ repositories {
 	maven("https://repo.kotlin.link")
 	maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 	google()
+	maven("https://jitpack.io")
 }
 
 val detekt by configurations.creating
@@ -52,7 +54,7 @@ dependencies {
 	testImplementation(kotlin("test"))
 	testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 	implementation("space.kscience:kmath-core:0.4.2")
-	implementation("com.github.Jetbrains-Research:louvain:main-SNAPSHOT")
+	implementation("com.github.JetBrains-Research:louvain:main-SNAPSHOT")
 }
 
 tasks.test {
@@ -62,6 +64,39 @@ tasks.test {
 tasks.check {
 	dependsOn(detektTask)
 }
+
+val runtimeClasspath: Configuration by configurations
+
+licenseReport {
+	// Указываем строкой
+	outputDir = "$buildDir/reports/licenses"
+
+	copySpec {
+		// runtimeClasspath теперь — это экземпляр Configuration
+		val jars = runtimeClasspath.filter { it.name.endsWith(".jar") }
+
+		// Распаковываем JAR-и
+		from(*jars.map { zipTree(it) }.toTypedArray())
+
+		include(
+			"META-INF/LICENSE",  "META-INF/LICENSE.*",
+			"META-INF/NOTICE",   "META-INF/NOTICE.*"
+		)
+		into("$buildDir/licenses")
+		rename("^META-INF/(.*)", "$1")
+	}
+
+}
+
+// Добавление в JAR
+tasks.named<Jar>("jar") {
+	dependsOn("generateLicenseReport")
+	from("$buildDir/licenses") {
+		into("META-INF")
+	}
+}
+
+
 
 compose.desktop {
 	application {
@@ -74,3 +109,5 @@ compose.desktop {
 		}
 	}
 }
+
+
