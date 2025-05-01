@@ -87,10 +87,11 @@ fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K,
 		) {
 			Button(
 				onClick = {
-					if (actionWindowVisibility == true) {
+
+					if (actionWindowVisibility == true && viewModel.graphViewModel.vertices.isNotEmpty()) {
 						actionWindowVisibility = false
 						resetGraphViewModel(viewModel.graphViewModel)
-					} else {
+					} else if (viewModel.graphViewModel.vertices.isNotEmpty()){
 						coroutine.launch { drawerState.open() }
 					}
 				}
@@ -98,7 +99,7 @@ fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K,
 				Icon(if (actionWindowVisibility == true) Icons.Default.Close else Icons.Default.Menu, "Main button")
 			}
 		}
-		actionMenuView(actionWindowVisibility, viewModel)
+		if (viewModel.graphViewModel.vertices.isNotEmpty()) actionMenuView(actionWindowVisibility, viewModel)
 	}
 }
 

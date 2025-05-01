@@ -45,6 +45,7 @@ import viewmodel.VertexViewModel
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun <V, K, W: Comparable<W>>actionMenuView(actionWindowVisibility: Boolean, viewModel: MainScreenViewModel<V, K, W>) {
+    require(viewModel.graph.vertices.isNotEmpty())
     var currentAlgorithm: Int = Algorithm.BellmanFord.ordinal
     val algorithms = returnArrayOfAlgorithmLabels()
     val arrayOfVertexNames by remember {
