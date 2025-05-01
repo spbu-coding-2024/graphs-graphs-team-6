@@ -69,15 +69,16 @@ tasks.check {
 val runtimeClasspath: Configuration by configurations
 
 licenseReport {
-	// Указываем строкой
 	outputDir = "$buildDir/reports/licenses"
 
 	copySpec {
-		// runtimeClasspath теперь — это экземпляр Configuration
 		val jars = runtimeClasspath.filter { it.name.endsWith(".jar") }
 
-		// Распаковываем JAR-и
-		from(*jars.map { zipTree(it) }.toTypedArray())
+		// вместо одного from(*array) — делаем from() N раз,
+		// чтобы не создавать большой временный Array
+		jars
+			.map { zipTree(it) }
+			.forEach { from(it) }
 
 		include(
 			"META-INF/LICENSE",  "META-INF/LICENSE.*",
@@ -86,7 +87,6 @@ licenseReport {
 		into("$buildDir/licenses")
 		rename("^META-INF/(.*)", "$1")
 	}
-
 }
 
 // Добавление в JAR

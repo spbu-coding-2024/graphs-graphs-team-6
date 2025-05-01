@@ -2,7 +2,10 @@ package model
 
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import space.kscience.attributes.SafeType
 import space.kscience.kmath.operations.Float64BufferOps.Companion.buffer
