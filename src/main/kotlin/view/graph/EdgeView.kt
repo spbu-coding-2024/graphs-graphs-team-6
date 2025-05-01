@@ -17,6 +17,10 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
+import model.Constants.DEFAULT_ARROW_TRIANGLE_HEIGHT
+import model.Constants.DEFAULT_ARROW_TRIANGLE_WIDTH
+import model.Constants.DEFAULT_LOOP_MULTIPLIER
+import model.Constants.DEFAULT_LOOP_RADIUS_COEFF
 import viewmodel.EdgeViewModel
 import viewmodel.VertexViewModel
 import kotlin.math.atan2
@@ -26,10 +30,7 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-private const val DEFAULT_ARROW_TRIANGLE_HEIGHT = 30
-private const val DEFAULT_ARROW_TRIANGLE_WIDTH = 10
-private const val DEFAULT_LOOP_RADIUS_COEFF = 0.75f
-private const val DEFAULT_LOOP_MULTIPLIER = 3
+
 
 @Composable
 fun <V, K, W: Comparable<W>> EdgeView(

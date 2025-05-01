@@ -17,9 +17,10 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import model.Constants.DEFAULT_ZOOM_SCALE_COEF
 import viewmodel.GraphViewModel
 
-private const val DEFAULT_ZOOM_SCALE_COEF = .001f
+
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

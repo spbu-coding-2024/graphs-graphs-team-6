@@ -7,6 +7,7 @@ import org.jetbrains.compose.ExperimentalComposeLibrary
 plugins {
 	kotlin("jvm")
 	id("org.jetbrains.compose")
+	id("jacoco")
 	id("org.jetbrains.kotlin.plugin.compose")
 }
 

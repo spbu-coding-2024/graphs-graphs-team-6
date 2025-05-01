@@ -2,18 +2,20 @@ package viewmodel
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import model.Constants.DEFAULT_BORDER_WIDTH
+import model.Constants.DEFAULT_EDGE_COLOR
+import model.Constants.DEFAULT_EDGE_WIDTH
+import model.Constants.DEFAULT_VERTEX_BORDER_COLOR
+import model.Constants.DEFAULT_VERTEX_COLOR
+import model.Constants.DEFAULT_VERTEX_RADIUS
+import model.Constants.MAX_RANDOM_VALUE
+import model.Constants.MIN_RANDOM_VALUE
 import model.Edge
 import model.Graph
 import model.Vertex
 import kotlin.random.Random
 
-private const val MIN_RANDOM_VALUE = 0
-private const val MAX_RANDOM_VALUE = 500
-private const val DEFAULT_VERTEX_COLOR = 0xFF2979FF
-private const val DEFAULT_VERTEX_BORDER_COLOR = 0xFF2962FF
-private const val DEFAULT_WIDTH = 25
-private const val DEFAULT_BORDER_WIDTH = 5
-private const val DEFAULT_EDGE_WIDTH = 2
+
 
 
 class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
@@ -23,7 +25,7 @@ class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
 			Random.nextInt(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE).dp,
 			Color(DEFAULT_VERTEX_COLOR),
 			Color(DEFAULT_VERTEX_BORDER_COLOR),
-			DEFAULT_WIDTH.dp,
+			DEFAULT_VERTEX_RADIUS.dp,
 			DEFAULT_BORDER_WIDTH.dp,
 			it
 		)
@@ -35,7 +37,7 @@ class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
 			_vertices[it.pair.toList()[if (it.pair.size == 2) 1 else 0]]
 				?: throw error("Vertex is missing"),
 			it,
-			Color.Black,
+			Color(DEFAULT_EDGE_COLOR),
 			DEFAULT_EDGE_WIDTH.dp
 		)
 	}

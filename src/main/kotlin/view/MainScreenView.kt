@@ -89,6 +89,7 @@ fun <V, K, W: Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K,
 				onClick = {
 					if (actionWindowVisibility == true) {
 						actionWindowVisibility = false
+						resetGraphViewModel(viewModel.graphViewModel)
 					} else {
 						coroutine.launch { drawerState.open() }
 					}
