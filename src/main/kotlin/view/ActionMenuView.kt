@@ -34,6 +34,7 @@ import model.Constants.DEFAULT_EDGE_WIDTH
 import model.Constants.DEFAULT_VERTEX_BORDER_COLOR
 import model.Constants.DEFAULT_VERTEX_COLOR
 import model.Constants.DEFAULT_VERTEX_RADIUS
+import model.UndirectedGraph
 import model.utils.SSSPCalculator
 import viewmodel.ColorUtils
 import viewmodel.GraphViewModel
@@ -135,7 +136,7 @@ fun <V, K, W: Comparable<W>>applyAlgorithm(algoNum: Int,
                 .map {viewModel.graphViewModel.getEdgeViewModel(it)}
             ColorUtils.applyOneColor(path, Color.Red)
         }
-        Algorithm.Kruskal.ordinal -> viewModel.findMSF()
+        Algorithm.Kruskal.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findMSF()
     }
 }
 @OptIn(ExperimentalMaterialApi::class)
