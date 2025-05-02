@@ -3,9 +3,6 @@ package model
 import space.kscience.kmath.operations.Ring
 
 interface Graph<V, K, W: Comparable<W>>{
-	/**
-	 * A ring, which contains arithmetic operation upon some objects
-	 */
 	val ring: Ring<W>
 
 	/**

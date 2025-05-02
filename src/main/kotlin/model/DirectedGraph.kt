@@ -6,7 +6,7 @@ class DirectedGraph<V, K, W: Comparable<W>> (override val ring: Ring<W>): Graph<
 
 
 	class DirectedVertex<V>(
-		override var element: V, override val adjacencyList: MutableList<Vertex<V>> = mutableListOf()
+		override var element: V, override val adjacencyList: MutableList<DirectedVertex<V>> = mutableListOf()
 	) : Vertex<V>
 
 	data class DirectedEdge<V, K, W: Comparable<W>>(

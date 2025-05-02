@@ -46,11 +46,11 @@ import viewmodel.VertexViewModel
 @Composable
 fun <V, K, W: Comparable<W>>actionMenuView(actionWindowVisibility: Boolean, viewModel: MainScreenViewModel<V, K, W>) {
     require(viewModel.graph.vertices.isNotEmpty())
-    var currentAlgorithm: Int = Algorithm.BellmanFord.ordinal
+    var currentAlgorithm by remember { mutableStateOf(Algorithm.BellmanFord.ordinal)}
     val algorithms = returnArrayOfAlgorithmLabels()
     val arrayOfVertexNames by remember {
         mutableStateOf(viewModel.graphViewModel.vertices.map
-        { it.vertex.element.toString() }.toTypedArray())
+        { it.model.element.toString() }.toTypedArray())
     }
     var startVertex by remember { mutableStateOf(viewModel.graphViewModel.vertices.first()) }
     var endVertex by remember { mutableStateOf(viewModel.graphViewModel.vertices.last()) }
@@ -86,12 +86,12 @@ fun <V, K, W: Comparable<W>>actionMenuView(actionWindowVisibility: Boolean, view
                 Icon(Icons.Default.Check, "Apply algorithm")
             }
             if (currentAlgorithm == Algorithm.BellmanFord.ordinal) {
-                menuBox(startVertex.vertex.element.toString(),
+                menuBox(startVertex.model.element.toString(),
                     viewModel.graphViewModel.vertices,
                     arrayOfVertexNames) { _, vertex ->
                     startVertex = vertex
                 }
-                menuBox(endVertex.vertex.element.toString(),
+                menuBox(endVertex.model.element.toString(),
                     viewModel.graphViewModel.vertices,
                     arrayOfVertexNames) { _, vertex ->
                     endVertex = vertex
@@ -103,8 +103,9 @@ fun <V, K, W: Comparable<W>>actionMenuView(actionWindowVisibility: Boolean, view
 fun returnArrayOfAlgorithmLabels(): List<String> {
     return List<String>(Algorithm.entries.size) {
         when(it) {
-            Algorithm.BellmanFord.ordinal -> "Bellman-Ford"
+            Algorithm.BellmanFord.ordinal -> "Bellman-Ford Shortest Path"
             Algorithm.Tarjan.ordinal -> "Tarjan Strong Connected Component"
+            Algorithm.Kruskal.ordinal -> "Kruskal Minimal Spanning Tree"
             else -> error("No string for enum")
         }
     }
@@ -112,13 +113,14 @@ fun returnArrayOfAlgorithmLabels(): List<String> {
 
 enum class Algorithm {
     Tarjan,
-    BellmanFord
+    BellmanFord,
+    Kruskal
 }
 
 fun <V, K, W: Comparable<W>>applyAlgorithm(algoNum: Int,
                                            viewModel: MainScreenViewModel<V, K, W>,
-                                           startVertex: VertexViewModel<V, W>,
-                                           endVertex: VertexViewModel<V, W>) {
+                                           startVertex: VertexViewModel<V>,
+                                           endVertex: VertexViewModel<V>) {
     resetGraphViewModel(viewModel.graphViewModel)
     when (algoNum) {
         Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
@@ -126,13 +128,14 @@ fun <V, K, W: Comparable<W>>applyAlgorithm(algoNum: Int,
         Algorithm.BellmanFord.ordinal -> {
             val (predecessors, _) = SSSPCalculator.bellmanFordAlgorithm(
                 viewModel.graph,
-                startVertex.vertex.element
+                startVertex.model.element
             )
 
-            val path = SSSPCalculator.constructPath(predecessors, endVertex.vertex.element)
+            val path = SSSPCalculator.constructPath(predecessors, endVertex.model.element)
                 .map {viewModel.graphViewModel.getEdgeViewModel(it)}
             ColorUtils.applyOneColor(path, Color.Red)
         }
+        Algorithm.Kruskal.ordinal -> viewModel.findMSF()
     }
 }
 @OptIn(ExperimentalMaterialApi::class)

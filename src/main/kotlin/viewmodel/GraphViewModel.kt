@@ -12,15 +12,14 @@ import model.Constants.MAX_RANDOM_VALUE
 import model.Constants.MIN_RANDOM_VALUE
 import model.Edge
 import model.Graph
-import model.Vertex
 import kotlin.random.Random
+import androidx.compose.runtime.State
+import model.Vertex
 
 
-
-
-class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
+class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>, showEdgesWeights: State<Boolean>) {
 	private val _vertices = graph.vertices.associateWith {
-		VertexViewModel<V, W>(
+		VertexViewModel<V>(
 			Random.nextInt(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE).dp,
 			Random.nextInt(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE).dp,
 			Color(DEFAULT_VERTEX_COLOR),
@@ -33,12 +32,13 @@ class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
 
 	private val _edges = graph.edges.associateWith {
 		EdgeViewModel<V, K, W>(
-			_vertices[it.pair.toList()[0]] ?: throw error("Vertex is missing"),
+			_vertices[it.pair.toList()[0]] ?: error("Vertex is missing"),
 			_vertices[it.pair.toList()[if (it.pair.size == 2) 1 else 0]]
-				?: throw error("Vertex is missing"),
+				?: error("Vertex is missing"),
 			it,
 			Color(DEFAULT_EDGE_COLOR),
-			DEFAULT_EDGE_WIDTH.dp
+			DEFAULT_EDGE_WIDTH.dp,
+			showEdgesWeights
 		)
 	}
 
@@ -52,11 +52,11 @@ class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>) {
 	/**
 	 * Given [vertex], return its corresponding view model
 	 */
-	fun getVertexViewModel(vertex: Vertex<V>): VertexViewModel<V, W> {
+	fun getVertexViewModel(vertex: Vertex<V>): VertexViewModel<V> {
 		return _vertices[vertex] ?: error("Vertex does not have its viewmodel")
 	}
 
-	val vertices: Collection<VertexViewModel<V, W>>
+	val vertices: Collection<VertexViewModel<V>>
 		get() = _vertices.values
 
 	val edges: Collection<EdgeViewModel<V, K, W>>
