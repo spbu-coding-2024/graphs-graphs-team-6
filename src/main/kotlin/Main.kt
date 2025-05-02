@@ -12,32 +12,42 @@ import view.graph.GraphView
 import viewmodel.ColorUtils
 import viewmodel.GraphViewModel
 
-const val BIG_NUMBER_1 = 9000
-const val BIG_NUMBER_2 = 5555
 
-val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
-	listOf("A","B","C","D","E","F","G","H").forEach { addVertex(it) }
+val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
+	addVertex("A")
+	addVertex("B")
+	addVertex("C")
+	addVertex("D")
+	addVertex("E")
+	addVertex("F")
+	addVertex("G")
+	addVertex("H")
 
 	var index = 0
+	val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) {it * 2}
 
-	addEdge("A", "B", index, index); index++
-	addEdge("B", "C", index, index); index++
-	addEdge("C", "A", index, index); index++
-	addEdge("C", "C", index, index); index++
+	addEdge("A", "B", index, weight[index]); index++
+	addEdge("B", "C", index, weight[index]); index++
+	addEdge("C", "A", index, weight[index]); index++
+	addEdge("C", "C", index, weight[index]); index++
 
-	addEdge("D", "E", index, index); index++
-	addEdge("E", "F", index, index); index++
-	addEdge("F", "D", index, index); index++
+	addEdge("C", "F", index, weight[index]); index++
 
-	addEdge("G", "H", index, BIG_NUMBER_1); index++
-	addEdge("H", "G", index, BIG_NUMBER_2)
+	addEdge("D", "E", index, weight[index]); index++
+	addEdge("E", "F", index, weight[index]); index++
+	addEdge("F", "D", index, weight[index]); index++
+
+	addEdge("H", "D", index, weight[index]); index++
+
+	addEdge("G", "H", index, weight[index]); index++
+	addEdge("H", "G", index, weight[index]); index++
 }
 
 @Composable
 @Preview
 fun app() {
 	MaterialTheme {
-		MainScreenView(MainScreenViewModel(graph))
+ 		MainScreenView<String, Int, Int>(MainScreenViewModel(graph))
 	}
 }
 

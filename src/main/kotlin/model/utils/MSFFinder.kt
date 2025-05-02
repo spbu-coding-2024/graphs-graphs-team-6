@@ -1,13 +1,16 @@
-package model
+package model.utils
 
 import androidx.compose.ui.graphics.Color
+import model.Edge
+import model.Graph
+import model.Vertex
 import viewmodel.ColorUtils
 import kotlin.random.Random
 
 class MSFFinder<V, K, W : Comparable<W>>(val graph: Graph<V, K, W>) {
 
 	fun findMSF(): Map<Edge<V, K, W>, Color> {
-		val msf = findMSFKruscal()
+		val msf = findMSFKruskal()
 		val colors = ColorUtils.assignColorsGrouped(msf)
 		return colors
 	}
@@ -37,7 +40,7 @@ class MSFFinder<V, K, W : Comparable<W>>(val graph: Graph<V, K, W>) {
 	 * Finds the minimal spanning forest of the [Graph].
 	 * @return List of pairs; each pair contains: list of edges sorted by weight of the current MST & sum of edge weights
 	 */
-	fun findMSFKruscal(): List<List<Edge<V, K, W>>> {
+	fun findMSFKruskal(): List<List<Edge<V, K, W>>> {
 		val sortedEdges = graph.edges.sortedBy { it.weight }
 		val res = mutableListOf<MutableList<Edge<V, K, W>>>()
 
@@ -55,7 +58,7 @@ class MSFFinder<V, K, W : Comparable<W>>(val graph: Graph<V, K, W>) {
 			fun uniteDSU(a: Vertex<V>, b: Vertex<V>) {
 				var aLeader = leaderDSU(a)
 				var bLeader = leaderDSU(b)
-				if (Random.nextBoolean()) {
+				if (Random.Default.nextBoolean()) {
 					aLeader = bLeader.also { bLeader = aLeader }
 				}
 				p[aLeader] = bLeader
