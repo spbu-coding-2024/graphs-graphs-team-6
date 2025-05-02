@@ -17,8 +17,7 @@ class MainScreenViewModelTest {
     @Test
     fun `Empty graph case`() = runComposeUiTest {
         val emptyGraph = DirectedGraph<String, Int, Int>(IntRing)
-        val graphViewModel = GraphViewModel<String, Int, Int>(emptyGraph)
-        val vm = MainScreenViewModel<String, Int, Int>(emptyGraph, graphViewModel)
+        val vm = MainScreenViewModel<String, Int, Int>(emptyGraph)
         setContent {
             MainScreenView(vm)
         }
