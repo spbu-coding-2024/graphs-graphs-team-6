@@ -78,6 +78,4 @@ class BridgeFinderTest {
         assertTrue(result.isEmpty())
     }
 
-
-
 }
