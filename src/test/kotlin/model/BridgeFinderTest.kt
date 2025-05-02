@@ -63,5 +63,21 @@ class BridgeFinderTest {
         assertTrue(result.isEmpty())
     }
 
+    @DisplayName("Single cycle graph")
+    @Test
+    fun singleCycleGraph() {
+        graph.addVertex(0)
+        graph.addVertex(1)
+        graph.addVertex(2)
+        graph.addEdge(0, 1, 0)
+        graph.addEdge(0, 2, 1)
+        graph.addEdge(1, 2, 2)
+        assertEquals(3, graph.vertices.size)
+        assertEquals(3, graph.edges.size)
+        val result = algorithm.runOn(graph)
+        assertTrue(result.isEmpty())
+    }
+
+
 
 }
