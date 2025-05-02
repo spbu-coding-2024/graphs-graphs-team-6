@@ -35,7 +35,6 @@ class DirectedGraph<V, K, W: Comparable<W>> (override val ring: Ring<W>): Graph<
 		return _edges.getOrPut(key) { DirectedEdge(firstV, secondV, key, weight) }
 	}
 
-
 	override fun addVertex(vertex: V) {
 		_vertices.getOrPut(vertex) {DirectedVertex(vertex)}
 	}

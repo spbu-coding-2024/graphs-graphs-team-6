@@ -1,7 +1,8 @@
 package model
 
 import androidx.compose.ui.graphics.Color
-import org.junit.jupiter.api.Assertions.assertEquals
+import model.utils.SCCCalculator
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import space.kscience.kmath.operations.IntRing
 
@@ -25,7 +26,7 @@ class SCCCalculatorTest {
    .map { it.toSet() }
    .toSet()
 
-  assertEquals(setOf(setOf("A", "B", "C")), groups)
+     Assertions.assertEquals(setOf(setOf("A", "B", "C")), groups)
  }
 
  @Test
@@ -47,7 +48,7 @@ class SCCCalculatorTest {
    .map { it.toSet() }
    .toSet()
 
-  assertEquals(setOf(setOf("A", "B", "C"), setOf("D")), groups)
+     Assertions.assertEquals(setOf(setOf("A", "B", "C"), setOf("D")), groups)
  }
 
  @Test
@@ -72,13 +73,13 @@ class SCCCalculatorTest {
    .map { it.toSet() }
    .toSet()
 
-  assertEquals(
-   setOf(
-    setOf("A", "B"),
-    setOf("C"),
-    setOf("D", "E", "F")
-   ),
-   groups
-  )
+     Assertions.assertEquals(
+         setOf(
+             setOf("A", "B"),
+             setOf("C"),
+             setOf("D", "E", "F")
+         ),
+         groups
+     )
  }
 }

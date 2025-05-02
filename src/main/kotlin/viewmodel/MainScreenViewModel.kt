@@ -4,14 +4,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import model.Constants.SEMI_BLACK
 import model.Graph
-import model.SCCCalculator
 import model.Vertex
 import model.Edge
-import model.MSFFinder
 import model.Louvain
-
-const val SEMI_BLACK = 0x50_00_00_00
+import model.utils.SCCCalculator
+import model.utils.MSFFinder
 
 class MainScreenViewModel<V, K, W : Comparable<W>>(
 	val graph: Graph<V, K, W>,

@@ -1,6 +1,7 @@
 package view.graph
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -14,7 +15,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import viewmodel.VertexViewModel
 
@@ -31,8 +37,14 @@ fun <V> VertexView(
 	val y = vertexViewModel.y
 	val radius = vertexViewModel.radius
 
+	val textMeasurer = rememberTextMeasurer()
+	val vertexElement =  remember(vertexViewModel.model.element.toString()) {
+		textMeasurer.measure(vertexViewModel.model.element.toString())
+	}
+
+
 	// Draw circle background and border at (x, y) with size = 2*radius
-	androidx.compose.foundation.Canvas(
+	Canvas(
 		modifier = modifier
 			.offset(x, y)
 			.size(radius * 2)
@@ -50,6 +62,14 @@ fun <V> VertexView(
 				}
 			}
 	) {
-		// Canvas is clipped + background, no extra drawing required
+	}
+	Canvas(modifier) {
+		drawText(
+			textLayoutResult = vertexElement,
+			topLeft = Offset(
+				x = vertexViewModel.x.toPx() + vertexViewModel.radius.toPx() - vertexElement.size.width / 2,
+				y = vertexViewModel.y.toPx() + vertexViewModel.radius.toPx() - vertexElement.size.height / 2,
+			),
+		)
 	}
 }

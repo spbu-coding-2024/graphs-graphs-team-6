@@ -11,40 +11,42 @@ import space.kscience.kmath.operations.IntRing
 
 const val LARGE_WEIGHT = 10
 
-val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
-	listOf("A","B","C","D","E","F","G","H","I","J","K","L")
-		.forEach { addVertex(it) }
+val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
+	addVertex("A")
+	addVertex("B")
+	addVertex("C")
+	addVertex("D")
+	addVertex("E")
+	addVertex("F")
+	addVertex("G")
+	addVertex("H")
 
-	var idx = 0
+	var index = 0
+	val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) {it * 2}
 
-	addEdge("A", "B", idx++, LARGE_WEIGHT)
-	addEdge("A", "C", idx++, LARGE_WEIGHT)
-	addEdge("B", "C", idx++, LARGE_WEIGHT)
-	addEdge("B", "D", idx++, LARGE_WEIGHT)
-	addEdge("C", "D", idx++, LARGE_WEIGHT)
+	addEdge("A", "B", index, weight[index]); index++
+	addEdge("B", "C", index, weight[index]); index++
+	addEdge("C", "A", index, weight[index]); index++
+	addEdge("C", "C", index, weight[index]); index++
 
-	addEdge("E", "F", idx++, LARGE_WEIGHT)
-	addEdge("E", "G", idx++, LARGE_WEIGHT)
-	addEdge("F", "G", idx++, LARGE_WEIGHT)
-	addEdge("F", "H", idx++, LARGE_WEIGHT)
-	addEdge("G", "H", idx++, LARGE_WEIGHT)
+	addEdge("C", "F", index, weight[index]); index++
 
-	addEdge("I", "J", idx++, LARGE_WEIGHT)
-	addEdge("I", "K", idx++, LARGE_WEIGHT)
-	addEdge("J", "K", idx++, LARGE_WEIGHT)
-	addEdge("J", "L", idx++, LARGE_WEIGHT)
-	addEdge("K", "L", idx++, LARGE_WEIGHT)
+	addEdge("D", "E", index, weight[index]); index++
+	addEdge("E", "F", index, weight[index]); index++
+	addEdge("F", "D", index, weight[index]); index++
 
-	addEdge("D", "E", idx++, 1)   // 1 <-> 2
-	addEdge("H", "I", idx++, 1)   // 2 <-> 3
-	addEdge("L", "A", idx, 1)   // 3 <-> 1
+
+	addEdge("H", "D", index, weight[index]); index++
+
+	addEdge("G", "H", index, weight[index]); index++
+	addEdge("H", "G", index, weight[index]); index++
 }
 
 @Composable
 @Preview
 fun app() {
 	MaterialTheme {
-		MainScreenView(MainScreenViewModel(graph))
+ 		MainScreenView<String, Int, Int>(MainScreenViewModel(graph))
 	}
 }
 
