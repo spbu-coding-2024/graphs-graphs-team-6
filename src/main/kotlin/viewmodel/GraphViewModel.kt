@@ -32,8 +32,8 @@ class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>, showEdgesWei
 
 	private val _edges = graph.edges.associateWith {
 		EdgeViewModel<V, K, W>(
-			_vertices[it.pair.toList()[0]] ?: error("Vertex is missing"),
-			_vertices[it.pair.toList()[if (it.pair.size == 2) 1 else 0]]
+			_vertices[it.startVertex] ?: error("Vertex is missing"),
+			_vertices[it.endVertex]
 				?: error("Vertex is missing"),
 			it,
 			Color(DEFAULT_EDGE_COLOR),

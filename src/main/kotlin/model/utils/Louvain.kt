@@ -13,9 +13,9 @@ class Louvain<V, K, W : Comparable<W>>(val graph: Graph<V, K, W>) {
 		val vertexToID: Map<Vertex<V>, Int>
 	) :
 		Link {
-		override fun source() = vertexToID[edge.pair.toList()[0]]
+		override fun source() = vertexToID[edge.startVertex]
 			?: error("Vertex is missing")
-		override fun target() = vertexToID[edge.pair.toList()[if (edge.pair.size > 1) 1 else 0]]
+		override fun target() = vertexToID[edge.endVertex]
 			?: error("Vertex is missing")
 
 		override fun weight() = toDouble(edge.weight)

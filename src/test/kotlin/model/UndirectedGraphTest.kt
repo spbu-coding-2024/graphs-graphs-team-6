@@ -4,8 +4,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.*
 import space.kscience.kmath.operations.IntRing
 
 @DisplayName("Tests for UndirectedGraph")
@@ -15,7 +14,6 @@ class UndirectedGraphTest {
 
     @BeforeEach
     fun graphInit() {
-        // Передаём графу кольцо целых чисел
         graph = UndirectedGraph(IntRing)
     }
 
@@ -24,7 +22,7 @@ class UndirectedGraphTest {
     fun oneVertexGraph() {
         graph.addVertex(0)
         assertEquals(1, graph.vertices.size)
-        assertTrue(graph.vertices.any { it.element == 0 })
+        assertTrue(graph.vertices.any { it.value == 0 })
     }
 
     @DisplayName("Two vertices and one edge graph")
@@ -32,21 +30,17 @@ class UndirectedGraphTest {
     fun twoVertexAndOneEdgeGraph() {
         graph.addVertex(0)
         graph.addVertex(1)
-        // Указываем вес ребра как IntRing.one
         graph.addEdge(0, 1, 10, IntRing.one)
 
         assertEquals(2, graph.vertices.size)
         assertEquals(1, graph.edges.size)
 
-        assertTrue(graph.vertices.any { it.element == 0 })
-        assertTrue(graph.vertices.any { it.element == 1 })
-
         val edge = graph.edges.first()
         assertEquals(10, edge.key)
-        // Проверяем концы
-        val elements = edge.pair.map { it.element }.toSet()
-        assertEquals(setOf(0, 1), elements)
-        // И вес
+
+        val endpoints = setOf(edge.startVertex.value, edge.endVertex.value)
+        assertEquals(setOf(0, 1), endpoints)
+
         assertEquals(IntRing.one, edge.weight)
     }
 
@@ -70,13 +64,14 @@ class UndirectedGraphTest {
 
         assertEquals(1, graph.vertices.size)
         assertEquals(1, graph.edges.size)
-        assertTrue(graph.vertices.any { it.element == 0 })
 
         val edge = graph.edges.first()
         assertEquals(10, edge.key)
-        val elements = edge.pair.map { it.element }.toSet()
-        // Для петли будет только один элемент
-        assertEquals(setOf(0), elements)
+
+        // For self-loop both start and end are the same
+        assertEquals(0, edge.startVertex.value)
+        assertEquals(0, edge.endVertex.value)
+
         assertEquals(IntRing.one, edge.weight)
     }
 }

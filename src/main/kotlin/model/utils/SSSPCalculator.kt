@@ -59,7 +59,7 @@ object SSSPCalculator {
             graph.edges.forEach { edge ->
                 require(edge.pair.size <= 2)
                 if (edge.pair.size == 1) null
-                val (firstVertex , secondVertex) = edge.pair.map { it.element }.toList()
+                val (firstVertex , secondVertex) = edge.pair.map { it.value }.toList()
                 val distFirst = distance[firstVertex]
                 val distSecond = distance[secondVertex]
 

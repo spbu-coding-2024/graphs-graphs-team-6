@@ -45,7 +45,7 @@ fun <V, K, W : Comparable<W>> actionMenuView(actionWindowVisibility: Boolean, vi
 	val arrayOfVertexNames by remember {
 		mutableStateOf(
 			viewModel.graphViewModel.vertices.map
-			{ it.model.element.toString() }.toTypedArray()
+			{ it.model.value.toString() }.toTypedArray()
 		)
 	}
 	var startVertex by remember { mutableStateOf(viewModel.graphViewModel.vertices.first()) }
@@ -83,14 +83,14 @@ fun <V, K, W : Comparable<W>> actionMenuView(actionWindowVisibility: Boolean, vi
 			}
 			if (currentAlgorithm == Algorithm.BellmanFord.ordinal) {
 				menuBox(
-					startVertex.model.element.toString(),
+					startVertex.model.value.toString(),
 					viewModel.graphViewModel.vertices,
 					arrayOfVertexNames
 				) { _, vertex ->
 					startVertex = vertex
 				}
 				menuBox(
-					endVertex.model.element.toString(),
+					endVertex.model.value.toString(),
 					viewModel.graphViewModel.vertices,
 					arrayOfVertexNames
 				) { _, vertex ->
@@ -136,10 +136,10 @@ fun <V, K, W : Comparable<W>> applyAlgorithm(
 		Algorithm.BellmanFord.ordinal -> {
 			val (predecessors, _) = SSSPCalculator.bellmanFordAlgorithm(
 				viewModel.graph,
-				startVertex.model.element
+				startVertex.model.value
 			)
 
-			val path = SSSPCalculator.constructPath(predecessors, endVertex.model.element)
+			val path = SSSPCalculator.constructPath(predecessors, endVertex.model.value)
 				.map { viewModel.graphViewModel.getEdgeViewModel(it) }
 			ColorUtils.applyOneColor(path, Color.Red)
 		}

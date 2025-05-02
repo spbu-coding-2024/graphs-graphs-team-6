@@ -22,7 +22,7 @@ class LouvainTest {
 		assertEquals(1, communities.size)
 		val community = communities.single()
 		assertEquals(1, community.size)
-		assertEquals("A", community.single().element)
+		assertEquals("A", community.single().value)
 	}
 
 	@Test
@@ -34,7 +34,7 @@ class LouvainTest {
 
 		// Expect two separate communities for A and B
 		assertEquals(1, communities.size)
-		val labels = communities.flatten().map { it.element }.toSet()
+		val labels = communities.flatten().map { it.value }.toSet()
 		assertEquals(setOf("A", "B"), labels)
 	}
 
@@ -48,7 +48,7 @@ class LouvainTest {
 
 		assertEquals(1, communities.size)
 		val community = communities.single()
-		assertEquals(setOf("A", "B"), community.map { it.element }.toSet())
+		assertEquals(setOf("A", "B"), community.map { it.value }.toSet())
 	}
 
 	@Test
@@ -70,7 +70,7 @@ class LouvainTest {
 		assertEquals(3, communities.size) // [A,B], [C], [D,E]
 
 		val sortedCommunities = communities
-			.map { it.map { v -> v.element }.sorted() }
+			.map { it.map { v -> v.value }.sorted() }
 			.sortedBy { it.first() }
 		assertEquals(
 			listOf(listOf("A", "B"), listOf("C"), listOf("D", "E")),
@@ -114,7 +114,7 @@ class LouvainTest {
 		assertEquals(3, communities.size)
 
 		val sortedCommunities = communities
-			.map { it.map { v -> v.element }.sorted() }
+			.map { it.map { v -> v.value }.sorted() }
 			.sortedBy { it.first() }
 		assertEquals(
 			listOf(listOf("A", "B", "C", "D"), listOf("E", "F", "G", "H"), listOf("I", "J", "K", "L")),
@@ -133,7 +133,7 @@ class LouvainTest {
 		assertEquals(1, communities.size)
 		val community = communities.single()
 		assertEquals(1, community.size)
-		assertEquals("A", community.single().element)
+		assertEquals("A", community.single().value)
 	}
 
 	@Test
@@ -159,7 +159,7 @@ class LouvainTest {
 
 		every { graph.vertices } returns listOf(vertexA)
 		val vertexB = UndirectedVertex("B")
-		val edge = UndirectedEdge(setOf(vertexA, vertexB), "e1", 1.0)
+		val edge = UndirectedEdge(vertexA, vertexB, "e1", 1.0)
 
 		every { graph.edges } returns listOf(edge)
 
@@ -178,7 +178,7 @@ class LouvainTest {
 
 		every { graph.vertices } returns listOf(vertexA)
 		val vertexB = UndirectedVertex("B")
-		val edge = UndirectedEdge(setOf(vertexB, vertexA), "e1", 1.0)
+		val edge = UndirectedEdge(vertexA, vertexB, "e1", 1.0)
 
 		every { graph.edges } returns listOf(edge)
 

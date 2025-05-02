@@ -38,8 +38,8 @@ fun <V> VertexView(
 	val radius = vertexViewModel.radius
 
 	val textMeasurer = rememberTextMeasurer()
-	val vertexElement =  remember(vertexViewModel.model.element.toString()) {
-		textMeasurer.measure(vertexViewModel.model.element.toString())
+	val vertexvalue =  remember(vertexViewModel.model.value.toString()) {
+		textMeasurer.measure(vertexViewModel.model.value.toString())
 	}
 
 
@@ -65,10 +65,10 @@ fun <V> VertexView(
 	}
 	Canvas(modifier) {
 		drawText(
-			textLayoutResult = vertexElement,
+			textLayoutResult = vertexvalue,
 			topLeft = Offset(
-				x = vertexViewModel.x.toPx() + vertexViewModel.radius.toPx() - vertexElement.size.width / 2,
-				y = vertexViewModel.y.toPx() + vertexViewModel.radius.toPx() - vertexElement.size.height / 2,
+				x = vertexViewModel.x.toPx() + vertexViewModel.radius.toPx() - vertexvalue.size.width / 2,
+				y = vertexViewModel.y.toPx() + vertexViewModel.radius.toPx() - vertexvalue.size.height / 2,
 			),
 		)
 	}

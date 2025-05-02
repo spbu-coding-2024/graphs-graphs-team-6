@@ -2,19 +2,19 @@ package model
 
 import space.kscience.kmath.operations.Ring
 
-class DirectedGraph<V, K, W: Comparable<W>> (override val ring: Ring<W>): Graph<V, K, W>{
+class DirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph<V, K, W> {
 
 
 	class DirectedVertex<V>(
-		override var element: V, override val adjacencyList: MutableList<DirectedVertex<V>> = mutableListOf()
+		override var value: V, override val adjacencyList: MutableList<DirectedVertex<V>> = mutableListOf()
 	) : Vertex<V>
 
-	data class DirectedEdge<V, K, W: Comparable<W>>(
-		var firstVertex: DirectedVertex<V>, var secondVertex: DirectedVertex<V>, override var key: K,
+	data class DirectedEdge<V, K, W : Comparable<W>>(
+		override var startVertex: Vertex<V>,
+		override var endVertex: Vertex<V>,
+		override var key: K,
 		override var weight: W
-	) : Edge<V, K, W> {
-		override val pair: List<Vertex<V>> = listOf(firstVertex, secondVertex)
-	}
+	) : Edge<V, K, W>
 
 	private val _vertices = HashMap<V, DirectedVertex<V>>()
 	private val _edges = HashMap<K, DirectedEdge<V, K, W>>()
@@ -36,6 +36,6 @@ class DirectedGraph<V, K, W: Comparable<W>> (override val ring: Ring<W>): Graph<
 	}
 
 	override fun addVertex(vertex: V) {
-		_vertices.getOrPut(vertex) {DirectedVertex(vertex)}
+		_vertices.getOrPut(vertex) { DirectedVertex(vertex) }
 	}
 }

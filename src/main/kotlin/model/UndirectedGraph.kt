@@ -5,20 +5,16 @@ import space.kscience.kmath.operations.Ring
 class UndirectedGraph<V, K, W: Comparable<W>>(override val ring: Ring<W>): Graph<V, K, W> {
 
 	class UndirectedVertex<V>(
-		override var element: V,
+		override var value: V,
 		override val adjacencyList: MutableList<UndirectedVertex<V>> = mutableListOf()
 	) : Vertex<V>
 
 	data class UndirectedEdge<V, K, W: Comparable<W>>(
-		override val pair: Set<UndirectedVertex<V>>,
+		override var startVertex: Vertex<V>, override var endVertex: Vertex<V>,
 		override var key: K,
 		override var weight: W
-	) : Edge<V, K, W> {
-		init {
-			require(pair.size == 2 || pair.size == 1)
-			{ "Edge must connect 2 (or 1 if it is a loop) vertices" }
-		}
-	}
+	) : Edge<V, K, W>
+
 
 	private val _vertices = HashMap<V, UndirectedVertex<V>>()
 	private val _edges = HashMap<K, UndirectedEdge<V, K, W>>()
@@ -38,7 +34,8 @@ class UndirectedGraph<V, K, W: Comparable<W>>(override val ring: Ring<W>): Graph
 		secondV.adjacencyList.add(firstV)
 		return _edges.getOrPut(key) {
 			UndirectedEdge<V, K, W>(
-				setOf(firstV, secondV),
+			UndirectedVertex(firstVertex),
+				UndirectedVertex(secondVertex),
 				key,
 				weight
 			)
