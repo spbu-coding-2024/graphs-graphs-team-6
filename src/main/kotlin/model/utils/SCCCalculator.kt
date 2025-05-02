@@ -1,11 +1,12 @@
-package model
+package model.utils
 
 import androidx.compose.ui.graphics.Color
-import java.util.Stack
+import model.Graph
+import model.Vertex
 import viewmodel.ColorUtils
+import java.util.Stack
 
-class SCCCalculator<V, K, W : Comparable<W>> {
-
+class SCCCalculator<V, K, W: Comparable<W>> {
 	var onComputeListener: ((Map<Vertex<V>, Color>) -> Unit)? = null
 	fun calculateComponents(graph: Graph<V, K, W>): Map<Vertex<V>, Color> {
 		val sccs = tarjanSCC(graph)

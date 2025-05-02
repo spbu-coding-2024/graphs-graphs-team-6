@@ -1,9 +1,13 @@
+@file:OptIn(ExperimentalComposeLibrary::class)
+
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.jetbrains.compose.ExperimentalComposeLibrary
 
 plugins {
 	kotlin("jvm")
 	id("org.jetbrains.compose")
+	id("jacoco")
 	id("org.jetbrains.kotlin.plugin.compose")
 }
 
@@ -48,6 +52,8 @@ dependencies {
 	// (in a separate module for demo project and in testMain).
 	// With compose.desktop.common you will also lose @Preview functionality
 	implementation(compose.desktop.currentOs)
+	implementation(compose.uiTest)
+	implementation(compose.desktop.uiTestJUnit4)
 	detekt("io.gitlab.arturbosch.detekt:detekt-cli:1.23.8")
 	testImplementation(kotlin("test"))
 	testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")

@@ -1,6 +1,8 @@
 package viewmodel
 
 import androidx.compose.ui.graphics.Color
+import model.Edge
+import viewmodel.Colorable
 
 private const val CIRCLE_GRADUS = 360
 private const val SATURATION = 0.7f
@@ -74,5 +76,9 @@ object ColorUtils {
 		for (viewModel in colorable) {
 			viewModel.color = colorMap[viewModel.model] ?: defaultColor
 		}
+	}
+
+	internal fun <T, C : Colorable<T>> applyOneColor(colorable: Collection<C>, color: Color) {
+		colorable.forEach { it.color = color }
 	}
 }
