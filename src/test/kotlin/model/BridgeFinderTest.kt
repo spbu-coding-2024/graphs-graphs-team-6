@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import space.kscience.kmath.operations.IntRing
-import javax.xml.crypto.AlgorithmMethod
 
 @DisplayName("Tests for BridgeFinder")
 class BridgeFinderTest {
