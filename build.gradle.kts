@@ -56,6 +56,9 @@ dependencies {
 	implementation("space.kscience:kmath-core:0.4.2")
 	implementation("com.github.JetBrains-Research:louvain:main-SNAPSHOT")
 	testImplementation("io.mockk:mockk:1.14.2")
+	implementation("org.neo4j:neo4j-ogm-core:4.0.17")
+	implementation("org.neo4j:neo4j-ogm-bolt-driver:4.0.17")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.0")
 }
 
 tasks.test {
