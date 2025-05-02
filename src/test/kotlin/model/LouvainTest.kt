@@ -10,6 +10,7 @@ import space.kscience.kmath.operations.Ring
 import kotlin.test.assertFailsWith
 import model.UndirectedGraph.UndirectedEdge
 import model.UndirectedGraph.UndirectedVertex
+import model.utils.Louvain
 
 class LouvainTest {
 	@Test

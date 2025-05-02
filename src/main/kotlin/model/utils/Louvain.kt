@@ -1,6 +1,8 @@
-package model
+package model.utils
 
-import androidx.compose.ui.graphics.Color
+import model.Edge
+import model.Graph
+import model.Vertex
 import org.jetbrains.research.ictl.louvain.Link
 import org.jetbrains.research.ictl.louvain.getPartition
 

@@ -88,8 +88,8 @@ licenseReport {
 			.forEach { from(it) }
 
 		include(
-			"META-INF/LICENSE",  "META-INF/LICENSE.*",
-			"META-INF/NOTICE",   "META-INF/NOTICE.*"
+			"META-INF/LICENSE", "META-INF/LICENSE.*",
+			"META-INF/NOTICE", "META-INF/NOTICE.*"
 		)
 		into("$buildDir/licenses")
 		rename("^META-INF/(.*)", "$1")

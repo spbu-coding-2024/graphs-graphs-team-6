@@ -7,11 +7,12 @@ import model.DirectedGraph
 import view.MainScreenView
 import viewmodel.MainScreenViewModel
 import model.UndirectedGraph
+import org.neo4j.ogm.session.SessionFactory
 import space.kscience.kmath.operations.IntRing
 
 const val LARGE_WEIGHT = 10
 
-val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
+val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 	addVertex("A")
 	addVertex("B")
 	addVertex("C")
@@ -39,7 +40,7 @@ val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
 	addEdge("H", "D", index, weight[index]); index++
 
 	addEdge("G", "H", index, weight[index]); index++
-	addEdge("H", "G", index, weight[index]); index++
+	addEdge("H", "G", index, 231); index++
 }
 
 @Composable
