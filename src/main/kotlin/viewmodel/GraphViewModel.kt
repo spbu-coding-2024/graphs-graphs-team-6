@@ -18,6 +18,7 @@ import model.Vertex
 
 
 class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>, showEdgesWeights: State<Boolean>) {
+
 	private val _vertices = graph.vertices.associateWith {
 		VertexViewModel<V>(
 			Random.nextInt(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE).dp,
@@ -33,8 +34,7 @@ class GraphViewModel<V, K, W: Comparable<W>>(graph: Graph<V, K, W>, showEdgesWei
 	private val _edges = graph.edges.associateWith {
 		EdgeViewModel<V, K, W>(
 			_vertices[it.startVertex] ?: error("Vertex is missing"),
-			_vertices[it.endVertex]
-				?: error("Vertex is missing"),
+			_vertices[it.endVertex] ?: error("Vertex is missing"),
 			it,
 			Color(DEFAULT_EDGE_COLOR),
 			DEFAULT_EDGE_WIDTH.dp,

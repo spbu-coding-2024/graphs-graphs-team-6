@@ -40,7 +40,7 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.TextButton
 import graph
 import model.neo4j.GraphService
-import viewmodel.Neoj4jViewModel
+
 import androidx.compose.material.Checkbox
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.TopEnd

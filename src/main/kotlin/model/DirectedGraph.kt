@@ -4,7 +4,6 @@ import space.kscience.kmath.operations.Ring
 
 class DirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph<V, K, W> {
 
-
 	class DirectedVertex<V>(
 		override var value: V, override val adjacencyList: MutableList<DirectedVertex<V>> = mutableListOf()
 	) : Vertex<V>
@@ -35,7 +34,7 @@ class DirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph
 		return _edges.getOrPut(key) { DirectedEdge(firstV, secondV, key, weight) }
 	}
 
-	override fun addVertex(vertex: V) {
-		_vertices.getOrPut(vertex) { DirectedVertex(vertex) }
+	override fun addVertex(vertex: V): Vertex<V> {
+		return _vertices.getOrPut(vertex) { DirectedVertex(vertex) }
 	}
 }

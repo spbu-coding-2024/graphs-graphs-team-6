@@ -10,8 +10,6 @@ import model.UndirectedGraph
 import org.neo4j.ogm.session.SessionFactory
 import space.kscience.kmath.operations.IntRing
 
-const val LARGE_WEIGHT = 10
-
 val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 	addVertex("A")
 	addVertex("B")
