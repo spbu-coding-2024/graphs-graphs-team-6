@@ -1,4 +1,7 @@
-package model
+package model.utils
+
+import model.UndirectedGraph
+import model.Vertex
 
 
 /**

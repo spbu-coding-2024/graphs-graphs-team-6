@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import model.BridgeFinder
+import model.utils.BridgeFinder
 import model.Constants.SEMI_BLACK
 import model.Constants.BRIGHT_RED
 import model.Graph
