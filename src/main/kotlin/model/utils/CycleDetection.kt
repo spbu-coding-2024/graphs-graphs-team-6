@@ -5,7 +5,7 @@ import model.DirectedGraph.DirectedVertex
 import model.Edge
 import model.Graph
 import model.UndirectedGraph
-import model.UndirectedGraph.UndirectedEdge
+
 import model.UndirectedGraph.UndirectedVertex
 import model.Vertex
 
