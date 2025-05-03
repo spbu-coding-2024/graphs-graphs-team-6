@@ -65,7 +65,9 @@ class MSFFinder<V, K, W : Comparable<W>>(val graph: Graph<V, K, W>) {
 			}
 
 			for (edge in sortedEdges) {
-				val v = edge.startVertex; val u = edge.endVertex
+				if (!comp.contains(edge.startVertex)) continue
+				val v = edge.startVertex
+				val u = edge.endVertex
 				val lv = leaderDSU(v)
 				val lu = leaderDSU(u)
 				if (lv != lu) {
