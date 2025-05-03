@@ -34,4 +34,15 @@ interface Graph<V, K, W: Comparable<W>>{
 	 * @return Added vertex
 	 */
 	fun addVertex(vertex: V): Vertex<V>
+
+	/**
+	 * Given two vertices, get corresponding edge
+	 *
+	 * @param firstVertex First end point
+	 * @param secondVertex Second end point
+	 * @return Corresponding edge
+	 */
+
+	fun getEdge(firstVertex: V, secondVertex: V): Edge<V, K, W>
+
 }

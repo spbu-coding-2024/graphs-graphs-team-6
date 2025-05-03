@@ -1,13 +1,9 @@
 package model.utils
 
 import model.DirectedGraph
-import model.DirectedGraph.DirectedEdge
 import model.Edge
 import model.Graph
 import model.UndirectedGraph
-import model.UndirectedGraph.UndirectedEdge
-import model.Vertex
-import org.jetbrains.skia.FontWeight
 
 object SSSPCalculator {
     fun <V, K, W: Comparable<W>> bellmanFordAlgorithm(graph: Graph<V, K, W>, startVertex: V):
@@ -47,8 +43,8 @@ object SSSPCalculator {
         return predecessorEdge.toMap() to distance.toMap()
     }
 
-    fun <V, K, W: Comparable<W>> constructPath(predecessors: Map<V, Edge<V, K, W>>,
-                                               endVertex: V): List<Edge<V, K, W>> {
+    fun <V, K, W: Comparable<W>> constructPathUsingEdges(predecessors: Map<V, Edge<V, K, W>>,
+                                                         endVertex: V): List<Edge<V, K, W>> {
         var current = predecessors[endVertex]
         var acknowledged = endVertex
         val array = ArrayList<Edge<V, K, W>>(predecessors.size)
