@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.runComposeUiTest
 import kotlin.test.Test
+
 import space.kscience.kmath.operations.IntRing
 import view.MainScreenView
 import viewmodel.MainScreenViewModel
