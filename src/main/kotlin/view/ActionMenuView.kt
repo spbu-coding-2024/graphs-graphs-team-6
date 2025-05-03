@@ -107,6 +107,7 @@ fun returnArrayOfAlgorithmLabels(): List<String> {
             Algorithm.BellmanFord.ordinal -> "Bellman-Ford Shortest Path"
             Algorithm.Tarjan.ordinal -> "Tarjan Strong Connected Component"
             Algorithm.Kruskal.ordinal -> "Kruskal Minimal Spanning Tree"
+            Algorithm.Bridges.ordinal -> "Finding bridges"
             else -> error("No string for enum")
         }
     }
@@ -115,7 +116,8 @@ fun returnArrayOfAlgorithmLabels(): List<String> {
 enum class Algorithm {
     Tarjan,
     BellmanFord,
-    Kruskal
+    Kruskal,
+    Bridges
 }
 
 fun <V, K, W: Comparable<W>>applyAlgorithm(algoNum: Int,
@@ -137,6 +139,7 @@ fun <V, K, W: Comparable<W>>applyAlgorithm(algoNum: Int,
             ColorUtils.applyOneColor(path, Color.Red)
         }
         Algorithm.Kruskal.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findMSF()
+        Algorithm.Bridges.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findBridges()
     }
 }
 @OptIn(ExperimentalMaterialApi::class)
