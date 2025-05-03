@@ -9,7 +9,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ExposedDropdownMenuBox
+import androidx.compose.material.ExposedDropdownMenuDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
@@ -36,6 +45,7 @@ import viewmodel.MainScreenViewModel
 import viewmodel.VertexViewModel
 
 
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun <V, K, W : Comparable<W>> actionMenuView(actionWindowVisibility: Boolean, viewModel: MainScreenViewModel<V, K, W>) {
@@ -51,25 +61,16 @@ fun <V, K, W : Comparable<W>> actionMenuView(actionWindowVisibility: Boolean, vi
 	var startVertex by remember { mutableStateOf(viewModel.graphViewModel.vertices.first()) }
 	var endVertex by remember { mutableStateOf(viewModel.graphViewModel.vertices.last()) }
 
-	AnimatedVisibility(
-		visible = actionWindowVisibility,
-		enter = EnterTransition.None,
-		exit = ExitTransition.None
-	) {
+	AnimatedVisibility(actionWindowVisibility, Modifier, EnterTransition.None, ExitTransition.None) {
 		Row(
-			modifier = Modifier
-				.fillMaxSize()
+			modifier = Modifier.fillMaxSize()
 				.padding(20.dp)
 				.width(300.dp)
 				.height(300.dp),
 			horizontalArrangement = Arrangement.Start,
 			verticalAlignment = Alignment.Bottom,
 		) {
-			menuBox(
-				firstTextField = algorithms[currentAlgorithm],
-				collection = algorithms,
-				arrayOfNames = algorithms.toTypedArray(),
-			) { i, _ ->
+			menuBox(algorithms[currentAlgorithm], algorithms, algorithms.toTypedArray(),) { i, _ ->
 				currentAlgorithm = i
 			}
 			Button(
@@ -82,23 +83,17 @@ fun <V, K, W : Comparable<W>> actionMenuView(actionWindowVisibility: Boolean, vi
 				Icon(Icons.Default.Check, "Apply algorithm")
 			}
 			if (currentAlgorithm == Algorithm.BellmanFord.ordinal) {
-				menuBox(
-					startVertex.model.value.toString(),
-					viewModel.graphViewModel.vertices,
-					arrayOfVertexNames
-				) { _, vertex ->
+				menuBox(startVertex.model.value.toString(),
+					viewModel.graphViewModel.vertices, arrayOfVertexNames) { _, vertex ->
 					startVertex = vertex
 				}
-				menuBox(
-					endVertex.model.value.toString(),
-					viewModel.graphViewModel.vertices,
-					arrayOfVertexNames
-				) { _, vertex ->
+				menuBox(endVertex.model.value.toString(),
+					viewModel.graphViewModel.vertices, arrayOfVertexNames) { _, vertex ->
 					endVertex = vertex
 				}
 			}
 			if (viewModel.exceptionMessage == "Incompatible weight type") {
-
+				LouvainAlertDialog(viewModel)
 			}
 		}
 	}

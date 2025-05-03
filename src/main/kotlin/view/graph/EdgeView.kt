@@ -13,6 +13,7 @@ import model.Constants.DEFAULT_ARROW_TRIANGLE_HEIGHT
 import model.Constants.DEFAULT_ARROW_TRIANGLE_WIDTH
 import model.Constants.DEFAULT_LOOP_MULTIPLIER
 import model.Constants.DEFAULT_LOOP_RADIUS_COEFF
+import model.Constants.SHOW_LABEL_MOD
 import model.DirectedGraph
 import viewmodel.EdgeViewModel
 import kotlin.math.absoluteValue
@@ -35,7 +36,7 @@ fun <V, K, W : Comparable<W>> showLabel(edgeViewModel: EdgeViewModel<V, K, W>) {
 		val midY = (y1 + y2) / 2f
 
 		val shift: Dp = 8.dp
-		val remainder = edgeViewModel.model.hashCode().absoluteValue % 3
+		val remainder = edgeViewModel.model.hashCode().absoluteValue % SHOW_LABEL_MOD
 		val sign = if (remainder == 0 || remainder == 2) 1f else -1f
 
 		val dx = (x2 - x1).value

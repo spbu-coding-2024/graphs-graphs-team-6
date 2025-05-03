@@ -1,6 +1,12 @@
 package view
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import viewmodel.MainScreenViewModel
 import androidx.compose.material.Button
@@ -23,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
@@ -34,13 +39,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import model.utils.SSSPCalculator
 import view.graph.GraphView
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.TextButton
-import graph
-import model.neo4j.GraphService
-
 import androidx.compose.material.Checkbox
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.TopEnd
@@ -145,8 +144,8 @@ fun drawerButton(
 
 @Composable
 fun <V, K, W : Comparable<W>> WeightsCheckBox(viewModel: MainScreenViewModel<V, K, W>, modifier: Modifier = Modifier) {
-	Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-		Row(modifier = Modifier.align(TopEnd), verticalAlignment = Alignment.CenterVertically) {
+	Box(modifier = modifier.fillMaxSize().padding(16.dp)) {
+		Row(modifier = modifier.align(TopEnd), verticalAlignment = Alignment.CenterVertically) {
 			Checkbox(
 				checked = viewModel.showEdgesWeights,
 				onCheckedChange = { viewModel.showEdgesWeights = it })

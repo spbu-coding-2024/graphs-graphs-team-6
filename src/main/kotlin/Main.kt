@@ -10,6 +10,7 @@ import model.UndirectedGraph
 import org.neo4j.ogm.session.SessionFactory
 import space.kscience.kmath.operations.IntRing
 
+private const val TEMP_WEIGHT_VALUE = 231
 val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 	addVertex("A")
 	addVertex("B")
@@ -38,7 +39,7 @@ val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 	addEdge("H", "D", index, weight[index]); index++
 
 	addEdge("G", "H", index, weight[index]); index++
-	addEdge("H", "G", index, 231); index++
+	addEdge("H", "G", index, TEMP_WEIGHT_VALUE); index++
 }
 
 @Composable
