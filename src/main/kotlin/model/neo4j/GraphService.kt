@@ -3,16 +3,17 @@ package model.neo4j
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import model.*
+import model.Graph
+import model.DirectedGraph
+import model.UndirectedGraph
 import org.neo4j.ogm.config.Configuration
 import org.neo4j.ogm.session.SessionFactory
 import org.neo4j.ogm.session.loadAll
 import space.kscience.kmath.operations.Float64Field
 import space.kscience.kmath.operations.IntRing
 import space.kscience.kmath.operations.Ring
-import space.kscience.kmath.structures.Buffer
 
-object GraphService { // TODO
+object GraphService {
 	var sessionFactory: SessionFactory? = null
 	var uri = ""
 	var user = ""
@@ -24,11 +25,10 @@ object GraphService { // TODO
 				.uri(uri)
 				.credentials(user, value)
 				.build()
-
 			sessionFactory = SessionFactory(configuration, "model.neo4j")
 		}
 
-	val mapper = jacksonObjectMapper().activateDefaultTyping(
+	private val mapper: ObjectMapper = jacksonObjectMapper().activateDefaultTyping(
 		LaissezFaireSubTypeValidator.instance,
 		ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE
 	)
@@ -40,90 +40,91 @@ object GraphService { // TODO
 	fun <V : Any, K : Any, W : Comparable<W>> loadGraph(
 		isDirected: Boolean
 	): Graph<V, K, W> {
-		val factory = sessionFactory
-		if (factory == null) error("SessionFactory is not initialized")
-		else {
-			val session = factory.openSession()
-			val edgeEntities = session.loadAll(EdgeEntity::class.java)
-			val vertEntities = session.loadAll(VertexEntity::class.java).sortedBy { it.modelID }
-			val ring: Ring<W> = if (edgeEntities.isEmpty()) IntRing as Ring<W>
-			else determineRingType<W>(edgeEntities)
+		val factory = sessionFactory ?: error("SessionFactory is not initialized")
+		val session = factory.openSession()
+		val edgeEntities = session.loadAll(EdgeEntity::class.java)
+		val vertEntities = session.loadAll(VertexEntity::class.java)
+		val ring: Ring<W> = if (edgeEntities.isEmpty()) IntRing as Ring<W>
+		else determineRingType(edgeEntities)
 
-			val graph = if (isDirected) DirectedGraph<V, K, W>(ring) else UndirectedGraph<V, K, W>(ring)
+		val graph = if (isDirected) DirectedGraph<V, K, W>(ring)
+		else UndirectedGraph<V, K, W>(ring)
 
-			val idToModel: Map<Long, Pair<Long, V>> = vertEntities.associate { ent ->
-				val vClass = Class.forName(ent.dataType)
-				val value = fromJson(ent.dataJson, vClass)
-				ent.id!! to (ent.modelID to value )
-			} as Map<Long, Pair<Long, V>>
-			idToModel.values.forEach { graph.addVertex(it.second) }
-
-			val idToVertex: Map<Long, model.Vertex<V>> = idToModel.mapValues { (_, value) ->
-				graph.vertices.first { it.id == value.first }
-			}
-
-			edgeEntities.forEach { ent ->
-				val u = idToVertex[ent.start?.id!!]!!
-				val v = idToVertex[ent.end?.id!!]!!
-				val kClass = Class.forName(ent.keyType)
-				val key = fromJson(ent.keyJson, kClass)
-
-				val wClass = Class.forName(ent.weightType)
-				val weight = fromJson(ent.weightJson, wClass)
-				graph.addEdge(u.value, v.value, key as K, weight as W)
-
-			}
-			session.clear()
-			return graph
+		vertEntities.forEach { ent ->
+			val vClass = Class.forName(normalize(ent.dataType))
+			val value = fromJson(ent.dataJson, vClass)
+			graph.addVertex(value as V)
 		}
+
+		val idToVertex: Map<Long, model.Vertex<V>> = vertEntities.mapIndexed { index, ent ->
+			ent.id!! to graph.vertices.elementAt(index)
+		}.toMap()
+
+		edgeEntities.forEach { ent ->
+			val u = idToVertex[ent.start?.id!!]!!
+			val v = idToVertex[ent.end?.id!!]!!
+			val kClass = Class.forName(normalize(ent.keyType))
+			val key = fromJson(ent.keyJson, kClass)
+			val wClass = Class.forName(normalize(ent.weightType))
+			val weight = fromJson(ent.weightJson, wClass)
+			graph.addEdge(u.value, v.value, key as K, weight as W)
+		}
+
+		session.clear()
+		return graph
 	}
 
 	fun <V, K, W : Comparable<W>> saveGraph(graph: Graph<V, K, W>) {
-		val factory = sessionFactory
-		if (factory == null) error("SessionFactory is not initialized")
-		else {
-			val session = factory.openSession()
-			session.query("MATCH (n) DETACH DELETE n", emptyMap<String, Any>())
-			val entityMap = graph.vertices.associateWith {
-				val entity = VertexEntity()
-				entity.modelID = it.id
-				entity.dataJson = toJson(it.value)
-				entity.dataType = it.value!!::class.java.name ?: ""
-				entity
-			}
+		val factory = sessionFactory ?: error("SessionFactory is not initialized")
+		val session = factory.openSession()
+		session.query("MATCH (n) DETACH DELETE n", emptyMap<String, Any>())
 
-			entityMap.values.forEach {
-				session.save(it)
+		val entityMap = graph.vertices.associateWith { vertex ->
+			VertexEntity().apply {
+				dataJson = toJson(vertex.value)
+				dataType = vertex.value!!::class.java.name
 			}
-
-			graph.edges.forEach {
-				val entity = EdgeEntity()
-				entity.start = entityMap[it.startVertex]
-				entity.end = entityMap[it.endVertex]
-				entity.keyJson = toJson(it.key)
-				entity.keyType = it.key!!::class.java.name ?: ""
-				entity.weightJson = toJson(it.weight)
-				entity.weightType = it.weight::class.java.name ?: ""
-				session.save(entity)
-			}
-			session.clear()
 		}
+		entityMap.values.forEach { session.save(it) }
+
+		graph.edges.forEach { edgeModel ->
+			val entity = EdgeEntity().apply {
+				start = entityMap[edgeModel.startVertex]
+				end = entityMap[edgeModel.endVertex]
+				keyJson = toJson(edgeModel.key)
+				keyType = edgeModel.key!!::class.java.name
+				weightJson = toJson(edgeModel.weight)
+				weightType = edgeModel.weight!!::class.java.name
+			}
+			session.save(entity)
+		}
+
+		session.clear()
 	}
 
-	private fun <W : Comparable<W>> determineRingType(entities: Collection<EdgeEntity>): Ring<W> {
+	private fun <W : Comparable<W>> determineRingType(
+		entities: Collection<EdgeEntity>
+	): Ring<W> {
 		val typeName = entities.first().weightType
 		@Suppress("UNCHECKED_CAST")
 		return when (typeName) {
-			Integer::class.java.name,
-			java.lang.Byte::class.java.name,
-			java.lang.Short::class.java.name,
-			java.lang.Long::class.java.name -> IntRing
-
-			java.lang.Double::class.java.name,
-			java.lang.Float::class.java.name -> Float64Field
-
+			Int::class.java.name, "int" -> IntRing
+			java.lang.Long::class.java.name, "long" -> IntRing
+			java.lang.Short::class.java.name, "short" -> IntRing
+			java.lang.Byte::class.java.name, "byte" -> IntRing
+			java.lang.Double::class.java.name, "double" -> Float64Field
+			java.lang.Float::class.java.name, "float" -> Float64Field
 			else -> error("Can't load this type of weight. Type: $typeName")
 		} as Ring<W>
 	}
 
+	private fun normalize(typeName: String): String = when (typeName) {
+		"int" -> Int::class.javaObjectType.name
+		"long" -> java.lang.Long::class.java.name
+		"short" -> java.lang.Short::class.java.name
+		"byte" -> java.lang.Byte::class.java.name
+		"double" -> java.lang.Double::class.java.name
+		"float" -> java.lang.Float::class.java.name
+		else -> typeName
+	}
 }

@@ -7,7 +7,6 @@ class DirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph
 	var idCounter = AtomicLong(0)
 
 	class DirectedVertex<V>(
-		override val id: Long,
 		override var value: V,
 		override val adjacencyList: MutableList<DirectedVertex<V>> = mutableListOf()
 	) : Vertex<V>
@@ -39,6 +38,6 @@ class DirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph
 	}
 
 	override fun addVertex(vertex: V): Vertex<V> {
-		return _vertices.getOrPut(vertex) { DirectedVertex(idCounter.incrementAndGet(), vertex) }
+		return _vertices.getOrPut(vertex) { DirectedVertex(vertex) }
 	}
 }

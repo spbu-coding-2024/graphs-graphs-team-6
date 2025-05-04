@@ -1,7 +1,26 @@
 package view
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.rememberDrawerState
+import androidx.compose.material.DrawerValue
+import androidx.compose.material.Button
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Checkbox
+import androidx.compose.material.TextButton
+import androidx.compose.material.RadioButton
+import androidx.compose.material.Text
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Icon
+import androidx.compose.material.ModalDrawer
 import viewmodel.MainScreenViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -37,63 +56,8 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 	val coroutine = rememberCoroutineScope()
 
 	var actionWindowVisibility by remember { mutableStateOf(false) }
-	var showDbSelectDialog by remember { mutableStateOf(false) }
-	var showNeo4jDialog by remember { mutableStateOf(false) }
-	var showOpsDialog by remember { mutableStateOf(false) }
-	var neo4jUri by remember { mutableStateOf("") }
-	var neo4jUser by remember { mutableStateOf("") }
-	var neo4jPassword by remember { mutableStateOf("") }
-	var neo4jLoadGraphIsDirected by remember { mutableStateOf(false) }
+	var showDbSelectDialog = remember { mutableStateOf(false) }
 
-
-	fun drawerShape() = object : Shape {
-		override fun createOutline(
-			size: Size,
-			layoutDirection: LayoutDirection,
-			density: Density
-		): Outline {
-			return Outline.Rectangle(Rect(0f, 0f, size.width / 2, size.height))
-		}
-
-	}
-
-	@Composable
-	fun drawerButton(
-		textString: String,
-		icon: ImageVector = Icons.Default.Add,
-		description: String,
-		onClickMethod: () -> Unit
-	) {
-		Column {
-			Button(
-				modifier = Modifier
-					.width(400.dp)
-					.height(100.dp)
-					.padding(16.dp)
-					.testTag(description),
-				onClick = onClickMethod,
-				shape = RectangleShape,
-			) {
-				Icon(icon, description, modifier = Modifier.padding(5.dp))
-				Text(textString, fontSize = 20.sp)
-			}
-		}
-	}
-
-	@Composable
-	fun <V : Any, K : Any, W : Comparable<W>> WeightsCheckBox(
-		viewModel: MainScreenViewModel<V, K, W>,
-		modifier: Modifier = Modifier
-	) {
-		Box(modifier = modifier.fillMaxSize().padding(16.dp)) {
-			Row(modifier = modifier.align(TopEnd), verticalAlignment = Alignment.CenterVertically) {
-				Checkbox(
-					checked = viewModel.showEdgesWeights,
-					onCheckedChange = { viewModel.showEdgesWeights = it })
-				Text("Show weights")
-			}
-		}
-	}
 
 	ModalDrawer(
 		drawerContent = {
@@ -108,7 +72,7 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 				Spacer(Modifier.height(8.dp))
 				drawerButton("Open", description = "OpenButton") {
 					coroutine.launch { drawerState.close() }
-					showDbSelectDialog = true
+					showDbSelectDialog.value = true
 				}
 				drawerButton("Action", icon = Icons.Default.Star, description = "ActionButton") {
 					coroutine.launch { drawerState.close() }
@@ -148,20 +112,32 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 	}
 
 	WeightsCheckBox(viewModel)
+	dbMenu(viewModel, showDbSelectDialog)
 
-	if (showDbSelectDialog) {
+}
+
+@Composable
+fun <V : Any, K : Any, W : Comparable<W>> dbMenu(
+	viewModel: MainScreenViewModel<V, K, W>,
+	showDbSelectDialog: MutableState<Boolean>
+) {
+	var showNeo4jDialog = remember { mutableStateOf(false) }
+	var showOpsDialog = remember { mutableStateOf(false) }
+
+
+	if (showDbSelectDialog.value) {
 		AlertDialog(
-			onDismissRequest = { showDbSelectDialog = false },
+			onDismissRequest = { showDbSelectDialog.value = false },
 			title = { Text("Select Database") },
 			text = {
 				Column {
 					Spacer(Modifier.height(8.dp))
 					Button(onClick = {
-						showDbSelectDialog = false
+						showDbSelectDialog.value = false
 						if (GraphService.sessionFactory == null)
-							showNeo4jDialog = true
+							showNeo4jDialog.value = true
 						else
-							showOpsDialog = true
+							showOpsDialog.value = true
 					}) {
 						Text("Neo4j")
 					}
@@ -170,9 +146,23 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 			buttons = {}
 		)
 	}
-	if (showNeo4jDialog && GraphService.sessionFactory == null) {
+	neo4jMenu(viewModel, showNeo4jDialog, showOpsDialog)
+}
+
+@Composable
+fun <V : Any, K : Any, W : Comparable<W>> neo4jMenu(
+	viewModel: MainScreenViewModel<V, K, W>,
+	showNeo4jDialog: MutableState<Boolean>,
+	showOpsDialog: MutableState<Boolean>
+) {
+	var neo4jUri by remember { mutableStateOf("") }
+	var neo4jUser by remember { mutableStateOf("") }
+	var neo4jPassword by remember { mutableStateOf("") }
+	var neo4jLoadGraphIsDirected = remember { mutableStateOf(false) }
+
+	if (showNeo4jDialog.value && GraphService.sessionFactory == null) {
 		AlertDialog(
-			onDismissRequest = { showNeo4jDialog = false },
+			onDismissRequest = { showNeo4jDialog.value = false },
 			title = { Text("Connect to Neo4j") },
 			text = {
 				Column(Modifier.fillMaxWidth()) {
@@ -202,22 +192,32 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 			confirmButton = {
 				TextButton(onClick = {
 					viewModel.connectNeo4j(neo4jUri, neo4jUser, neo4jPassword)
-					showNeo4jDialog = false
-					showOpsDialog = true
+					showNeo4jDialog.value = false
+					showOpsDialog.value = true
 				}) {
 					Text("Connect")
 				}
 			},
 			dismissButton = {
-				TextButton(onClick = { showNeo4jDialog = false }) {
+				TextButton(onClick = { showNeo4jDialog.value = false }) {
 					Text("Cancel")
 				}
 			}
 		)
 	}
-	if (showOpsDialog) {
+	opsDialog(viewModel, showOpsDialog, neo4jLoadGraphIsDirected)
+
+}
+
+@Composable
+fun <V : Any, K : Any, W : Comparable<W>> opsDialog(
+	viewModel: MainScreenViewModel<V, K, W>,
+	showOpsDialog: MutableState<Boolean>,
+	neo4jLoadGraphIsDirected: MutableState<Boolean>
+) {
+	if (showOpsDialog.value) {
 		AlertDialog(
-			onDismissRequest = { showOpsDialog = false },
+			onDismissRequest = { showOpsDialog.value = false },
 			title = { Text("Neo4j Operations") },
 			text = {
 				Column(Modifier.fillMaxWidth().padding(16.dp)) {
@@ -225,15 +225,15 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 					Spacer(Modifier.height(12.dp))
 					Row(verticalAlignment = Alignment.CenterVertically) {
 						RadioButton(
-							selected = !neo4jLoadGraphIsDirected,
-							onClick = { neo4jLoadGraphIsDirected = false }
+							selected = !neo4jLoadGraphIsDirected.value,
+							onClick = { neo4jLoadGraphIsDirected.value = false }
 						)
 						Text("Undirected Graph", Modifier.padding(start = 8.dp))
 					}
 					Row(verticalAlignment = Alignment.CenterVertically) {
 						RadioButton(
-							selected = neo4jLoadGraphIsDirected,
-							onClick = { neo4jLoadGraphIsDirected = true }
+							selected = neo4jLoadGraphIsDirected.value,
+							onClick = { neo4jLoadGraphIsDirected.value = true }
 						)
 						Text("Directed Graph", Modifier.padding(start = 8.dp))
 					}
@@ -241,8 +241,8 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 			},
 			confirmButton = {
 				TextButton(onClick = {
-					viewModel.loadNeo4j(neo4jLoadGraphIsDirected)
-					showOpsDialog = false
+					viewModel.loadNeo4j(neo4jLoadGraphIsDirected.value)
+					showOpsDialog.value = false
 				}) {
 					Text("Load Graph")
 				}
@@ -250,12 +250,60 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 			dismissButton = {
 				TextButton(onClick = {
 					viewModel.saveNeo4j(viewModel.graph)
-					showOpsDialog = false
+					showOpsDialog.value = false
 				}) {
 					Text("Save Graph")
 				}
 			}
 		)
 	}
+}
 
+@Composable
+fun drawerButton(
+	textString: String,
+	icon: ImageVector = Icons.Default.Add,
+	description: String,
+	onClickMethod: () -> Unit
+) {
+	Column {
+		Button(
+			modifier = Modifier
+				.width(400.dp)
+				.height(100.dp)
+				.padding(16.dp)
+				.testTag(description),
+			onClick = onClickMethod,
+			shape = RectangleShape,
+		) {
+			Icon(icon, description, modifier = Modifier.padding(5.dp))
+			Text(textString, fontSize = 20.sp)
+		}
+	}
+}
+
+fun drawerShape() = object : Shape {
+	override fun createOutline(
+		size: Size,
+		layoutDirection: LayoutDirection,
+		density: Density
+	): Outline {
+		return Outline.Rectangle(Rect(0f, 0f, size.width / 2, size.height))
+	}
+
+}
+
+@Composable
+fun <V : Any, K : Any, W : Comparable<W>> WeightsCheckBox(
+	viewModel: MainScreenViewModel<V, K, W>,
+	modifier: Modifier = Modifier
+) {
+	Box(modifier = modifier.fillMaxSize().padding(16.dp)) {
+		Row(modifier = modifier.align(TopEnd), verticalAlignment = Alignment.CenterVertically) {
+			Checkbox(
+				checked = viewModel.showEdgesWeights,
+				onCheckedChange = { viewModel.showEdgesWeights = it })
+			Text("Show weights")
+		}
+	}
 }

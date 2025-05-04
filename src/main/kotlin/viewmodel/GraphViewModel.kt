@@ -19,9 +19,12 @@ import androidx.compose.runtime.getValue
 import model.Vertex
 
 
-class GraphViewModel<V, K, W : Comparable<W>>(val _graph: State<Graph<V, K, W>>, showEdgesWeights: State<Boolean>) {
+class GraphViewModel<V, K, W : Comparable<W>>(
+	private val graphState: State<Graph<V, K, W>>,
+	showEdgesWeights: State<Boolean>
+) {
 	val graph: Graph<V, K, W>
-		get() = _graph.value
+		get() = graphState.value
 
 	private val _verticesState by derivedStateOf {
 		graph.vertices.associateWith {

@@ -5,7 +5,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import model.*
+import model.Graph
+import model.Vertex
+import model.Edge
 import model.Constants.SEMI_BLACK
 import model.utils.SCCCalculator
 import model.neo4j.GraphService
@@ -15,7 +17,7 @@ import space.kscience.kmath.operations.IntRing
 import space.kscience.kmath.operations.Ring
 
 class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K, W>) {
-	var _graph = mutableStateOf(graph)
+	private var _graph = mutableStateOf(graph)
 	var graph: Graph<V, K, W>
 		get() = _graph.value
 		set(value) {

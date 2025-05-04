@@ -9,7 +9,6 @@ import org.neo4j.ogm.annotation.Relationship
 open class VertexEntity @JvmOverloads constructor(
 	@Id @GeneratedValue
 	var id: Long? = null,
-	var modelID: Long = 0,
 	var dataJson: String = "",
 	var dataType: String = ""
 )

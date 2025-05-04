@@ -91,29 +91,24 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 			) { _, vertex ->
 				endVertex = vertex
 			}
-		}
-		if (viewModel.showIncompatibleWeightTypeDialog) {
-			AlertDialog(
-				onDismissRequest = {
-					viewModel.showIncompatibleWeightTypeDialog = false
-				},
-				title = { Text("Incompatible Edge Weight Type") },
-				text = {
-					Text(
-						"Your graph uses edge weight weight type that is not supported yet. " +
-							"Please try exploring graph with numerical weight" +
-							"\n${viewModel.exceptionMessage}"
-					)
-				},
-				confirmButton = {
-					TextButton(onClick = {
-						viewModel.showIncompatibleWeightTypeDialog = false
-					}) {
-						Text("ОК")
-					}
+			if (currentAlgorithm == Algorithm.BellmanFord.ordinal) {
+				menuBox(
+					startVertex.model.value.toString(),
+					viewModel.graphViewModel.vertices,
+					arrayOfVertexNames
+				) { _, vertex ->
+					startVertex = vertex
 				}
-			)
+				menuBox(
+					endVertex.model.value.toString(),
+					viewModel.graphViewModel.vertices,
+					arrayOfVertexNames
+				) { _, vertex ->
+					endVertex = vertex
+				}
+			}
 		}
+
 	}
 }
 
@@ -144,9 +139,18 @@ fun <V : Any, K : Any, W : Comparable<W>> applyAlgorithm(
 ) {
 	resetGraphViewModel(viewModel.graphViewModel)
 	when (algoNum) {
+		Algorithm.BellmanFord.ordinal -> {
+			val (predecessors, _) = SSSPCalculator.bellmanFordAlgorithm(
+				viewModel.graph,
+				startVertex.model.value
+			)
+
+			val path = SSSPCalculator.constructPath(predecessors, endVertex.model.value)
+				.map { viewModel.graphViewModel.getEdgeViewModel(it) }
+			ColorUtils.applyOneColor(path, Color.Red)
+		}
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
 		Algorithm.Kruskal.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findMSF()
-
 		Algorithm.Louvain.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.assignCommunities()
 	}
 }
