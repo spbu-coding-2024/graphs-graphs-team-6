@@ -12,6 +12,10 @@ import org.neo4j.ogm.session.loadAll
 import space.kscience.kmath.operations.Float64Field
 import space.kscience.kmath.operations.IntRing
 import space.kscience.kmath.operations.Ring
+import space.kscience.kmath.operations.LongRing
+import space.kscience.kmath.operations.ByteRing
+import space.kscience.kmath.operations.ShortRing
+import space.kscience.kmath.operations.Float32Field
 
 object GraphService {
 	var sessionFactory: SessionFactory? = null
@@ -105,26 +109,62 @@ object GraphService {
 	private fun <W : Comparable<W>> determineRingType(
 		entities: Collection<EdgeEntity>
 	): Ring<W> {
-		val typeName = entities.first().weightType
+		val rawTypeName = entities.first().weightType
+		val typeName = normalize(rawTypeName)
+		val wClass = Class.forName(typeName)
+
 		@Suppress("UNCHECKED_CAST")
-		return when (typeName) {
-			Int::class.java.name, "int" -> IntRing
-			java.lang.Long::class.java.name, "long" -> IntRing
-			java.lang.Short::class.java.name, "short" -> IntRing
-			java.lang.Byte::class.java.name, "byte" -> IntRing
-			java.lang.Double::class.java.name, "double" -> Float64Field
-			java.lang.Float::class.java.name, "float" -> Float64Field
-			else -> error("Can't load this type of weight. Type: $typeName")
-		} as Ring<W>
+		return when (wClass) {
+			java.lang.Integer::class.java,
+			Int::class.java,
+			Int::class.javaObjectType ->
+				IntRing as Ring<W>
+
+			java.lang.Long::class.java,
+			Long::class.java,
+			Long::class.javaObjectType ->
+				LongRing as Ring<W>
+
+			java.lang.Short::class.java,
+			Short::class.java,
+			Short::class.javaObjectType ->
+				ShortRing as Ring<W>
+
+			java.lang.Byte::class.java,
+			Byte::class.java,
+			Byte::class.javaObjectType ->
+				ByteRing as Ring<W>
+
+			java.lang.Double::class.java,
+			Double::class.java,
+			Double::class.javaObjectType ->
+				Float64Field as Ring<W>
+
+			java.lang.Float::class.java,
+			Float::class.java,
+			Float::class.javaObjectType ->
+				Float32Field as Ring<W>
+
+			else ->
+				error("Can't load this type of weight. Type: $rawTypeName")
+		}
 	}
 
 	private fun normalize(typeName: String): String = when (typeName) {
-		"int" -> Int::class.javaObjectType.name
-		"long" -> java.lang.Long::class.java.name
-		"short" -> java.lang.Short::class.java.name
-		"byte" -> java.lang.Byte::class.java.name
+		"int"    -> java.lang.Integer::class.java.name
+		"long"   -> java.lang.Long::class.java.name
+		"short"  -> java.lang.Short::class.java.name
+		"byte"   -> java.lang.Byte::class.java.name
 		"double" -> java.lang.Double::class.java.name
-		"float" -> java.lang.Float::class.java.name
+		"float"  -> java.lang.Float::class.java.name
+
+		"kotlin.Int"    -> java.lang.Integer::class.java.name
+		"kotlin.Long"   -> java.lang.Long::class.java.name
+		"kotlin.Short"  -> java.lang.Short::class.java.name
+		"kotlin.Byte"   -> java.lang.Byte::class.java.name
+		"kotlin.Double" -> java.lang.Double::class.java.name
+		"kotlin.Float"  -> java.lang.Float::class.java.name
+
 		else -> typeName
 	}
 }
