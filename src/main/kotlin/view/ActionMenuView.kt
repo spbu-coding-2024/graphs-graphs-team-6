@@ -45,12 +45,14 @@ import viewmodel.MainScreenViewModel
 import viewmodel.VertexViewModel
 
 
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun <V, K, W : Comparable<W>> actionMenuView(actionWindowVisibility: Boolean, viewModel: MainScreenViewModel<V, K, W>) {
+fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
+	actionWindowVisibility: Boolean,
+	viewModel: MainScreenViewModel<V, K, W>
+) {
 	require(viewModel.graph.vertices.isNotEmpty())
-	var currentAlgorithm by remember { mutableStateOf(Algorithm.BellmanFord.ordinal) }
+	var currentAlgorithm by remember { mutableStateOf(Algorithm.Louvain.ordinal) }
 	val algorithms = returnArrayOfAlgorithmLabels()
 	val arrayOfVertexNames by remember {
 		mutableStateOf(
@@ -82,19 +84,35 @@ fun <V, K, W : Comparable<W>> actionMenuView(actionWindowVisibility: Boolean, vi
 			) {
 				Icon(Icons.Default.Check, "Apply algorithm")
 			}
-			if (currentAlgorithm == Algorithm.BellmanFord.ordinal) {
-				menuBox(startVertex.model.value.toString(),
-					viewModel.graphViewModel.vertices, arrayOfVertexNames) { _, vertex ->
-					startVertex = vertex
-				}
-				menuBox(endVertex.model.value.toString(),
-					viewModel.graphViewModel.vertices, arrayOfVertexNames) { _, vertex ->
-					endVertex = vertex
-				}
+			menuBox(
+				endVertex.model.value.toString(),
+				viewModel.graphViewModel.vertices,
+				arrayOfVertexNames
+			) { _, vertex ->
+				endVertex = vertex
 			}
-			if (viewModel.exceptionMessage == "Incompatible weight type") {
-				LouvainAlertDialog(viewModel)
-			}
+		}
+		if (viewModel.showIncompatibleWeightTypeDialog) {
+			AlertDialog(
+				onDismissRequest = {
+					viewModel.showIncompatibleWeightTypeDialog = false
+				},
+				title = { Text("Incompatible Edge Weight Type") },
+				text = {
+					Text(
+						"Your graph uses edge weight weight type that is not supported yet. " +
+							"Please try exploring graph with numerical weight" +
+							"\n${viewModel.exceptionMessage}"
+					)
+				},
+				confirmButton = {
+					TextButton(onClick = {
+						viewModel.showIncompatibleWeightTypeDialog = false
+					}) {
+						Text("ОК")
+					}
+				}
+			)
 		}
 	}
 }
@@ -118,7 +136,7 @@ enum class Algorithm {
 	Louvain
 }
 
-fun <V, K, W : Comparable<W>> applyAlgorithm(
+fun <V : Any, K : Any, W : Comparable<W>> applyAlgorithm(
 	algoNum: Int,
 	viewModel: MainScreenViewModel<V, K, W>,
 	startVertex: VertexViewModel<V>,
@@ -127,18 +145,6 @@ fun <V, K, W : Comparable<W>> applyAlgorithm(
 	resetGraphViewModel(viewModel.graphViewModel)
 	when (algoNum) {
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
-
-		Algorithm.BellmanFord.ordinal -> {
-			val (predecessors, _) = SSSPCalculator.bellmanFordAlgorithm(
-				viewModel.graph,
-				startVertex.model.value
-			)
-
-			val path = SSSPCalculator.constructPath(predecessors, endVertex.model.value)
-				.map { viewModel.graphViewModel.getEdgeViewModel(it) }
-			ColorUtils.applyOneColor(path, Color.Red)
-		}
-
 		Algorithm.Kruskal.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findMSF()
 
 		Algorithm.Louvain.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.assignCommunities()
@@ -146,7 +152,7 @@ fun <V, K, W : Comparable<W>> applyAlgorithm(
 }
 
 @Composable
-fun <V, K, W: Comparable<W>> LouvainAlertDialog(viewModel: MainScreenViewModel<V, K, W>){
+fun <V : Any, K : Any, W : Comparable<W>> LouvainAlertDialog(viewModel: MainScreenViewModel<V, K, W>) {
 	AlertDialog(
 		onDismissRequest = {
 			viewModel.showIncompatibleWeightTypeDialog = false

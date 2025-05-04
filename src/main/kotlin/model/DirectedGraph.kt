@@ -1,11 +1,15 @@
 package model
 
 import space.kscience.kmath.operations.Ring
+import java.util.concurrent.atomic.AtomicLong
 
 class DirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph<V, K, W> {
+	var idCounter = AtomicLong(0)
 
 	class DirectedVertex<V>(
-		override var value: V, override val adjacencyList: MutableList<DirectedVertex<V>> = mutableListOf()
+		override val id: Long,
+		override var value: V,
+		override val adjacencyList: MutableList<DirectedVertex<V>> = mutableListOf()
 	) : Vertex<V>
 
 	data class DirectedEdge<V, K, W : Comparable<W>>(
@@ -35,6 +39,6 @@ class DirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph
 	}
 
 	override fun addVertex(vertex: V): Vertex<V> {
-		return _vertices.getOrPut(vertex) { DirectedVertex(vertex) }
+		return _vertices.getOrPut(vertex) { DirectedVertex(idCounter.incrementAndGet(), vertex) }
 	}
 }

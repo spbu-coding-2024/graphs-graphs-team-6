@@ -8,10 +8,8 @@ import org.neo4j.ogm.annotation.Relationship
 @NodeEntity("Vertex")
 open class VertexEntity @JvmOverloads constructor(
 	@Id @GeneratedValue
-	val id: Long? = null,
+	var id: Long? = null,
+	var modelID: Long = 0,
 	var dataJson: String = "",
 	var dataType: String = ""
-) {
-	@Relationship(type = "ADJACENT TO", direction = Relationship.Direction.OUTGOING)
-	val adjacencyList: MutableList<VertexEntity> = mutableListOf()
-}
+)
