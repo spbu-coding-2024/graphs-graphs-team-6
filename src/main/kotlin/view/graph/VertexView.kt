@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
@@ -46,6 +47,7 @@ fun <V> VertexView(
 	// Draw circle background and border at (x, y) with size = 2*radius
 	Canvas(
 		modifier = modifier
+			.testTag("Vertex: ${vertexViewModel.model.value.toString()}")
 			.offset(x, y)
 			.size(radius * 2)
 			.border(

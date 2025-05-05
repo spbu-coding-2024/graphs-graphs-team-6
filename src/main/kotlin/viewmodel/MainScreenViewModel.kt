@@ -47,8 +47,7 @@ class MainScreenViewModel<V, K, W : Comparable<W>>(
 	}
 
 	private val louvainDetector = Louvain(graph)
-	var exceptionMessage: String? = null
-	var showIncompatibleWeightTypeDialog by mutableStateOf(false)
+	var exceptionMessage by mutableStateOf("")
 
 	fun assignCommunities() {
 		try {
@@ -57,8 +56,9 @@ class MainScreenViewModel<V, K, W : Comparable<W>>(
 			ColorUtils.applyColors(colorMap, graphViewModel.vertices)
 		}
 		catch (e: IllegalArgumentException){
-			showIncompatibleWeightTypeDialog = true
-			exceptionMessage = e.message
+			e.message?.let {
+				exceptionMessage = it
+			}
 		}
 	}
 }

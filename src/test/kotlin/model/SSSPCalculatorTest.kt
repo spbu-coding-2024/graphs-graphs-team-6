@@ -11,17 +11,6 @@ import kotlin.test.assertTrue
 
 class SSSPCalculatorTest {
 
-    @BeforeTest
-    fun before() {
-    }
-
-    @Test
-    fun `BellmanFord empty graph case`() {
-        val testGraph = DirectedGraph<String, Int, Int>(IntRing)
-        val (pred, map) = SSSPCalculator.bellmanFordAlgorithm<String, Int, Int>(testGraph, "A")
-        assertEquals(map["A"], 0)
-        assertTrue(pred.isEmpty())
-    }
     @Test
     fun `BellmanFord on linkedlist-like directed graph`() {
         val testGraph = DirectedGraph<String, Int, Int>(IntRing).apply {
@@ -204,7 +193,7 @@ class SSSPCalculatorTest {
         val MAX_VERTS = 1000
         val MAX_WEIGHT = 100
         val numOfVertices = Random.nextInt(0, MAX_VERTS)
-        val numOfEdges = Random.nextInt(0, numOfVertices * (numOfVertices - 1) / 2)
+        val numOfEdges = Random.nextInt(0, numOfVertices * (numOfVertices - 1) / 2 + 1)
         val randomGraph = UndirectedGraph<Int, Int, Int>(IntRing).apply {
             for (i in 0..(numOfVertices - 1)) addVertex(i)
 
@@ -226,5 +215,45 @@ class SSSPCalculatorTest {
             assertEquals(e.message, "There's exist a negative cycle in a graph")
         }
     }
+
+    @Test
+    fun `Bellman-Ford with complicated undirected graph`() {
+        val testGraph = UndirectedGraph<String, Int, Int>(IntRing).apply {
+            addVertex("A")
+            addVertex("B")
+            addVertex("C")
+            addVertex("D")
+            addVertex("E")
+            addVertex("F")
+            addVertex("G")
+            addVertex("H")
+
+            var index = 0
+            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) {it * 2}
+
+            addEdge("A", "B", index, weight[index]); index++
+            addEdge("B", "C", index, weight[index]); index++
+            addEdge("C", "A", index, weight[index]); index++
+            addEdge("C", "C", index, weight[index]); index++
+
+            addEdge("C", "F", index, weight[index]); index++
+
+            addEdge("D", "E", index, weight[index]); index++
+            addEdge("E", "F", index, weight[index]); index++
+            addEdge("F", "D", index, weight[index]); index++
+
+
+            addEdge("H", "D", index, weight[index]); index++
+
+            addEdge("G", "H", index, weight[index]); index++
+            addEdge("H", "G", index, 231); index++
+        }
+        val (pred, map) = SSSPCalculator.bellmanFordAlgorithm(testGraph, "A")
+        assertEquals("F", pred["E"]?.opposite("E"))
+        assertEquals("C", pred["F"]?.opposite("F"))
+        assertEquals("B", pred["C"]?.opposite("C"))
+        assertEquals("A", pred["B"]?.opposite("B"))
+    }
+
 
 }

@@ -7,6 +7,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import model.Constants.DEFAULT_ARROW_TRIANGLE_HEIGHT
@@ -48,7 +49,9 @@ fun <V, K, W : Comparable<W>> showLabel(edgeViewModel: EdgeViewModel<V, K, W>) {
 		Text(
 			text = edgeViewModel.weightLabel,
 			color = edgeViewModel.color,
-			modifier = Modifier.offset(
+			modifier = Modifier
+				.testTag("EdgeLabel: ${edgeViewModel.model.key}")
+				.offset(
 				x = midX + (ux * shift.value).dp,
 				y = midY + (uy * shift.value).dp
 			)

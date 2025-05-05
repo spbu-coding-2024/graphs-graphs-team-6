@@ -83,23 +83,20 @@ fun <V, K, W : Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K
 			modifier = Modifier
 				.fillMaxSize()
 				.padding(16.dp)
-				.testTag("MainButton")
-		) {
+				) {
 			Button(
+				modifier = Modifier
+					.testTag("MainButton"),
 				onClick = {
-
-					if (actionWindowVisibility == true && viewModel.graphViewModel.vertices.isNotEmpty()) {
+					if (actionWindowVisibility == true ){
 						actionWindowVisibility = false
 						resetGraphViewModel(viewModel.graphViewModel)
-					} else if (viewModel.graphViewModel.vertices.isNotEmpty()) {
+					} else {
 						coroutine.launch { drawerState.open() }
 					}
 				}
 			) {
-				Icon(
-					if (actionWindowVisibility == true) Icons.Default.Close else Icons.Default.Menu,
-					"Main button"
-				)
+				Icon(if (actionWindowVisibility == true) Icons.Default.Close else Icons.Default.Menu, "Main button")
 			}
 		}
 		if (viewModel.graphViewModel.vertices.isNotEmpty()) actionMenuView(actionWindowVisibility, viewModel)
@@ -145,8 +142,14 @@ fun drawerButton(
 @Composable
 fun <V, K, W : Comparable<W>> WeightsCheckBox(viewModel: MainScreenViewModel<V, K, W>, modifier: Modifier = Modifier) {
 	Box(modifier = modifier.fillMaxSize().padding(16.dp)) {
-		Row(modifier = modifier.align(TopEnd), verticalAlignment = Alignment.CenterVertically) {
+		Row(
+			modifier = modifier
+				.align(TopEnd),
+			verticalAlignment = Alignment.CenterVertically
+		) {
 			Checkbox(
+				modifier = Modifier
+					.testTag("WeightCheckBox"),
 				checked = viewModel.showEdgesWeights,
 				onCheckedChange = { viewModel.showEdgesWeights = it })
 			Text("Show weights")

@@ -42,4 +42,8 @@ class DirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph
 	override fun addVertex(vertex: V): Vertex<V> {
 		return _vertices.getOrPut(vertex) { DirectedVertex(vertex) }
 	}
+
+	override fun getVertex(vertex: V): Vertex<V> {
+		return _vertices[vertex] ?: error("No such vertex with a given value")
+	}
 }

@@ -30,9 +30,9 @@ object SSSPCalculator {
                     any = true
                 }
 
-                if (graph is DirectedGraph) return@forEach
+                if (graph is DirectedGraph || secondDist == null) return@forEach
 
-                newDistance = graph.ring.add(firstDist, edge.weight)
+                newDistance = graph.ring.add(secondDist, edge.weight)
 
                 if (firstDist > newDistance) {
                     distance[firstVertex] = newDistance
