@@ -18,4 +18,8 @@ object Constants {
     const val DEFAULT_ZOOM_SCALE_COEF = .001f
 
     const val SEMI_BLACK = 0x50000000
+
+    const val SHOW_LABEL_MOD = 3
+
+    const val DEFAULT_PATH_COLOR = 0xFFFF0000
 }

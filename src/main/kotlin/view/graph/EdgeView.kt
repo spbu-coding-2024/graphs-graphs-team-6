@@ -7,12 +7,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import model.Constants.DEFAULT_ARROW_TRIANGLE_HEIGHT
 import model.Constants.DEFAULT_ARROW_TRIANGLE_WIDTH
 import model.Constants.DEFAULT_LOOP_MULTIPLIER
 import model.Constants.DEFAULT_LOOP_RADIUS_COEFF
+import model.Constants.SHOW_LABEL_MOD
 import model.DirectedGraph
 import viewmodel.EdgeViewModel
 import kotlin.math.absoluteValue
@@ -24,6 +26,7 @@ import kotlin.math.PI
 
 @Composable
 fun <V, K, W : Comparable<W>> showLabel(edgeViewModel: EdgeViewModel<V, K, W>) {
+
 	if (edgeViewModel.weightLabelVisible) {
 		val x1 = edgeViewModel.firstVertexViewModel.x
 		val y1 = edgeViewModel.firstVertexViewModel.y
@@ -34,7 +37,8 @@ fun <V, K, W : Comparable<W>> showLabel(edgeViewModel: EdgeViewModel<V, K, W>) {
 		val midY = (y1 + y2) / 2f
 
 		val shift: Dp = 8.dp
-		val sign = if (edgeViewModel.model.hashCode().absoluteValue % 2 == 0) 1f else -1f
+		val remainder = edgeViewModel.model.hashCode().absoluteValue % SHOW_LABEL_MOD
+		val sign = if (remainder == 0 || remainder == 2) 1f else -1f
 
 		val dx = (x2 - x1).value
 		val dy = (y2 - y1).value
@@ -45,7 +49,9 @@ fun <V, K, W : Comparable<W>> showLabel(edgeViewModel: EdgeViewModel<V, K, W>) {
 		Text(
 			text = edgeViewModel.weightLabel,
 			color = edgeViewModel.color,
-			modifier = Modifier.offset(
+			modifier = Modifier
+				.testTag("EdgeLabel: ${edgeViewModel.model.key}")
+				.offset(
 				x = midX + (ux * shift.value).dp,
 				y = midY + (uy * shift.value).dp
 			)
