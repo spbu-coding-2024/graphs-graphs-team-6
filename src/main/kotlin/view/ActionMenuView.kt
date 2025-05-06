@@ -72,7 +72,7 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 			horizontalArrangement = Arrangement.Start,
 			verticalAlignment = Alignment.Bottom,
 		) {
-			menuBox(algorithms[currentAlgorithm], algorithms, algorithms.toTypedArray(),) { i, _ ->
+			menuBox(algorithms[currentAlgorithm], algorithms, algorithms.toTypedArray()) { i, _ ->
 				currentAlgorithm = i
 			}
 			Button(
@@ -101,7 +101,9 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 				}
 			}
 		}
-
+	}
+	if (viewModel.showIncompatibleWeightTypeDialog) {
+		LouvainAlertDialog(viewModel)
 	}
 }
 
@@ -142,14 +144,11 @@ fun <V : Any, K : Any, W : Comparable<W>> applyAlgorithm(
 				.map { viewModel.graphViewModel.getEdgeViewModel(it) }
 			ColorUtils.applyOneColor(path, Color.Red)
 		}
+
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
 		Algorithm.Kruskal.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findMSF()
-		Algorithm.Louvain.ordinal -> if (viewModel.graph is UndirectedGraph) {
-			viewModel.assignCommunities()
-			if (viewModel.showIncompatibleWeightTypeDialog) {
-				LouvainAlertDialog(viewModel)
-			}
-		}
+		Algorithm.Louvain.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.assignCommunities()
+
 	}
 }
 
