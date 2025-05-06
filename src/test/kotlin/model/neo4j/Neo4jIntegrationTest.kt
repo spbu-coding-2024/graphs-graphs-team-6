@@ -25,6 +25,14 @@ class Neo4jIntegrationTest {
 		embeddedNeo4j.close()
 	}
 
+	/**
+	 * Integration test for GraphService with embedded Neo4j: Typical usage of Neo4j in this application
+	 *
+	 * - Starts an in‑process Neo4j instance before all tests.
+	 * - Saves and loads a simple directed graph (vertices X, Y; edge X->Y with weight 10).
+	 * - Verifies that vertices, edge count, and weight match.
+	 * - Shuts down Neo4j after all tests.
+	 */
 	@Test
 	fun `save and load directed graph`() {
 		val graph = DirectedGraph<String, Int, Int>(IntRing).apply {

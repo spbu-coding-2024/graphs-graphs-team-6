@@ -118,27 +118,27 @@ object GraphService {
 			java.lang.Integer::class.java,
 			Int::class.java,
 			Int::class.javaObjectType ->
-				IntRing as Ring<W>
+				IntRing
 
 			java.lang.Long::class.java,
 			Long::class.java,
 			Long::class.javaObjectType ->
-				LongRing as Ring<W>
+				LongRing
 
 			java.lang.Short::class.java,
 			Short::class.java,
 			Short::class.javaObjectType ->
-				ShortRing as Ring<W>
+				ShortRing
 
 			java.lang.Byte::class.java,
 			Byte::class.java,
 			Byte::class.javaObjectType ->
-				ByteRing as Ring<W>
+				ByteRing
 
 			java.lang.Double::class.java,
 			Double::class.java,
 			Double::class.javaObjectType ->
-				Float64Field as Ring<W>
+				Float64Field
 
 			java.lang.Float::class.java,
 			Float::class.java,
@@ -147,23 +147,23 @@ object GraphService {
 
 			else ->
 				error("Can't load this type of weight. Type: $rawTypeName")
-		}
+		} as Ring<W>
 	}
 
 	private fun normalize(typeName: String): String = when (typeName) {
-		"int"    -> java.lang.Integer::class.java.name
-		"long"   -> java.lang.Long::class.java.name
-		"short"  -> java.lang.Short::class.java.name
-		"byte"   -> java.lang.Byte::class.java.name
+		"int" -> java.lang.Integer::class.java.name
+		"long" -> java.lang.Long::class.java.name
+		"short" -> java.lang.Short::class.java.name
+		"byte" -> java.lang.Byte::class.java.name
 		"double" -> java.lang.Double::class.java.name
-		"float"  -> java.lang.Float::class.java.name
+		"float" -> java.lang.Float::class.java.name
 
-		"kotlin.Int"    -> java.lang.Integer::class.java.name
-		"kotlin.Long"   -> java.lang.Long::class.java.name
-		"kotlin.Short"  -> java.lang.Short::class.java.name
-		"kotlin.Byte"   -> java.lang.Byte::class.java.name
+		"kotlin.Int" -> java.lang.Integer::class.java.name
+		"kotlin.Long" -> java.lang.Long::class.java.name
+		"kotlin.Short" -> java.lang.Short::class.java.name
+		"kotlin.Byte" -> java.lang.Byte::class.java.name
 		"kotlin.Double" -> java.lang.Double::class.java.name
-		"kotlin.Float"  -> java.lang.Float::class.java.name
+		"kotlin.Float" -> java.lang.Float::class.java.name
 
 		else -> typeName
 	}
