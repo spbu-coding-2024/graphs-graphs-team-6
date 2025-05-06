@@ -84,13 +84,6 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 			) {
 				Icon(Icons.Default.Check, "Apply algorithm")
 			}
-			menuBox(
-				endVertex.model.value.toString(),
-				viewModel.graphViewModel.vertices,
-				arrayOfVertexNames
-			) { _, vertex ->
-				endVertex = vertex
-			}
 			if (currentAlgorithm == Algorithm.BellmanFord.ordinal) {
 				menuBox(
 					startVertex.model.value.toString(),
@@ -151,7 +144,12 @@ fun <V : Any, K : Any, W : Comparable<W>> applyAlgorithm(
 		}
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
 		Algorithm.Kruskal.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findMSF()
-		Algorithm.Louvain.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.assignCommunities()
+		Algorithm.Louvain.ordinal -> if (viewModel.graph is UndirectedGraph) {
+			viewModel.assignCommunities()
+			if (viewModel.showIncompatibleWeightTypeDialog) {
+				LouvainAlertDialog(viewModel)
+			}
+		}
 	}
 }
 
