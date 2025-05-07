@@ -7,11 +7,10 @@ import model.DirectedGraph
 import view.MainScreenView
 import viewmodel.MainScreenViewModel
 import model.UndirectedGraph
+import org.neo4j.ogm.session.SessionFactory
 import space.kscience.kmath.operations.IntRing
-import view.graph.GraphView
-import viewmodel.ColorUtils
-import viewmodel.GraphViewModel
 
+const val TEMP_WEIGHT_VALUE = 231
 
 val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
 	addVertex("A")
@@ -37,22 +36,26 @@ val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
 	addEdge("E", "F", index, weight[index]); index++
 	addEdge("F", "D", index, weight[index]); index++
 
+
 	addEdge("H", "D", index, weight[index]); index++
 
 	addEdge("G", "H", index, weight[index]); index++
-	addEdge("H", "G", index, weight[index]); index++
+	addEdge("H", "G", index, TEMP_WEIGHT_VALUE); index++
+//	addVertex("X")
+//	addVertex("Y")
+//	addVertex("Z")
 }
 
 @Composable
 @Preview
 fun app() {
 	MaterialTheme {
- 		MainScreenView<String, Int, Int>(MainScreenViewModel(graph))
+		MainScreenView<String, Int, Int>(MainScreenViewModel(graph))
 	}
 }
 
 fun main() = application {
-		Window(onCloseRequest = ::exitApplication) {
+	Window(onCloseRequest = ::exitApplication) {
 		app()
 	}
 }

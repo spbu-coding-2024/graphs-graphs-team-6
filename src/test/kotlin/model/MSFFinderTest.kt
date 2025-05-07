@@ -1,7 +1,8 @@
 package model
 
 import model.utils.MSFFinder
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import space.kscience.kmath.operations.IntRing
 
@@ -11,7 +12,7 @@ class MSFFinderTest {
  fun testEmptyGraph() {
   val graph = UndirectedGraph<String, Int, Int>(IntRing)
   val edgeLists = MSFFinder(graph).findMSFKruskal()
-     Assertions.assertTrue(edgeLists.isEmpty(), "Empty graph should produce no components")
+     assertTrue(edgeLists.isEmpty(), "Empty graph should produce no components")
  }
 
  @Test
@@ -20,8 +21,8 @@ class MSFFinderTest {
   graph.addVertex("A")
   val edgeLists = MSFFinder(graph).findMSFKruskal()
 
-     Assertions.assertEquals(1, edgeLists.size, "Graph with one vertex should yield one component")
-     Assertions.assertTrue(edgeLists[0].isEmpty(), "Single-vertex MST should have no edges")
+     assertEquals(1, edgeLists.size, "Graph with one vertex should yield one component")
+     assertTrue(edgeLists[0].isEmpty(), "Single-vertex MST should have no edges")
  }
 
  @Test
@@ -34,14 +35,14 @@ class MSFFinderTest {
   graph.addEdge("B", "C", 2, 3)
 
   val edgeLists = MSFFinder(graph).findMSFKruskal()
-     Assertions.assertEquals(1, edgeLists.size, "Tree graph should yield one component")
+     assertEquals(1, edgeLists.size, "Tree graph should yield one component")
 
   val mst = edgeLists[0]
-     Assertions.assertEquals(2, mst.size, "Tree MST should contain two edges")
+     assertEquals(2, mst.size, "Tree MST should contain two edges")
   val weights = mst.map { it.weight }
-     Assertions.assertTrue(weights.containsAll(listOf(5, 3)), "MST edges should have weights 3 and 5")
+     assertTrue(weights.containsAll(listOf(5, 3)), "MST edges should have weights 3 and 5")
   val totalWeight = weights.sumOf { it }
-     Assertions.assertEquals(8, totalWeight, "MST total weight should be 8")
+     assertEquals(8, totalWeight, "MST total weight should be 8")
  }
 
  @Test
@@ -55,14 +56,14 @@ class MSFFinderTest {
   graph.addEdge("C", "A", 3, 3)
 
   val edgeLists = MSFFinder(graph).findMSFKruskal()
-     Assertions.assertEquals(1, edgeLists.size, "Cycle graph should yield one component")
+     assertEquals(1, edgeLists.size, "Cycle graph should yield one component")
 
   val mst = edgeLists[0]
-     Assertions.assertEquals(2, mst.size, "Cycle MST should contain two edges")
+     assertEquals(2, mst.size, "Cycle MST should contain two edges")
   val weights = mst.map { it.weight }
-     Assertions.assertTrue(weights.containsAll(listOf(1, 2)), "MST should include edges of weight 1 and 2")
+     assertTrue(weights.containsAll(listOf(1, 2)), "MST should include edges of weight 1 and 2")
   val totalWeight = weights.sumOf { it }
-     Assertions.assertEquals(3, totalWeight, "MST total weight should be 3")
+     assertEquals(3, totalWeight, "MST total weight should be 3")
  }
 
  @Test
@@ -76,12 +77,12 @@ class MSFFinderTest {
   graph.addEdge("C", "D", 2, 7)
 
   val edgeLists = MSFFinder(graph).findMSFKruskal()
-     Assertions.assertEquals(2, edgeLists.size, "Disconnected graph should yield two components")
+     assertEquals(2, edgeLists.size, "Disconnected graph should yield two components")
 
   val weights = edgeLists.map { component -> component.sumOf { it.weight } }.sorted()
-     Assertions.assertEquals(listOf(4, 7), weights, "Weights should be 4 and 7")
-     Assertions.assertEquals(1, edgeLists[0].size)
-     Assertions.assertEquals(1, edgeLists[1].size)
+     assertEquals(listOf(4, 7), weights, "Weights should be 4 and 7")
+     assertEquals(1, edgeLists[0].size)
+     assertEquals(1, edgeLists[1].size)
  }
 
  @Test
@@ -104,9 +105,9 @@ class MSFFinderTest {
 
   val edgeLists = MSFFinder(graph).findMSFKruskal()
   val totalEdges = edgeLists.sumOf { it.size }
-     Assertions.assertEquals(5, totalEdges, "Should have 5 MST edges across all components")
-     Assertions.assertEquals(3, edgeLists.size, "Should detect three separate components")
+     assertEquals(5, totalEdges, "Should have 5 MST edges across all components")
+     assertEquals(3, edgeLists.size, "Should detect three separate components")
   val componentSizes = edgeLists.map { it.size }.sorted()
-     Assertions.assertEquals(listOf(1, 2, 2), componentSizes, "Component MST sizes should be 2,2 and 1")
+     assertEquals(listOf(1, 2, 2), componentSizes, "Component MST sizes should be 2,2 and 1")
  }
 }

@@ -9,6 +9,7 @@ plugins {
 	id("org.jetbrains.compose")
 	id("jacoco")
 	id("org.jetbrains.kotlin.plugin.compose")
+	id("com.github.jk1.dependency-license-report") version "2.0"
 }
 
 group = "org.example"
@@ -19,6 +20,7 @@ repositories {
 	maven("https://repo.kotlin.link")
 	maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 	google()
+	maven("https://jitpack.io")
 }
 
 val detekt by configurations.creating
@@ -58,6 +60,12 @@ dependencies {
 	testImplementation(kotlin("test"))
 	testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 	implementation("space.kscience:kmath-core:0.4.2")
+	implementation("com.github.JetBrains-Research:louvain:main-SNAPSHOT")
+	testImplementation("io.mockk:mockk:1.14.2")
+	implementation("org.neo4j:neo4j-ogm-core:4.0.17")
+	implementation("org.neo4j:neo4j-ogm-bolt-driver:4.0.17")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.0")
+	testImplementation("org.neo4j.test:neo4j-harness:2025.04.0")
 }
 
 tasks.test {
@@ -67,6 +75,36 @@ tasks.test {
 tasks.check {
 	dependsOn(detektTask)
 }
+
+val runtimeClasspath: Configuration by configurations
+
+licenseReport {
+	outputDir = "$buildDir/reports/licenses"
+
+	copySpec {
+		val jars = runtimeClasspath.filter { it.name.endsWith(".jar") }
+
+		jars
+			.map { zipTree(it) }
+			.forEach { from(it) }
+
+		include(
+			"META-INF/LICENSE", "META-INF/LICENSE.*",
+			"META-INF/NOTICE", "META-INF/NOTICE.*"
+		)
+		into("$buildDir/licenses")
+		rename("^META-INF/(.*)", "$1")
+	}
+}
+
+tasks.named<Jar>("jar") {
+	dependsOn("generateLicenseReport")
+	from("$buildDir/licenses") {
+		into("META-INF")
+	}
+}
+
+
 
 compose.desktop {
 	application {
@@ -79,3 +117,5 @@ compose.desktop {
 		}
 	}
 }
+
+

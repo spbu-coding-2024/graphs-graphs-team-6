@@ -14,12 +14,12 @@ private const val COLOR_OFFSET = 137
  */
 object ColorUtils {
 	/**
-	 * Assigns a distinct color to each group of elements in [components].
-	 * All elements within the same sub-collection receive the same color.
+	 * Assigns a distinct color to each group of values in [components].
+	 * All values within the same sub-collection receive the same color.
 	 * Colors are generated based on the group's index in the outer collection.
 	 *
 	 * @param components A collection of collections; each inner collection represents a group.
-	 * @return A map from each element to its assigned [Color].
+	 * @return A map from each value to its assigned [Color].
 	 */
 	fun <T> assignColorsGrouped(components: Collection<Collection<T>>): Map<T, Color> {
 		val mapping = mutableMapOf<T, Color>()
@@ -31,15 +31,15 @@ object ColorUtils {
 	}
 
 	/**
-	 * Assigns a unique color to each element in [elements], independent of grouping.
-	 * Colors are generated based on the element's index in the collection.
+	 * Assigns a unique color to each value in [values], independent of grouping.
+	 * Colors are generated based on the value's index in the collection.
 	 *
-	 * @param elements A collection of items to color.
-	 * @return A map from each element to its assigned [Color].
+	 * @param values A collection of items to color.
+	 * @return A map from each value to its assigned [Color].
 	 */
-	fun <T> assignColorsAll(elements: Collection<T>): Map<T, Color> {
+	fun <T> assignColorsAll(values: Collection<T>): Map<T, Color> {
 		val mapping = mutableMapOf<T, Color>()
-		elements.forEachIndexed { idx, elem ->
+		values.forEachIndexed { idx, elem ->
 			mapping[elem] = generateColor(idx)
 		}
 		return mapping
