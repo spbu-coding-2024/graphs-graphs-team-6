@@ -143,7 +143,7 @@ object GraphService {
 			java.lang.Float::class.java,
 			Float::class.java,
 			Float::class.javaObjectType ->
-				Float32Field as Ring<W>
+				Float32Field
 
 			else ->
 				error("Can't load this type of weight. Type: $rawTypeName")
