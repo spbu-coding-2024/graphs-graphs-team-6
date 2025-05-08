@@ -16,39 +16,17 @@ class CycleDetection {
         var endEdge = endVertex
         var startEdge = predecessors[endVertex]
         val list = ArrayList<Edge<V, K, W>>()
-        while (startEdge != null && startEdge != startVertex) {
-            list.addLast(graph.getEdge(startEdge, endEdge))
+        do {
+            if (startEdge == null) break
+            val edge = graph.getEdge(startEdge, endEdge)
+            list.addLast(edge)
             val temp = startEdge
             startEdge = predecessors[startEdge]
             endEdge = temp
-        }
+        } while (endEdge != startVertex)
         return list.toList()
-    }
-    fun <V, K, W: Comparable<W>> findCyclesFromGivenVertex(graph: UndirectedGraph<V, K, W>, start: UndirectedVertex<V>):
-            List<List<Edge<V, K, W>>> {
-        require(graph.vertices.contains(start))
-        val predecessor = mutableMapOf<V, V>()
-        val isRelaxed = mutableMapOf<Vertex<V>, Boolean>()
-        val queue = ArrayDeque<Vertex<V>>()
-        val cycles = ArrayList<List< Edge<V, K, W>>>()
-        queue.addLast(start)
-        while (queue.isNotEmpty()) {
-            val current = queue.removeLast()
-            for (adjVertex in current.adjacencyList) {
-                if (isRelaxed[adjVertex] == false) {
-                    queue.addLast(adjVertex)
-                    predecessor[adjVertex.value] = current.value
-                } else {
-                    val adjPredecessor = predecessor[adjVertex.value]
-                    if (adjPredecessor == null) error("Relaxed vertex does not have predecessors")
-                    val pathToCurrent = constructPath(graph, predecessor, start.value, current.value)
-                    val pathToRelaxed =  constructPath(graph, predecessor, start.value, adjVertex.value)
-                    cycles.addLast(pathToRelaxed + pathToCurrent)
-                }
-            }
-            isRelaxed[current] = true
-        }
-        return cycles.toList()
+
+
     }
 
     fun <V, K, W: Comparable<W>> findCyclesFromGivenVertex(graph: DirectedGraph<V, K, W>, start: DirectedVertex<V>):
@@ -59,7 +37,7 @@ class CycleDetection {
         val cycles = ArrayList<List< Edge<V, K, W>>>()
 
         fun dfs(vertex: DirectedVertex<V>, visited: MutableMap<DirectedVertex<V>, Boolean>) {
-            if (visited[vertex] == false){
+            if (visited[vertex] == true){
                 if (vertex == start) {
                     cycles.addLast(constructPath(graph, predecessor, start.value, start.value))
                 }
@@ -72,7 +50,6 @@ class CycleDetection {
             }
             visited[vertex] = false
         }
-
         dfs(start, visited)
         return cycles.toList()
     }

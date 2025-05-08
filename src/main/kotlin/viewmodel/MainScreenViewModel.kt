@@ -13,6 +13,7 @@ import model.utils.SCCCalculator
 import model.neo4j.GraphService
 import model.utils.MSFFinder
 import model.utils.Louvain
+import model.utils.SSSPCalculator
 
 class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K, W>) {
 	private var _graph = mutableStateOf(graph)
@@ -43,6 +44,20 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 		val calculator by derivedStateOf { SCCCalculator<V, K, W>() }
 		vertexColors = calculator.calculateComponents(graph)
 		ColorUtils.applyColors(vertexColors, graphViewModel.vertices)
+	}
+
+	fun findSSSPBellmanFord(startVertex: VertexViewModel<V>, endVertex: VertexViewModel<V>) {
+		val (predecessors, _) = SSSPCalculator.bellmanFordAlgorithm(
+			graph,
+			startVertex.model.value
+		)
+		val path = SSSPCalculator.constructPathUsingEdges(predecessors, endVertex.model.value)
+			.map { graphViewModel.getEdgeViewModel(it) }
+		ColorUtils.applyOneColor(path, Color.Red)
+	}
+
+	fun findCycles(vertex: VertexViewModel<V>) {
+
 	}
 
 	fun findMSF() {

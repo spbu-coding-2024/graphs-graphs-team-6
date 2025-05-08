@@ -106,7 +106,8 @@ enum class Algorithm {
 	Tarjan,
 	BellmanFord,
 	Kruskal,
-	Louvain
+	Louvain,
+	CycleDetection
 }
 
 // TODO: Make some functions in View private, like this one
@@ -118,21 +119,11 @@ fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
 ) {
 	resetGraphViewModel(viewModel.graphViewModel)
 	when (algoNum) {
-		Algorithm.BellmanFord.ordinal -> {
-			val (predecessors, _) = SSSPCalculator.bellmanFordAlgorithm(
-				viewModel.graph,
-				startVertex.model.value
-			)
-
-			val path = SSSPCalculator.constructPathUsingEdges(predecessors, endVertex.model.value)
-				.map { viewModel.graphViewModel.getEdgeViewModel(it) }
-			ColorUtils.applyOneColor(path, Color.Red)
-		}
-
+		Algorithm.BellmanFord.ordinal -> viewModel.findSSSPBellmanFord(startVertex, endVertex)
+		Algorithm.CycleDetection.ordinal -> TODO()
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
 		Algorithm.Kruskal.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findMSF()
 		Algorithm.Louvain.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.assignCommunities()
-
 	}
 }
 
