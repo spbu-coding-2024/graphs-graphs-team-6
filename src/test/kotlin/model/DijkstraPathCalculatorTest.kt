@@ -90,10 +90,10 @@ class DijkstraPathCalculatorTest {
     }
 
     @TestFactory
-    @DisplayName("Single edge graph")
+    @DisplayName("Single cycle graph")
     fun singleCycleGraph() {
         graphType.map {
-            dynamicTest("Single edge $it graph") {
+            dynamicTest("Single cycle $it graph") {
                 if (graph[it] != null) {
                     var index = 0
                     graph[it]?.apply {
