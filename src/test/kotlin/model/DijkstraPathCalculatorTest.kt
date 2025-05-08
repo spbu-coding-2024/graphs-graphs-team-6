@@ -89,6 +89,19 @@ class DijkstraPathCalculatorTest {
         }
     }
 
+    @Test
+    @DisplayName("Negative weight")
+    fun negativeWeight() {
+        if (graph[DIRECTED] != null) {
+            graph[DIRECTED]?.apply {
+                addVertex("A")
+                addVertex("B")
+                addEdge("A", "B", 1, -1)
+            }
+            assertThrows<IllegalArgumentException> { algorithm.runOn(graph[DIRECTED] as Graph, "A").second }
+        }
+    }
+
     @TestFactory
     @DisplayName("Single cycle graph")
     fun singleCycleGraph() {
