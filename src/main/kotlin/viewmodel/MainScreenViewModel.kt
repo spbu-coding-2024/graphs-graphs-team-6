@@ -6,11 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import model.Constants.SEMI_BLACK
+import model.DirectedGraph
 import model.Graph
 import model.Vertex
 import model.Edge
 import model.utils.SCCCalculator
 import model.neo4j.GraphService
+import model.utils.CycleDetection
 import model.utils.MSFFinder
 import model.utils.Louvain
 import model.utils.SSSPCalculator
@@ -57,6 +59,15 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 	}
 
 	fun findCycles(vertex: VertexViewModel<V>) {
+		require(graph is DirectedGraph)
+		val cycleDetection = CycleDetection()
+		val list = cycleDetection.findCyclesFromGivenVertex(graph as DirectedGraph, vertex.model as DirectedGraph.DirectedVertex)
+
+		list.forEachIndexed { i, cycle ->
+			val cycleViewModel = cycle.map { graphViewModel.getEdgeViewModel(it) }
+			val color = ColorUtils.generateColor(i)
+			ColorUtils.applyOneColor(cycleViewModel, color)
+		}
 
 	}
 

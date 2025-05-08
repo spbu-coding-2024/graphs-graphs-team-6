@@ -85,13 +85,19 @@ fun <V: Any, K: Any, W : Comparable<W>> actionMenuView(actionWindowVisibility: B
 			) {
 				Icon(Icons.Default.Check, "Apply algorithm")
 			}
-			if (currentAlgorithm == Algorithm.BellmanFord.ordinal) {
-				menuBox(startVertex.model.value.toString(),
-					viewModel.graphViewModel.vertices, arrayOfVertexNames, "StartVertex") { _, vertex ->
+			if (currentAlgorithm == Algorithm.BellmanFord.ordinal || currentAlgorithm == Algorithm.CycleDetection.ordinal) {
+				menuBox(
+					startVertex.model.value.toString(),
+					viewModel.graphViewModel.vertices, arrayOfVertexNames, "StartVertex"
+				) { _, vertex ->
 					startVertex = vertex
 				}
-				menuBox(endVertex.model.value.toString(),
-					viewModel.graphViewModel.vertices, arrayOfVertexNames, "EndVertex") { _, vertex ->
+			}
+			if (currentAlgorithm == Algorithm.BellmanFord.ordinal) {
+				menuBox(
+					endVertex.model.value.toString(),
+					viewModel.graphViewModel.vertices, arrayOfVertexNames, "EndVertex"
+				) { _, vertex ->
 					endVertex = vertex
 				}
 			}
@@ -110,7 +116,6 @@ enum class Algorithm {
 	CycleDetection
 }
 
-// TODO: Make some functions in View private, like this one
 fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
 	algoNum: Int,
 	viewModel: MainScreenViewModel<V, K, W>,
@@ -120,7 +125,7 @@ fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
 	resetGraphViewModel(viewModel.graphViewModel)
 	when (algoNum) {
 		Algorithm.BellmanFord.ordinal -> viewModel.findSSSPBellmanFord(startVertex, endVertex)
-		Algorithm.CycleDetection.ordinal -> TODO()
+		Algorithm.CycleDetection.ordinal -> viewModel.findCycles(startVertex)
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
 		Algorithm.Kruskal.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findMSF()
 		Algorithm.Louvain.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.assignCommunities()
