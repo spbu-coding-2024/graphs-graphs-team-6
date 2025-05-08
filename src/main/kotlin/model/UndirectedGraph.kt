@@ -1,14 +1,16 @@
 package model
 
 import space.kscience.kmath.operations.Ring
+import java.util.concurrent.atomic.AtomicLong
 
-class UndirectedGraph<V, K, W: Comparable<W>>(override val ring: Ring<W>): Graph<V, K, W> {
+class UndirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph<V, K, W> {
 
 	class UndirectedVertex<V>(
-		override var value: V, override val adjacencyList: MutableList<UndirectedVertex<V>> = mutableListOf()
+		override var value: V,
+		override val adjacencyList: MutableList<UndirectedVertex<V>> = mutableListOf()
 	) : Vertex<V>
 
-	data class UndirectedEdge<V, K, W: Comparable<W>>(
+	data class UndirectedEdge<V, K, W : Comparable<W>>(
 		override var startVertex: Vertex<V>,
 		override var endVertex: Vertex<V>,
 		override var key: K,

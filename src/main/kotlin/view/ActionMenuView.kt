@@ -39,6 +39,7 @@ import model.Constants.DEFAULT_VERTEX_BORDER_COLOR
 import model.Constants.DEFAULT_VERTEX_COLOR
 import model.Constants.DEFAULT_VERTEX_RADIUS
 import model.UndirectedGraph
+import model.utils.Louvain
 import model.utils.SSSPCalculator
 import viewmodel.ColorUtils
 import viewmodel.GraphViewModel
@@ -49,7 +50,7 @@ import viewmodel.VertexViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun <V, K, W : Comparable<W>> actionMenuView(actionWindowVisibility: Boolean, viewModel: MainScreenViewModel<V, K, W>) {
+fun <V: Any, K: Any, W : Comparable<W>> actionMenuView(actionWindowVisibility: Boolean, viewModel: MainScreenViewModel<V, K, W>) {
 	require(viewModel.graph.vertices.isNotEmpty())
 	var currentAlgorithm by remember { mutableStateOf(Algorithm.BellmanFord.ordinal) }
 	val algorithms = Algorithm.entries.map { it.toString() }
@@ -94,10 +95,10 @@ fun <V, K, W : Comparable<W>> actionMenuView(actionWindowVisibility: Boolean, vi
 					endVertex = vertex
 				}
 			}
-			if (viewModel.exceptionMessage == "Incompatible weight type") {
-				LouvainAlertDialog(viewModel)
-			}
 		}
+	}
+	if (viewModel.showIncompatibleWeightTypeDialog) {
+		LouvainAlertDialog(viewModel)
 	}
 }
 
@@ -109,7 +110,7 @@ enum class Algorithm {
 }
 
 // TODO: Make some functions in View private, like this one
-fun <V, K, W : Comparable<W>> applyAlgorithm(
+fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
 	algoNum: Int,
 	viewModel: MainScreenViewModel<V, K, W>,
 	startVertex: VertexViewModel<V>,
@@ -117,9 +118,7 @@ fun <V, K, W : Comparable<W>> applyAlgorithm(
 ) {
 	resetGraphViewModel(viewModel.graphViewModel)
 	when (algoNum) {
-		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
-
-		Algorithm.BellmanFord.ordinal -> { //TODO: make this consistent
+		Algorithm.BellmanFord.ordinal -> {
 			val (predecessors, _) = SSSPCalculator.bellmanFordAlgorithm(
 				viewModel.graph,
 				startVertex.model.value
@@ -127,22 +126,23 @@ fun <V, K, W : Comparable<W>> applyAlgorithm(
 
 			val path = SSSPCalculator.constructPathUsingEdges(predecessors, endVertex.model.value)
 				.map { viewModel.graphViewModel.getEdgeViewModel(it) }
-			ColorUtils.applyOneColor(path, Color(DEFAULT_PATH_COLOR))
+			ColorUtils.applyOneColor(path, Color.Red)
 		}
 
+		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
 		Algorithm.Kruskal.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findMSF()
-
 		Algorithm.Louvain.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.assignCommunities()
+
 	}
 }
 
 @Composable
-fun <V, K, W: Comparable<W>> LouvainAlertDialog(viewModel: MainScreenViewModel<V, K, W>){
+fun <V: Any, K: Any, W: Comparable<W>> LouvainAlertDialog(viewModel: MainScreenViewModel<V, K, W>){
 	AlertDialog(
 		modifier = Modifier
 			.testTag("AlertDialog"),
 		onDismissRequest = {
-			viewModel.exceptionMessage = ""
+            viewModel.showIncompatibleWeightTypeDialog = false
 		},
 		title = { Text("Incompatible Edge Weight Type") },
 		text = {
@@ -156,7 +156,7 @@ fun <V, K, W: Comparable<W>> LouvainAlertDialog(viewModel: MainScreenViewModel<V
 			TextButton(
 				modifier = Modifier
 					.testTag("AlertDialogButton"),
-				onClick = { viewModel.exceptionMessage = "" }
+				onClick = { viewModel.showIncompatibleWeightTypeDialog = false }
 			) {
 				Text("ОК")
 			}
@@ -187,7 +187,6 @@ fun <T> menuBox(
 			trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) }
 		)
 		ExposedDropdownMenu(
-
 			expanded = isExpanded,
 			onDismissRequest = { isExpanded = false }
 		) {

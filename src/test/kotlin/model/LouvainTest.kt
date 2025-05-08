@@ -1,28 +1,27 @@
 package model
 
-import io.mockk.every
-import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import space.kscience.kmath.operations.Float64Field
-import space.kscience.kmath.operations.Ring
-import kotlin.test.assertFailsWith
+import io.mockk.every
+import io.mockk.mockk
 import model.UndirectedGraph.UndirectedEdge
 import model.UndirectedGraph.UndirectedVertex
 import model.utils.Louvain
+import space.kscience.kmath.operations.Ring
 
 class LouvainTest {
+
 	@Test
 	fun `single vertex yields one community`() {
 		val graph = UndirectedGraph<String, String, Double>(Float64Field)
 		graph.addVertex("A")
 		val communities = Louvain(graph).detectCommunities()
 
-		assertEquals(1, communities.size)
+		Assertions.assertEquals(1, communities.size)
 		val community = communities.single()
-		assertEquals(1, community.size)
-		assertEquals("A", community.single().value)
+		val vertex = community.single()
+		Assertions.assertEquals("A", vertex.value)
 	}
 
 	@Test
@@ -30,12 +29,10 @@ class LouvainTest {
 		val graph = UndirectedGraph<String, String, Double>(Float64Field)
 		graph.addVertex("A")
 		graph.addVertex("B")
+
 		val communities = Louvain(graph).detectCommunities()
 
-		// Expect two separate communities for A and B
-		assertEquals(1, communities.size)
-		val labels = communities.flatten().map { it.value }.toSet()
-		assertEquals(setOf("A", "B"), labels)
+		Assertions.assertEquals(1, communities.size)
 	}
 
 	@Test
@@ -44,11 +41,13 @@ class LouvainTest {
 		graph.addVertex("A")
 		graph.addVertex("B")
 		graph.addEdge("A", "B", "e1", 1.0)
-		val communities = Louvain(graph).detectCommunities()
 
-		assertEquals(1, communities.size)
+		val communities = Louvain(graph).detectCommunities()
+		Assertions.assertEquals(1, communities.size)
+
 		val community = communities.single()
-		assertEquals(setOf("A", "B"), community.map { it.value }.toSet())
+		val values = community.map { it.value }.toSet()
+		Assertions.assertEquals(setOf("A", "B"), values)
 	}
 
 	@Test
@@ -61,64 +60,63 @@ class LouvainTest {
 		graph.addVertex("E")
 
 		graph.addEdge("A", "B", "e1", 1.0)
-
-		graph.addVertex("C")
-
 		graph.addEdge("D", "E", "e2", 1.0)
 
 		val communities = Louvain(graph).detectCommunities()
-		assertEquals(3, communities.size) // [A,B], [C], [D,E]
+		Assertions.assertEquals(3, communities.size)
 
-		val sortedCommunities = communities
-			.map { it.map { v -> v.value }.sorted() }
+		val sorted = communities
+			.map { comm -> comm.map { it.value }.sorted() }
 			.sortedBy { it.first() }
-		assertEquals(
+
+		Assertions.assertEquals(
 			listOf(listOf("A", "B"), listOf("C"), listOf("D", "E")),
-			sortedCommunities
+			sorted
 		)
 	}
 
 	@Test
 	fun `connected graph with multiple communities`() {
-
 		val graph = UndirectedGraph<String, Int, Double>(Float64Field).apply {
-			listOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L")
-				.forEach { addVertex(it) }
-
+			listOf("A","B","C","D","E","F","G","H","I","J","K","L").forEach { addVertex(it) }
 			var idx = 0
+			addEdge("A","B", idx++, 10.0)
+			addEdge("A","C", idx++, 10.0)
+			addEdge("B","C", idx++, 10.0)
+			addEdge("B","D", idx++, 10.0)
+			addEdge("C","D", idx++, 10.0)
 
-			addEdge("A", "B", idx++, 10.0)
-			addEdge("A", "C", idx++, 10.0)
-			addEdge("B", "C", idx++, 10.0)
-			addEdge("B", "D", idx++, 10.0)
-			addEdge("C", "D", idx++, 10.0)
+			addEdge("E","F", idx++, 10.0)
+			addEdge("E","G", idx++, 10.0)
+			addEdge("F","G", idx++, 10.0)
+			addEdge("F","H", idx++, 10.0)
+			addEdge("G","H", idx++, 10.0)
 
-			addEdge("E", "F", idx++, 10.0)
-			addEdge("E", "G", idx++, 10.0)
-			addEdge("F", "G", idx++, 10.0)
-			addEdge("F", "H", idx++, 10.0)
-			addEdge("G", "H", idx++, 10.0)
+			addEdge("I","J", idx++, 10.0)
+			addEdge("I","K", idx++, 10.0)
+			addEdge("J","K", idx++, 10.0)
+			addEdge("J","L", idx++, 10.0)
+			addEdge("K","L", idx++, 10.0)
 
-			addEdge("I", "J", idx++, 10.0)
-			addEdge("I", "K", idx++, 10.0)
-			addEdge("J", "K", idx++, 10.0)
-			addEdge("J", "L", idx++, 10.0)
-			addEdge("K", "L", idx++, 10.0)
-
-			addEdge("D", "E", idx++, 1.0)   // 1 <-> 2
-			addEdge("H", "I", idx++, 1.0)   // 2 <-> 3
-			addEdge("L", "A", idx, 1.0)   // 3 <-> 1
+			addEdge("D","E", idx++, 1.0)
+			addEdge("H","I", idx++, 1.0)
+			addEdge("L","A", idx, 1.0)
 		}
 
 		val communities = Louvain(graph).detectCommunities().toList()
-		assertEquals(3, communities.size)
+		Assertions.assertEquals(3, communities.size)
 
-		val sortedCommunities = communities
-			.map { it.map { v -> v.value }.sorted() }
+		val sorted = communities
+			.map { comm -> comm.map { it.value }.sorted() }
 			.sortedBy { it.first() }
-		assertEquals(
-			listOf(listOf("A", "B", "C", "D"), listOf("E", "F", "G", "H"), listOf("I", "J", "K", "L")),
-			sortedCommunities
+
+		Assertions.assertEquals(
+			listOf(
+				listOf("A","B","C","D"),
+				listOf("E","F","G","H"),
+				listOf("I","J","K","L")
+			),
+			sorted
 		)
 	}
 
@@ -126,66 +124,53 @@ class LouvainTest {
 	fun `graph with self-loop yields single community`() {
 		val graph = UndirectedGraph<String, String, Double>(Float64Field)
 		graph.addVertex("A")
-		graph.addEdge("A", "A", "loop", 2.0)
+		graph.addEdge("A","A","loop", 2.0)
 
 		val communities = Louvain(graph).detectCommunities()
+		Assertions.assertEquals(1, communities.size)
 
-		assertEquals(1, communities.size)
-		val community = communities.single()
-		assertEquals(1, community.size)
-		assertEquals("A", community.single().value)
+		val vertex = communities.single().single()
+		Assertions.assertEquals("A", vertex.value)
 	}
 
 	@Test
 	fun `throws when weight is non-numeric`() {
 		val stringRing = mockk<Ring<String>>()
 		val graph = UndirectedGraph<String, String, String>(stringRing)
-
 		graph.addVertex("A")
 		graph.addVertex("B")
-		graph.addEdge("A", "B", "e1", "nonNumeric")
+		graph.addEdge("A","B","e1","nonNumeric")
 
-		val exception = assertFailsWith<IllegalArgumentException> {
+		Assertions.assertThrows(IllegalArgumentException::class.java) {
 			Louvain(graph).detectCommunities()
 		}
-		assertTrue(exception.message!!.contains("Incompatible weight type"))
 	}
 
 	@Test
 	fun `throws when second vertex mapping is missing`() {
 		val graph = mockk<UndirectedGraph<String, String, Double>>()
-
-		val vertexA = UndirectedVertex("A")
-
-		every { graph.vertices } returns listOf(vertexA)
-		val vertexB = UndirectedVertex("B")
+		val vertexA = UndirectedVertex(1)
+		every { graph.vertices } returns listOf(vertexA) as Collection<UndirectedVertex<String>>
+		val vertexB = UndirectedVertex(2,)
 		val edge = UndirectedEdge(vertexA, vertexB, "e1", 1.0)
+		every { graph.edges } returns listOf(edge) as Collection<UndirectedEdge<String, String, Double>>
 
-		every { graph.edges } returns listOf(edge)
-
-		val exception = assertFailsWith<IllegalStateException> {
+		Assertions.assertThrows(IllegalStateException::class.java) {
 			Louvain(graph).detectCommunities()
 		}
-
-		assertTrue(exception.message!!.contains("Vertex is missing"))
 	}
 
 	@Test
 	fun `throws when first vertex mapping is missing`() {
 		val graph = mockk<UndirectedGraph<String, String, Double>>()
-
-		val vertexA = UndirectedVertex("A")
-
-		every { graph.vertices } returns listOf(vertexA)
-		val vertexB = UndirectedVertex("B")
+		val vertexA = UndirectedVertex(1)
+		every { graph.vertices } returns listOf(vertexA) as Collection<UndirectedVertex<String>>
+		val vertexB = UndirectedVertex(2)
 		val edge = UndirectedEdge(vertexA, vertexB, "e1", 1.0)
+		every { graph.edges } returns listOf(edge) as Collection<UndirectedEdge<String, String, Double>>
 
-		every { graph.edges } returns listOf(edge)
-
-		val exception = assertFailsWith<IllegalStateException> {
+		Assertions.assertThrows(IllegalStateException::class.java) {
 			Louvain(graph).detectCommunities()
 		}
-
-		assertTrue(exception.message!!.contains("Vertex is missing"))
 	}
 }

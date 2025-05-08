@@ -65,6 +65,7 @@ dependencies {
 	implementation("org.neo4j:neo4j-ogm-core:4.0.17")
 	implementation("org.neo4j:neo4j-ogm-bolt-driver:4.0.17")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.0")
+	testImplementation("org.neo4j.test:neo4j-harness:2025.04.0")
 }
 
 tasks.test {

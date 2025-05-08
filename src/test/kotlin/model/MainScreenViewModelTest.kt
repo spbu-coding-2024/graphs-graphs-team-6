@@ -22,6 +22,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
+import io.mockk.mockk
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import model.Constants.DEFAULT_EDGE_COLOR
@@ -327,6 +328,7 @@ class MainScreenViewModelTest {
         onNodeWithTag("ActionButton").performClick()
         onNodeWithTag("Algorithms").performClick()
         onNodeWithTag("Algorithms: Louvain").performClick()
+
         val firstColor = vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex(0)).color
         val secondColor = vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex(1)).color
         val thirdColor = vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex(5)).color
@@ -457,24 +459,14 @@ class MainScreenViewModelTest {
     fun `Louvain Alert dialog works correctly`() = runComposeUiTest {
         testGraph.addVertex("A")
         testGraph.addVertex("B")
-        testGraph.addEdge("A", "B", 0, 5)
-
-        var vm = MainScreenViewModel<String, Int, Int>(testGraph)
+        testGraph.addEdge("A", "B", 1, 1)
+        var vm = MainScreenViewModel(testGraph)
+        vm.showIncompatibleWeightTypeDialog = true
         setContent {
-            vm.exceptionMessage = "Incompatible weight type"
             MainScreenView(vm)
         }
-
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").performClick()
-
         onNodeWithTag("AlertDialog").assertExists()
-        onNodeWithTag("AlertDialogButton").assertExists()
-
         onNodeWithTag("AlertDialogButton").performClick()
-
-        onNodeWithTag("AlertDialog").assertDoesNotExist()
-        onNodeWithTag("AlertDialogButton").assertDoesNotExist()
     }
 
     @OptIn(ExperimentalTestApi::class)

@@ -1,20 +1,27 @@
 package viewmodel
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import model.Constants.SEMI_BLACK
 import model.Graph
-import model.utils.SCCCalculator
 import model.Vertex
 import model.Edge
+import model.utils.SCCCalculator
+import model.neo4j.GraphService
 import model.utils.MSFFinder
 import model.utils.Louvain
 
-class MainScreenViewModel<V, K, W : Comparable<W>>(
-	val graph: Graph<V, K, W>,
-) {
+class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K, W>) {
+	private var _graph = mutableStateOf(graph)
+	var graph: Graph<V, K, W>
+		get() = _graph.value
+		set(value) {
+			_graph.value = value
+		}
+
 	private var _showEdgesWeights = mutableStateOf(false)
 
 	var showEdgesWeights
@@ -23,7 +30,7 @@ class MainScreenViewModel<V, K, W : Comparable<W>>(
 			_showEdgesWeights.value = value
 		}
 
-	val graphViewModel = GraphViewModel(graph, _showEdgesWeights)
+	val graphViewModel = GraphViewModel(_graph, _showEdgesWeights)
 
 	// Current vertex colorscheme
 	var vertexColors by mutableStateOf(mapOf<Vertex<V>, Color>())
@@ -32,33 +39,48 @@ class MainScreenViewModel<V, K, W : Comparable<W>>(
 	var edgeColors by mutableStateOf(mapOf<Edge<V, K, W>, Color>())
 		private set
 
-	private val calculator = SCCCalculator<V, K, W>()
 	fun calculateSCC() {
+		val calculator by derivedStateOf { SCCCalculator<V, K, W>() }
 		vertexColors = calculator.calculateComponents(graph)
 		ColorUtils.applyColors(vertexColors, graphViewModel.vertices)
 	}
 
-	private val msfFinder = MSFFinder(graph)
 	fun findMSF() {
+		val msfFinder by derivedStateOf { MSFFinder(graph) }
 		val msf = msfFinder.findMSF()
 		edgeColors = msf
 
 		ColorUtils.applyColors(edgeColors, graphViewModel.edges.sortedBy { it.model.weight }, Color(SEMI_BLACK))
 	}
 
-	private val louvainDetector = Louvain(graph)
-	var exceptionMessage by mutableStateOf("")
+	var exceptionMessage: String? = null
+	var showIncompatibleWeightTypeDialog by mutableStateOf(false)
 
 	fun assignCommunities() {
 		try {
+
+			val louvainDetector by derivedStateOf { Louvain(graph) }
 			val grouping = louvainDetector.detectCommunities()
 			val colorMap = ColorUtils.assignColorsGrouped(grouping)
 			ColorUtils.applyColors(colorMap, graphViewModel.vertices)
+		} catch (e: IllegalArgumentException) {
+			showIncompatibleWeightTypeDialog = true
+			exceptionMessage = e.message
 		}
-		catch (e: IllegalArgumentException){
-			e.message?.let {
-				exceptionMessage = it
-			}
-		}
+	}
+
+	// Neo4j
+	fun connectNeo4j(uri: String, user: String, password: String) {
+		GraphService.uri = uri
+		GraphService.user = user
+		GraphService.pass = password
+	}
+
+	fun loadNeo4j(isDirected: Boolean) {
+		graph = GraphService.loadGraph(isDirected)
+	}
+
+	fun saveNeo4j(graph: Graph<V, K, W>) {
+		GraphService.saveGraph(graph)
 	}
 }
