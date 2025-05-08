@@ -31,6 +31,7 @@ interface Graph<V, K, W: Comparable<W>>{
 	 * If vertex already exist, don't overwrite it
 	 *
 	 * @param vertex A vertex to be added to a graph
+	 * @return Added vertex
 	 */
-	fun addVertex(vertex: V)
+	fun addVertex(vertex: V): Vertex<V>
 }

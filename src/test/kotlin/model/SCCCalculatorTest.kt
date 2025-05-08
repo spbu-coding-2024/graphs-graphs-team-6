@@ -21,7 +21,7 @@ class SCCCalculatorTest {
   val colors: Map<Vertex<String>, Color> = calculator.calculateComponents(graph)
 
   val groups = colors.entries
-   .groupBy({ it.value }, { it.key.element })
+   .groupBy({ it.value }, { it.key.value })
    .values
    .map { it.toSet() }
    .toSet()
@@ -43,7 +43,7 @@ class SCCCalculatorTest {
   val colors: Map<Vertex<String>, Color> = calculator.calculateComponents(graph)
 
   val groups = colors.entries
-   .groupBy({ it.value }, { it.key.element })
+   .groupBy({ it.value }, { it.key.value })
    .values
    .map { it.toSet() }
    .toSet()
@@ -68,7 +68,7 @@ class SCCCalculatorTest {
   val colors: Map<Vertex<String>, Color> = calculator.calculateComponents(graph)
 
   val groups = colors.entries
-   .groupBy({ it.value }, { it.key.element })
+   .groupBy({ it.value }, { it.key.value })
    .values
    .map { it.toSet() }
    .toSet()
