@@ -7,7 +7,6 @@ import viewmodel.ColorUtils
 import java.util.Stack
 
 class SCCCalculator<V, K, W: Comparable<W>> {
-	var onComputeListener: ((Map<Vertex<V>, Color>) -> Unit)? = null
 	fun calculateComponents(graph: Graph<V, K, W>): Map<Vertex<V>, Color> {
 		val sccs = tarjanSCC(graph)
 		val colors = ColorUtils.assignColorsGrouped(sccs)
