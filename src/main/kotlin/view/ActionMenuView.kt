@@ -108,21 +108,23 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 }
 
 fun returnArrayOfAlgorithmLabels(): List<String> {
-	return List<String>(Algorithm.entries.size) {
-		when (it) {
-			Algorithm.BellmanFord.ordinal -> "Bellman-Ford Shortest Path"
-			Algorithm.Tarjan.ordinal -> "Tarjan Strong Connected Component"
-			Algorithm.Kruskal.ordinal -> "Kruskal Minimal Spanning Tree"
-			Algorithm.Louvain.ordinal -> "Louvain Community Detection"
-			else -> error("No string for enum")
-		}
-	}
+    return List<String>(Algorithm.entries.size) {
+      when(it) {
+          Algorithm.BellmanFord.ordinal -> "Bellman-Ford Shortest Path"
+          Algorithm.Tarjan.ordinal -> "Tarjan Strong Connected Component"
+          Algorithm.Kruskal.ordinal -> "Kruskal Minimal Spanning Tree"
+          Algorithm.Bridges.ordinal -> "Finding bridges"
+          Algorithm.Louvain.ordinal -> "Louvain Community Detection"
+          else -> error("No string for enum")
+        }
+    }
 }
 
 enum class Algorithm {
-	Tarjan,
-	BellmanFord,
-	Kruskal,
+  Tarjan,
+  BellmanFord,
+  Kruskal,
+  Bridges,
 	Louvain
 }
 
@@ -147,8 +149,8 @@ fun <V : Any, K : Any, W : Comparable<W>> applyAlgorithm(
 
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
 		Algorithm.Kruskal.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findMSF()
+    Algorithm.Bridges.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findBridges()
 		Algorithm.Louvain.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.assignCommunities()
-
 	}
 }
 
