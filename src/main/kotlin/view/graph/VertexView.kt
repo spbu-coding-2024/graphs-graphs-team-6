@@ -28,7 +28,7 @@ fun VertexView(
 	Box(
 		modifier = modifier
 			.offset(x = vertexViewModel.x, y = vertexViewModel.y)
-			.testTag("Vertex: ${vertexViewModel.model.value.toString()}")
+			.testTag("Vertex: ${vertexViewModel.model.value}")
 			.size(vertexViewModel.radius * 2).pointerInput(vertexViewModel) {
 				detectDragGestures { change, dragAmount ->
 					change.consume()

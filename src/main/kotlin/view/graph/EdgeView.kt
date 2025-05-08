@@ -68,7 +68,10 @@ fun <V, K, W : Comparable<W>> EdgeView(
 	edgeViewModel: EdgeViewModel<V, K, W>,
 	modifier: Modifier = Modifier
 ) {
-	Canvas(modifier = modifier.fillMaxSize()) {
+	Canvas(modifier = modifier
+		.testTag("Edge: ${edgeViewModel.model.key}")
+		.fillMaxSize()
+	) {
 		val first = edgeViewModel.firstVertexViewModel
 		val second = edgeViewModel.secondVertexViewModel
 		val r = first.radius.toPx()
@@ -77,6 +80,7 @@ fun <V, K, W : Comparable<W>> EdgeView(
 			val start = Offset(first.x.toPx() + r, first.y.toPx() + r)
 			val end = Offset(second.x.toPx() + r, second.y.toPx() + r)
 			drawLine(
+
 				start = start,
 				end = end,
 				color = edgeViewModel.color,

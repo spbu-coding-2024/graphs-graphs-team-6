@@ -453,6 +453,55 @@ class MainScreenViewModelTest {
         assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("G")).color)
         assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("H")).color)
     }
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `Apply CycleDetection`() = runComposeUiTest {
+        val firstVertex: Vertex<String>
+        val undirectedGraph = DirectedGraph<String, Int, Int>(IntRing).apply {
+            firstVertex = addVertex("A")
+            addVertex("B")
+            addVertex("C")
+            addVertex("D")
+            addVertex("E")
+            addVertex("F")
+            addVertex("G")
+            addVertex("H")
+
+            var index = 0
+            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) {it * 2}
+
+            addEdge("A", "B", index, weight[index]); index++
+            addEdge("B", "C", index, weight[index]); index++
+            addEdge("C", "A", index, weight[index]); index++
+            addEdge("C", "C", index, weight[index]); index++
+
+
+            addEdge("D", "E", index, weight[index]); index++
+            addEdge("E", "F", index, weight[index]); index++
+            addEdge("F", "D", index, weight[index]); index++
+
+            addEdge("H", "D", index, weight[index]); index++
+
+            addEdge("G", "H", index, weight[index]); index++
+        }
+
+        val vm = MainScreenViewModel(undirectedGraph)
+        setContent {
+            MainScreenView(vm)
+        }
+
+        onNodeWithTag("MainButton").performClick()
+        onNodeWithTag("ActionButton").performClick()
+        onNodeWithTag("Algorithms").performClick()
+        onNodeWithTag("Algorithms: CycleDetection").performClick()
+        onNodeWithTag("ApplyAlgorithm").performClick()
+        val color = vm.graphViewModel.getEdgeViewModel(undirectedGraph.getEdge("A", "B")).color
+
+        assertEquals(color, vm.graphViewModel.getEdgeViewModel(undirectedGraph.getEdge("A", "B")).color)
+        assertEquals(color, vm.graphViewModel.getEdgeViewModel(undirectedGraph.getEdge("B", "C")).color)
+        assertEquals(color, vm.graphViewModel.getEdgeViewModel(undirectedGraph.getEdge("C", "A")).color)
+
+    }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
