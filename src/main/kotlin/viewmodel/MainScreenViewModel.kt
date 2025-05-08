@@ -59,15 +59,15 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 	}
 
 	private val bridgeFinder = BridgeFinder()
-	private fun convertPairsToColorMap(pairs: Set<Set<Vertex<V>>>): Map<Edge<V, K, W>, Color> {
+	private fun convertPairsToColorMap(pairs: Set<Pair<Vertex<V>, Vertex<V>>>): Map<Edge<V, K, W>, Color> {
 		return graph.edges
 			.filterIsInstance<UndirectedGraph.UndirectedEdge<V, K, W>>()
-			.filter { edge -> edge.pair in pairs }
+			.filter { edge -> edge.startVertex to edge.endVertex in pairs }
 			.associateWith { Color(BRIGHT_RED) }
 	}
 	fun findBridges() {
 		require(graph is UndirectedGraph)
-		val bridges = bridgeFinder.runOn(graph)
+		val bridges = bridgeFinder.runOn(graph as UndirectedGraph<V, K, W>)
 		edgeColors = convertPairsToColorMap(bridges)
 
 		ColorUtils.applyColors(edgeColors, graphViewModel.edges.sortedBy { it.model.weight }, Color(SEMI_BLACK))

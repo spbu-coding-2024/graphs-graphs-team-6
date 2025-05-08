@@ -15,8 +15,8 @@ class BridgeFinder {
      *
      * @return set of pairs, which represents bridge edges
      */
-    fun <V, K, W: Comparable<W>> runOn(graph: UndirectedGraph<V, K, W>): Set<Set<Vertex<V>>> {
-        val bridges: MutableSet<Set<Vertex<V>>> = mutableSetOf()
+    fun <V, K, W: Comparable<W>> runOn(graph: UndirectedGraph<V, K, W>): Set<Pair<Vertex<V>, Vertex<V>>> {
+        val bridges: MutableSet<Pair<Vertex<V>, Vertex<V>>> = mutableSetOf()
         val usedVertices: MutableSet<Vertex<V>> = mutableSetOf()
         val timeIn: MutableMap<Vertex<V>, Int> = mutableMapOf()
         val lowLink: MutableMap<Vertex<V>, Int> = mutableMapOf()
@@ -45,7 +45,8 @@ class BridgeFinder {
                         >
                         (timeIn[current] ?: error("Cannot find current vertex(next is not used)"))
                     ) {
-                        bridges.add(setOf(current, next))
+                        bridges.add(current to next)
+                        bridges.add(next to current)
                     }
                 }
             }

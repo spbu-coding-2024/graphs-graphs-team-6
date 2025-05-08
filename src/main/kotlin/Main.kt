@@ -5,7 +5,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import view.MainScreenView
 import viewmodel.MainScreenViewModel
-import model.UndirectedGraph
+import model.DirectedGraph
 import org.neo4j.ogm.session.SessionFactory
 import space.kscience.kmath.operations.IntRing
 

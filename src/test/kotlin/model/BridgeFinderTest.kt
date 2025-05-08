@@ -46,9 +46,8 @@ class BridgeFinderTest {
         assertEquals(2, graph.vertices.size)
         assertEquals(1, graph.edges.size)
         val result = algorithm.runOn(graph)
-        assertEquals(1, result.size)
-        assertEquals(2, result.first().size)
-        assertTrue(result.first().all { it.element in 0..1 })
+        assertTrue(result.first().first.value in 0..1)
+        assertTrue(result.first().second.value in 0..1)
     }
 
     @DisplayName("Multiple edge pseudo-bridge")
