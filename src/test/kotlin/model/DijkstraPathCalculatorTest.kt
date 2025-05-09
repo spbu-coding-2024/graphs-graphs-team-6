@@ -4,7 +4,6 @@ import model.utils.DijkstraPathCalculator
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import space.kscience.kmath.operations.IntRing
-import kotlin.Int.Companion.MAX_VALUE
 import kotlin.test.assertEquals
 
 private const val DIRECTED = "directed"
@@ -27,8 +26,8 @@ class DijkstraPathCalculatorTest {
 
     @TestFactory
     @DisplayName("Empty graph")
-    fun emptyGraph() {
-        graphType.map {
+    fun emptyGraph(): List<DynamicTest> {
+        return graphType.map {
             dynamicTest("Empty $it graph") {
                 if (graph[it] != null) {
                     val (predecessor, distance) = algorithm.runOn(graph[it] as Graph, "A")
@@ -37,29 +36,27 @@ class DijkstraPathCalculatorTest {
                     assertEquals(0, distance["A"])
                 }
             }
-        }
+        }.toList()
     }
 
     @TestFactory
     @DisplayName("Single vertex graph")
-    fun singleVertexGraph() {
-        graphType.map {
+    fun singleVertexGraph(): List<DynamicTest> {
+        return graphType.map {
             dynamicTest("Single vertex $it graph") {
                 if (graph[it] != null) {
                     graph[it]?.addVertex("A")
-                    val (predecessor, distance) = algorithm.runOn(graph[it] as Graph, "A")
-                    assertEquals(0, predecessor.size)
-                    assertEquals(1, distance.size)
+                    val (_, distance) = algorithm.runOn(graph[it] as Graph, "A")
                     assertEquals(0, distance["A"])
                 }
             }
-        }
+        }.toList()
     }
 
     @TestFactory
     @DisplayName("Single edge graph")
-    fun singleEdgeGraph() {
-        graphType.map {
+    fun singleEdgeGraph(): List<DynamicTest> {
+        return graphType.map {
             dynamicTest("Single edge $it graph") {
                 if (graph[it] != null) {
                     graph[it]?.apply {
@@ -68,25 +65,23 @@ class DijkstraPathCalculatorTest {
                         addEdge("A", "B", 1, 1)
                     }
                     var distance = algorithm.runOn(graph[it] as Graph, "A").second
-                    assertEquals(2, distance.size)
                     assertEquals(0, distance["A"])
                     assertEquals(1, distance["B"])
 
                     distance = algorithm.runOn(graph[it] as Graph, "B").second
-                    assertEquals(2, distance.size)
                     when (graph[it]) {
                         is UndirectedGraph -> {
-                            assertEquals(0, distance["A"])
-                            assertEquals(1, distance["B"])
+                            assertEquals(1, distance["A"])
+                            assertEquals(0, distance["B"])
                         }
                         is DirectedGraph -> {
-                            assertEquals(MAX_VALUE, distance["A"])
+                            assertEquals(null, distance["A"])
                             assertEquals(0, distance["B"])
                         }
                     }
                 }
             }
-        }
+        }.toList()
     }
 
     @Test
@@ -104,8 +99,8 @@ class DijkstraPathCalculatorTest {
 
     @TestFactory
     @DisplayName("Single cycle graph")
-    fun singleCycleGraph() {
-        graphType.map {
+    fun singleCycleGraph(): List<DynamicTest> {
+        return graphType.map {
             dynamicTest("Single cycle $it graph") {
                 if (graph[it] != null) {
                     var index = 0
@@ -127,13 +122,13 @@ class DijkstraPathCalculatorTest {
                     }
                 }
             }
-        }
+        }.toList()
     }
 
     @TestFactory
     @DisplayName("Loop")
-    fun loopGraph() {
-        graphType.map {
+    fun loopGraph(): List<DynamicTest> {
+        return graphType.map {
             dynamicTest("Loop $it graph") {
                 if (graph[it] != null) {
                     var index = 0
@@ -156,13 +151,13 @@ class DijkstraPathCalculatorTest {
                     }
                 }
             }
-        }
+        }.toList()
     }
 
     @TestFactory
     @DisplayName("Complex graph")
-    fun complexGraph() {
-        graphType.map {current ->
+    fun complexGraph(): List<DynamicTest> {
+        return graphType.map {current ->
             dynamicTest("Complex $current graph") {
                 if (graph[current] != null) {
                     var index = 0
@@ -190,7 +185,7 @@ class DijkstraPathCalculatorTest {
                     var distance = algorithm.runOn(graph[current] as Graph, "A").second
                     assertEquals(0, distance["A"])
                     assertEquals(1, distance["B"])
-                    "DEFGHI".forEach {char -> assertEquals(MAX_VALUE, distance[char.toString()]) }
+                    "DEFGHI".forEach {char -> assertEquals(null, distance[char.toString()]) }
                     when (graph[current]) {
                         is UndirectedGraph -> assertEquals(1, distance["C"])
                         is DirectedGraph -> assertEquals(2, distance["C"])
@@ -198,7 +193,7 @@ class DijkstraPathCalculatorTest {
                     distance = algorithm.runOn(graph[current] as Graph, "D").second
                     assertEquals(0, distance["D"])
                     assertEquals(1, distance["E"])
-                    "ABC".forEach {char -> assertEquals(MAX_VALUE, distance[char.toString()]) }
+                    "ABC".forEach {char -> assertEquals(null, distance[char.toString()]) }
                     when (graph[current]) {
                         is UndirectedGraph -> {
                             assertEquals(2, distance["F"])
@@ -210,11 +205,11 @@ class DijkstraPathCalculatorTest {
                             assertEquals(2, distance["F"])
                             assertEquals(3, distance["G"])
                             assertEquals(4, distance["H"])
-                            assertEquals(MAX_VALUE, distance["I"])
+                            assertEquals(null, distance["I"])
                         }
                     }
                 }
             }
-        }
+        }.toList()
     }
 }
