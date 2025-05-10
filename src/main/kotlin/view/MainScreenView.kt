@@ -83,7 +83,7 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 					coroutine.launch { drawerState.close() }
 					showDbSelectDialog.value = true
 				}
-				drawerButton("Save", description = "OpenButton") {
+				drawerButton("Save", description = "SaveButton") {
 					coroutine.launch { drawerState.close() }
 					val dialog = FileDialog(null as Frame?, "Select JSON")
 					dialog.mode = FileDialog.SAVE
