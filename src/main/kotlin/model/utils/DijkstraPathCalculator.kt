@@ -40,6 +40,45 @@ class DijkstraPathCalculator {
         val vertices = valueToVertexMap(graph)
         val edges = valuesToEdgeMap(graph)
 
+        fun processEdges(
+            neighborValue: V,
+            currentDistance: W,
+            multipleEdge: List<Edge<V, K, W>>
+        ) {
+            for (edge in multipleEdge) {
+                val weight = edge.weight
+                require(weight >= ring.zero) { "Edge weights must be non-negative" }
+
+                val newDist = ring.add(currentDistance, weight)
+                val currentNeighborDistance = distances[neighborValue]
+
+                if (currentNeighborDistance == null || newDist < currentNeighborDistance) {
+                    distances[neighborValue] = newDist
+                    previousEdges[neighborValue] = edge
+                    queue.add(newDist to neighborValue)
+                }
+            }
+        }
+
+        fun processNeighbors(
+            vertex: Vertex<V>,
+            currentVertexValue: V,
+            currentDistance: W,
+            edges: Map<Pair<V, V>, List<Edge<V, K, W>>>,
+        ) {
+            for (neighbor in vertex.adjacencyList) {
+                val multipleEdge = edges[currentVertexValue to neighbor.value]
+                    ?: edges[neighbor.value to currentVertexValue]
+                    ?: continue
+
+                processEdges(
+                    neighbor.value,
+                    currentDistance,
+                    multipleEdge
+                )
+            }
+        }
+
         distances[startVertex] = ring.zero
         queue.add(ring.zero to startVertex)
 
@@ -50,27 +89,7 @@ class DijkstraPathCalculator {
 
             val vertex = vertices[currentVertexValue] ?: continue
 
-            for (neighbor in vertex.adjacencyList) {
-                val multipleEdge =
-                    edges[currentVertexValue to neighbor.value]?:
-                    edges[neighbor.value to currentVertexValue]?:
-                    continue
-
-                for (edge in multipleEdge) {
-                    val weight = edge.weight
-                    require(weight >= ring.zero) { "Edge weights must be non-negative" }
-
-                    val neighborValue = neighbor.value
-                    val newDist = ring.add(currentDistance, weight)
-
-                    val currentNeighborDistance = distances[neighborValue]
-                    if (currentNeighborDistance == null || newDist < currentNeighborDistance) {
-                        distances[neighborValue] = newDist
-                        previousEdges[neighborValue] = edge
-                        queue.add(newDist to neighborValue)
-                    }
-                }
-            }
+            processNeighbors(vertex, currentVertexValue, currentDistance, edges)
         }
 
         return previousEdges to distances
