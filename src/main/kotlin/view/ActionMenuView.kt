@@ -46,7 +46,10 @@ import viewmodel.VertexViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun <V: Any, K: Any, W : Comparable<W>> actionMenuView(actionWindowVisibility: Boolean, viewModel: MainScreenViewModel<V, K, W>) {
+fun <V: Any, K: Any, W : Comparable<W>> actionMenuView(
+	actionWindowVisibility: Boolean,
+	viewModel: MainScreenViewModel<V, K, W>
+) {
 	require(viewModel.graph.vertices.isNotEmpty())
 	var currentAlgorithm by remember { mutableStateOf(Algorithm.BellmanFord.ordinal) }
 	val algorithms = Algorithm.entries.map { it.toString() }

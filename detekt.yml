@@ -132,7 +132,7 @@ complexity:
     threshold: 60
   LongParameterList:
     active: true
-    functionThreshold: 6
+    functionThreshold: 8
     constructorThreshold: 9
     ignoreDefaultParameters: false
     ignoreDataClasses: true
@@ -543,7 +543,7 @@ style:
   DataClassShouldBeImmutable:
     active: false
   DestructuringDeclarationWithTooManyEntries:
-    active: true
+    active: false
     maxDestructuringEntries: 3
   DoubleNegativeLambda:
     active: false

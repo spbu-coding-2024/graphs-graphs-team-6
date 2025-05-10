@@ -15,6 +15,7 @@ import androidx.compose.material.DrawerValue
 import androidx.compose.material.Button
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Checkbox
+import androidx.compose.material.DrawerState
 import androidx.compose.material.TextButton
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
@@ -24,6 +25,7 @@ import androidx.compose.material.ModalDrawer
 import viewmodel.MainScreenViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Star
@@ -51,6 +53,7 @@ import kotlinx.coroutines.launch
 import view.graph.GraphView
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.TopEnd
+import kotlinx.coroutines.CoroutineScope
 import model.graph.DirectedGraph
 import model.JsonManager
 import model.graph.Graph
@@ -79,24 +82,13 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 				Button(onClick = { coroutine.launch { drawerState.close() } }) {
 					Icon(Icons.Default.Close, "Close")
 				}
-				drawerButton("Open", icon = Icons.Default.Add, description = "OpenButton") {
-					coroutine.launch { drawerState.close() }
+				drawerButton("Open", Icons.Default.Add, "OpenButton", coroutine, drawerState) {
 					showDbSelectDialog.value = true
 				}
-				drawerButton("Save", description = "SaveButton") {
-					coroutine.launch { drawerState.close() }
-					val dialog = FileDialog(null as Frame?, "Select JSON")
-					dialog.mode = FileDialog.SAVE
-					dialog.isVisible = true
-					var file = dialog.file
-					if (file.length < 5 || file.substring(file.length - 5) != ".json") {
-						file += ".json"
-					}
-
-					JsonManager.saveJSON<V,K,W>(file, viewModel.graph as DirectedGraph)
+				drawerButton("Save", Icons.Default.ArrowDropDown, "SaveButton", coroutine, drawerState) {
+					drawerSave(viewModel)
 				}
-				drawerButton("Action", icon = Icons.Default.Star, description = "ActionButton") {
-					coroutine.launch { drawerState.close() }
+				drawerButton("Action", Icons.Default.Star, "ActionButton", coroutine, drawerState) {
 					actionWindowVisibility = true
 				}
 			}
@@ -122,20 +114,15 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 					}
 				}
 			) {
-				Icon(
-					if (actionWindowVisibility) Icons.Default.Close else Icons.Default.Menu,
-					"Main button"
-				)
+				Icon(if (actionWindowVisibility) Icons.Default.Close else Icons.Default.Menu, "Main button")
 			}
 		}
 		if (viewModel.graphViewModel.vertices.isNotEmpty()) {
 			actionMenuView(actionWindowVisibility, viewModel)
 		}
 	}
-
 	WeightsCheckBox(viewModel)
 	dbMenu(viewModel, showDbSelectDialog)
-
 }
 
 @Composable
@@ -297,6 +284,8 @@ fun drawerButton(
 	textString: String,
 	icon: ImageVector = Icons.Default.Add,
 	description: String,
+	coroutine: CoroutineScope,
+	drawerState: DrawerState,
 	onClickMethod: () -> Unit
 ) {
 	Column {
@@ -306,7 +295,10 @@ fun drawerButton(
 				.height(100.dp)
 				.padding(16.dp)
 				.testTag(description),
-			onClick = onClickMethod,
+			onClick = {
+				coroutine.launch { drawerState.close() }
+				onClickMethod()
+			},
 			shape = RectangleShape,
 		) {
 			Icon(icon, description, modifier = Modifier.padding(5.dp))
@@ -345,4 +337,16 @@ fun <V : Any, K : Any, W : Comparable<W>> WeightsCheckBox(
 			Text("Show weights")
 		}
 	}
+}
+
+fun <V: Any, K: Any, W: Comparable<W>> drawerSave(viewModel: MainScreenViewModel<V, K, W>) {
+	val extension = ".json"
+	val dialog = FileDialog(null as Frame?, "Select JSON")
+	dialog.mode = FileDialog.SAVE
+	dialog.isVisible = true
+	var file = dialog.file
+	if (file.length < extension.length || file.substring(file.length - extension.length) != ".json") {
+		file += extension
+	}
+	JsonManager.saveJSON<V,K,W>(file, viewModel.graph)
 }

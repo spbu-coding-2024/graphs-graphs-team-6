@@ -44,19 +44,23 @@ object JsonManager {
     fun <V: Any, K: Any, W: Comparable<W>>loadJSON(filePath: String): Graph<V, K, W> {
         val lines = File(filePath).readLines()
         val metadata = readJSON(lines[0], GraphMetadata::class.java)
-        val vertices = readJSON(lines[1], List::class.java) as List<V>
-        val firstVertexOfEdges = readJSON(lines[2], List::class.java) as List<V>
-        val secondVertexOfEdges = readJSON(lines[3], List::class.java) as List<V>
-        val keysOfEdges = readJSON(lines[4], List::class.java) as List<K>
-        val weightsOfEdges = readJSON(lines[4], List::class.java) as List<W>
+
+        val (vertices, firstVertexOfEdges, secondVertexOfEdges, keysOfEdges, weightsOfEdges)
+        = lines.subList(1, lines.size).map { readJSON(it, List::class.java) }
+
         val ring = getRing(metadata.ring) as Ring<W>
-        val graph: Graph<V, K, W> = if (metadata.isDirected) DirectedGraph<V, K, W>(ring) else UndirectedGraph<V, K, W>(ring)
+        val graph: Graph<V, K, W> = if (metadata.isDirected)
+            DirectedGraph<V, K, W>(ring) else UndirectedGraph<V, K, W>(ring)
 
         for (v in vertices) {
-            graph.addVertex(v)
+            graph.addVertex(v as V)
         }
         for (i in 0..(firstVertexOfEdges.size - 1)) {
-            graph.addEdge(firstVertexOfEdges[i], secondVertexOfEdges[i], keysOfEdges[i], weightsOfEdges[i])
+            graph.addEdge(
+                firstVertexOfEdges[i] as V,
+                secondVertexOfEdges[i] as V,
+                keysOfEdges[i] as K,
+                weightsOfEdges[i] as W)
         }
         return graph
     }

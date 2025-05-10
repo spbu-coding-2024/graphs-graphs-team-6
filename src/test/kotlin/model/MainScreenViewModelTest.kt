@@ -1,10 +1,14 @@
 package model
 
+import androidx.compose.material.DrawerState
+import androidx.compose.material.DrawerValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.rememberDrawerState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -509,8 +513,10 @@ class MainScreenViewModelTest {
     @Test
     fun `drawerButton reacts on click`() = runComposeUiTest {
         setContent {
+            val coroutine = rememberCoroutineScope()
+            val drawerState = rememberDrawerState(DrawerValue.Closed)
             var title by remember { mutableStateOf("A button") }
-            drawerButton(title, Icons.Default.Check, "TestButton") {
+            drawerButton(title, Icons.Default.Check, "TestButton",coroutine, drawerState) {
                 title = "A pressed button"
             }
         }
@@ -525,11 +531,10 @@ class MainScreenViewModelTest {
     fun `test Weight check box`() = runComposeUiTest {
         testGraph.addVertex("A")
         testGraph.addVertex("B")
-        val edge = testGraph.addEdge("A", "B", 0, 5)
+        testGraph.addEdge("A", "B", 0, 5)
 
 
         var vm = MainScreenViewModel(testGraph)
-        val edgeVM = vm.graphViewModel.getEdgeViewModel(edge)
         setContent {
             MainScreenView(vm)
         }

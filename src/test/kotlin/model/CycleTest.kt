@@ -22,7 +22,8 @@ class CycleTest {
             addEdge("C", "A", index++, 5)
         }
 
-        val list = cycleDetection.findCyclesFromGivenVertex<String, Int, Int>(graph, graph.getVertex("A") as DirectedVertex).first()
+        val list = cycleDetection.findCyclesFromGivenVertex<String, Int, Int>(graph, graph.getVertex("A")
+                as DirectedVertex).first()
         assertEquals(graph.getEdge("C", "A"), list[0])
         assertEquals(graph.getEdge("B", "C"), list[1])
         assertEquals(graph.getEdge("A", "B"), list[2])
@@ -55,7 +56,10 @@ class CycleTest {
             addEdge("H", "E", index++, 5)
         }
 
-        val list = cycleDetection.findCyclesFromGivenVertex<String, Int, Int>(graph, graph.getVertex("A") as DirectedVertex)
+        val list = cycleDetection.findCyclesFromGivenVertex<String, Int, Int>(
+            graph,
+            graph.getVertex("A") as DirectedVertex
+        )
 
         assertEquals(graph.getEdge("F", "A"), list[0][0])
         assertEquals(graph.getEdge("E", "F"), list[0][1])
