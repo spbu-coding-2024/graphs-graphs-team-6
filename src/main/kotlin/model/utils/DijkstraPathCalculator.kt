@@ -85,11 +85,11 @@ class DijkstraPathCalculator {
         while (queue.isNotEmpty()) {
             val (currentDistance, currentVertexValue) = queue.poll()
 
-            if (!visited.add(currentVertexValue)) continue
-
-            val vertex = vertices[currentVertexValue] ?: continue
-
-            processNeighbors(vertex, currentVertexValue, currentDistance, edges)
+            if (visited.add(currentVertexValue)) {
+                vertices[currentVertexValue]?.let { vertex ->
+                    processNeighbors(vertex, currentVertexValue, currentDistance, edges)
+                }
+            }
         }
 
         return previousEdges to distances
