@@ -37,6 +37,8 @@ import model.Constants.DEFAULT_VERTEX_BORDER_COLOR
 import model.Constants.DEFAULT_VERTEX_COLOR
 import model.Constants.DEFAULT_VERTEX_RADIUS
 import model.UndirectedGraph
+import model.utils.DijkstraPathCalculator
+import model.utils.GraphPath
 import model.utils.Louvain
 import model.utils.SSSPCalculator
 import viewmodel.ColorUtils
@@ -84,7 +86,8 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 			) {
 				Icon(Icons.Default.Check, "Apply algorithm")
 			}
-			if (currentAlgorithm == Algorithm.BellmanFord.ordinal) {
+			if (currentAlgorithm == Algorithm.BellmanFord.ordinal ||
+				currentAlgorithm == Algorithm.Dijkstra.ordinal) {
 				menuBox(
 					startVertex.model.value.toString(),
 					viewModel.graphViewModel.vertices,
@@ -110,7 +113,8 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 fun returnArrayOfAlgorithmLabels(): List<String> {
     return List<String>(Algorithm.entries.size) {
       when(it) {
-          Algorithm.BellmanFord.ordinal -> "Bellman-Ford Shortest Path"
+		  Algorithm.BellmanFord.ordinal -> "Bellman-Ford Shortest Path"
+		  Algorithm.Dijkstra.ordinal -> "Dijkstra Shortest Path"
           Algorithm.Tarjan.ordinal -> "Tarjan Strong Connected Component"
           Algorithm.Kruskal.ordinal -> "Kruskal Minimal Spanning Tree"
           Algorithm.Bridges.ordinal -> "Finding bridges"
@@ -121,10 +125,11 @@ fun returnArrayOfAlgorithmLabels(): List<String> {
 }
 
 enum class Algorithm {
-  Tarjan,
-  BellmanFord,
-  Kruskal,
-  Bridges,
+	Tarjan,
+	BellmanFord,
+	Kruskal,
+	Bridges,
+	Dijkstra,
 	Louvain
 }
 
@@ -142,7 +147,18 @@ fun <V : Any, K : Any, W : Comparable<W>> applyAlgorithm(
 				startVertex.model.value
 			)
 
-			val path = SSSPCalculator.constructPath(predecessors, endVertex.model.value)
+			val path = GraphPath.construct(predecessors, endVertex.model.value)
+				.map { viewModel.graphViewModel.getEdgeViewModel(it) }
+			ColorUtils.applyOneColor(path, Color.Red)
+		}
+
+		Algorithm.Dijkstra.ordinal -> {
+			val (predecessors, _) = DijkstraPathCalculator().runOn(
+				viewModel.graph,
+				startVertex.model.value
+			)
+
+			val path = GraphPath.construct(predecessors, endVertex.model.value)
 				.map { viewModel.graphViewModel.getEdgeViewModel(it) }
 			ColorUtils.applyOneColor(path, Color.Red)
 		}
