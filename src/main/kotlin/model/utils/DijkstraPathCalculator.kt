@@ -15,10 +15,13 @@ class DijkstraPathCalculator {
         return result
     }
 
-    private fun <V, K, W : Comparable<W>> valuesToEdgeMap(graph: Graph<V, K, W>): Map<Pair<V, V>, Edge<V, K, W>> {
-        val result: MutableMap<Pair<V, V>, Edge<V, K, W>> = mutableMapOf()
+    private fun <V, K, W : Comparable<W>> valuesToEdgeMap(graph: Graph<V, K, W>): Map<Pair<V, V>, List<Edge<V, K, W>>> {
+        val result: MutableMap<Pair<V, V>, MutableList<Edge<V, K, W>>> = mutableMapOf()
         for (edge in graph.edges) {
-            result[edge.startVertex.value to edge.endVertex.value] = edge
+            if (result[edge.startVertex.value to edge.endVertex.value] == null) {
+                result[edge.startVertex.value to edge.endVertex.value] = mutableListOf()
+            }
+            result[edge.startVertex.value to edge.endVertex.value]?.add(edge)
         }
         return result
     }
@@ -48,22 +51,24 @@ class DijkstraPathCalculator {
             val vertex = vertices[currentVertexValue] ?: continue
 
             for (neighbor in vertex.adjacencyList) {
-                val edge =
+                val multipleEdge =
                     edges[currentVertexValue to neighbor.value]?:
                     edges[neighbor.value to currentVertexValue]?:
                     continue
 
-                val weight = edge.weight
-                require(weight >= ring.zero) { "Edge weights must be non-negative" }
+                for (edge in multipleEdge) {
+                    val weight = edge.weight
+                    require(weight >= ring.zero) { "Edge weights must be non-negative" }
 
-                val neighborValue = neighbor.value
-                val newDist = ring.add(currentDistance, weight)
+                    val neighborValue = neighbor.value
+                    val newDist = ring.add(currentDistance, weight)
 
-                val currentNeighborDistance = distances[neighborValue]
-                if (currentNeighborDistance == null || newDist < currentNeighborDistance) {
-                    distances[neighborValue] = newDist
-                    previousEdges[neighborValue] = edge
-                    queue.add(newDist to neighborValue)
+                    val currentNeighborDistance = distances[neighborValue]
+                    if (currentNeighborDistance == null || newDist < currentNeighborDistance) {
+                        distances[neighborValue] = newDist
+                        previousEdges[neighborValue] = edge
+                        queue.add(newDist to neighborValue)
+                    }
                 }
             }
         }
