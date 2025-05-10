@@ -3,7 +3,6 @@ package model.utils
 import model.Edge
 import model.Graph
 import java.util.PriorityQueue
-import kotlin.collections.ArrayList
 
 class DijkstraPathCalculator {
 
@@ -50,20 +49,5 @@ class DijkstraPathCalculator {
         }
 
         return previousEdges to distances
-    }
-
-    fun <V, K, W: Comparable<W>> constructPath(predecessors: Map<V, Edge<V, K, W>>,
-                                               endVertex: V): List<Edge<V, K, W>> {
-        var current = predecessors[endVertex]
-        var acknowledged = endVertex
-        val array = ArrayList<Edge<V, K, W>>(predecessors.size)
-
-        while (current != null) {
-            array.addLast(current)
-            acknowledged = current.opposite(acknowledged)
-            current = predecessors[acknowledged]
-        }
-
-        return array.reversed()
     }
 }

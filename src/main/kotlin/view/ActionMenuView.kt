@@ -37,6 +37,7 @@ import model.Constants.DEFAULT_VERTEX_BORDER_COLOR
 import model.Constants.DEFAULT_VERTEX_COLOR
 import model.Constants.DEFAULT_VERTEX_RADIUS
 import model.UndirectedGraph
+import model.utils.GraphPath
 import model.utils.Louvain
 import model.utils.SSSPCalculator
 import viewmodel.ColorUtils
@@ -142,7 +143,7 @@ fun <V : Any, K : Any, W : Comparable<W>> applyAlgorithm(
 				startVertex.model.value
 			)
 
-			val path = SSSPCalculator.constructPath(predecessors, endVertex.model.value)
+			val path = GraphPath.construct(predecessors, endVertex.model.value)
 				.map { viewModel.graphViewModel.getEdgeViewModel(it) }
 			ColorUtils.applyOneColor(path, Color.Red)
 		}
