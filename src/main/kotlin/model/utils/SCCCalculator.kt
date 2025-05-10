@@ -1,8 +1,8 @@
 package model.utils
 
 import androidx.compose.ui.graphics.Color
-import model.Graph
-import model.Vertex
+import model.graph.Graph
+import model.graph.Vertex
 import viewmodel.ColorUtils
 import java.util.Stack
 

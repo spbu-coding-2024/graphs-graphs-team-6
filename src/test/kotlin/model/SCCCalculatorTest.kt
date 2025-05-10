@@ -1,6 +1,8 @@
 package model
 
 import androidx.compose.ui.graphics.Color
+import model.graph.DirectedGraph
+import model.graph.Vertex
 import model.utils.SCCCalculator
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test

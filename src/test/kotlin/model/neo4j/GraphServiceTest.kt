@@ -3,8 +3,8 @@ package model.neo4j
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import model.DirectedGraph
-import model.UndirectedGraph
+import model.graph.DirectedGraph
+import model.graph.UndirectedGraph
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

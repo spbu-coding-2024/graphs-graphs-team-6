@@ -1,15 +1,19 @@
-package model
+package model.graph
 
+import kotlinx.serialization.Serializable
 import space.kscience.kmath.operations.Ring
-import java.util.concurrent.atomic.AtomicLong
+import kotlin.collections.get
+
 
 class UndirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph<V, K, W> {
 
+	@Serializable
 	class UndirectedVertex<V>(
 		override var value: V,
 		override val adjacencyList: MutableList<UndirectedVertex<V>> = mutableListOf()
 	) : Vertex<V>
 
+	@Serializable
 	data class UndirectedEdge<V, K, W : Comparable<W>>(
 		override var startVertex: Vertex<V>,
 		override var endVertex: Vertex<V>,
@@ -21,9 +25,11 @@ class UndirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Gra
 	private val _edges = HashMap<K, UndirectedEdge<V, K, W>>()
 	private val _edgeMap = HashMap<Pair<V, V>, K>()
 
+	@Serializable
 	override val vertices: Collection<UndirectedVertex<V>>
 		get() = _vertices.values
 
+	@Serializable
 	override val edges: Collection<UndirectedEdge<V, K, W>>
 		get() = _edges.values
 

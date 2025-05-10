@@ -1,13 +1,9 @@
 package model.utils
 
-import model.DirectedGraph
-import model.DirectedGraph.DirectedVertex
-import model.Edge
-import model.Graph
-import model.UndirectedGraph
-
-import model.UndirectedGraph.UndirectedVertex
-import model.Vertex
+import model.graph.DirectedGraph
+import model.graph.DirectedGraph.DirectedVertex
+import model.graph.Edge
+import model.graph.Graph
 
 class CycleDetection {
     private fun <V, K, W: Comparable<W>>

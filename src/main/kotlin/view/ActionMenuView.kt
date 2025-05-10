@@ -34,14 +34,10 @@ import androidx.compose.ui.unit.dp
 import model.Constants.DEFAULT_BORDER_WIDTH
 import model.Constants.DEFAULT_EDGE_COLOR
 import model.Constants.DEFAULT_EDGE_WIDTH
-import model.Constants.DEFAULT_PATH_COLOR
 import model.Constants.DEFAULT_VERTEX_BORDER_COLOR
 import model.Constants.DEFAULT_VERTEX_COLOR
 import model.Constants.DEFAULT_VERTEX_RADIUS
-import model.UndirectedGraph
-import model.utils.Louvain
-import model.utils.SSSPCalculator
-import viewmodel.ColorUtils
+import model.graph.UndirectedGraph
 import viewmodel.GraphViewModel
 import viewmodel.MainScreenViewModel
 import viewmodel.VertexViewModel

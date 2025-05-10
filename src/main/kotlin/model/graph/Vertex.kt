@@ -1,4 +1,4 @@
-package model
+package model.graph
 
 interface Vertex<V> {
     var value: V

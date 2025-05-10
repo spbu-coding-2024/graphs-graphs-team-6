@@ -15,7 +15,7 @@ import model.Constants.DEFAULT_ARROW_TRIANGLE_WIDTH
 import model.Constants.DEFAULT_LOOP_MULTIPLIER
 import model.Constants.DEFAULT_LOOP_RADIUS_COEFF
 import model.Constants.SHOW_LABEL_MOD
-import model.DirectedGraph
+import model.graph.DirectedGraph.DirectedEdge
 import viewmodel.EdgeViewModel
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
@@ -87,7 +87,7 @@ fun <V, K, W : Comparable<W>> EdgeView(
 				strokeWidth = edgeViewModel.width.toPx()
 			)
 			// Draw arrowhead for directed edges
-			if (edgeViewModel.model is DirectedGraph.DirectedEdge) {
+			if (edgeViewModel.model is DirectedEdge) {
 				val dx = end.x - start.x
 				val dy = end.y - start.y
 				val angle = atan2(dx, -dy) - PI.toFloat() / 2f

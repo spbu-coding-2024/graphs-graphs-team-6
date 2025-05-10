@@ -1,9 +1,8 @@
 package model.utils
 
-import model.DirectedGraph
-import model.Edge
-import model.Graph
-import model.UndirectedGraph
+import model.graph.DirectedGraph
+import model.graph.Edge
+import model.graph.Graph
 
 object SSSPCalculator {
     fun <V, K, W: Comparable<W>> bellmanFordAlgorithm

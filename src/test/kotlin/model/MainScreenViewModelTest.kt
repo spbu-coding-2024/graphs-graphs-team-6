@@ -1,8 +1,5 @@
 package model
 
-import androidx.compose.material.Icon
-import kotlin.math.max
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.getValue
@@ -10,35 +7,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.isDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
-import io.mockk.mockk
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import model.Constants.DEFAULT_EDGE_COLOR
 import model.Constants.DEFAULT_PATH_COLOR
 import model.Constants.SEMI_BLACK
-import org.junit.Rule
-import space.kscience.kmath.expressions.DSRing
-import space.kscience.kmath.nd.IntRingND
-import space.kscience.kmath.nd.RingND
-import space.kscience.kmath.operations.Group
+import model.graph.DirectedGraph
+import model.graph.UndirectedGraph
+import model.graph.Vertex
 import kotlin.test.Test
 
 import space.kscience.kmath.operations.IntRing
-import space.kscience.kmath.operations.Ring
-import space.kscience.kmath.structures.MutableBufferFactory
-import view.LouvainAlertDialog
 import view.MainScreenView
 import view.drawerButton
 import viewmodel.MainScreenViewModel

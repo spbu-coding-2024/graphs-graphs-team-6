@@ -1,10 +1,8 @@
 package model
 
-import junit.framework.TestCase.assertTrue
-import model.DirectedGraph.DirectedVertex
-import model.UndirectedGraph.UndirectedVertex
+import model.graph.DirectedGraph
+import model.graph.DirectedGraph.DirectedVertex
 import model.utils.CycleDetection
-import org.junit.jupiter.api.BeforeEach
 import space.kscience.kmath.operations.IntRing
 import kotlin.test.Test
 import kotlin.test.assertEquals

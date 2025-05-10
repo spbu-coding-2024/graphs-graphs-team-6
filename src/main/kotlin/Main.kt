@@ -3,12 +3,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import model.DirectedGraph
+import model.graph.DirectedGraph
 import view.MainScreenView
 import viewmodel.MainScreenViewModel
-import model.UndirectedGraph
-import org.neo4j.ogm.session.SessionFactory
 import space.kscience.kmath.operations.IntRing
+import space.kscience.kmath.operations.Ring
 
 const val TEMP_WEIGHT_VALUE = 231
 
@@ -51,7 +50,7 @@ val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
 fun app() {
 	MaterialTheme {
 		val vm = MainScreenViewModel(graph)
-		MainScreenView<String, Int, Int>(vm)
+		MainScreenView(vm)
 	}
 }
 

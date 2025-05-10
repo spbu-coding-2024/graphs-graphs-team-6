@@ -1,10 +1,16 @@
-package model
+package model.graph
 
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import space.kscience.kmath.operations.Ring
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.collections.get
 
 class DirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph<V, K, W> {
-	var idCounter = AtomicLong(0)
+	//var idCounter = AtomicLong(0)
 
 	class DirectedVertex<V>(
 		override var value: V,
@@ -19,7 +25,9 @@ class DirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph
 	) : Edge<V, K, W>
 
 	private val _vertices = HashMap<V, DirectedVertex<V>>()
+
 	private val _edges = HashMap<K, DirectedEdge<V, K, W>>()
+
 	private val _edgeMap = HashMap<Pair<V, V>, K>()
 
 	override val vertices: Collection<DirectedVertex<V>>

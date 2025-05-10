@@ -51,7 +51,13 @@ import kotlinx.coroutines.launch
 import view.graph.GraphView
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.TopEnd
+import model.graph.DirectedGraph
+import model.JsonManager
+import model.graph.Graph
 import model.neo4j.GraphService
+import space.kscience.kmath.operations.IntRing
+import java.awt.FileDialog
+import java.awt.Frame
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -73,10 +79,21 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 				Button(onClick = { coroutine.launch { drawerState.close() } }) {
 					Icon(Icons.Default.Close, "Close")
 				}
-				Spacer(Modifier.height(8.dp))
-				drawerButton("Open", description = "OpenButton") {
+				drawerButton("Open", icon = Icons.Default.Add, description = "OpenButton") {
 					coroutine.launch { drawerState.close() }
 					showDbSelectDialog.value = true
+				}
+				drawerButton("Save", description = "OpenButton") {
+					coroutine.launch { drawerState.close() }
+					val dialog = FileDialog(null as Frame?, "Select JSON")
+					dialog.mode = FileDialog.SAVE
+					dialog.isVisible = true
+					var file = dialog.file
+					if (file.length < 5 || file.substring(file.length - 5) != ".json") {
+						file += ".json"
+					}
+
+					JsonManager.saveJSON<V,K,W>(file, viewModel.graph as DirectedGraph)
 				}
 				drawerButton("Action", icon = Icons.Default.Star, description = "ActionButton") {
 					coroutine.launch { drawerState.close() }
@@ -145,6 +162,17 @@ fun <V : Any, K : Any, W : Comparable<W>> dbMenu(
 							showOpsDialog.value = true
 					}) {
 						Text("Neo4j")
+					}
+					Spacer(Modifier.height(8.dp))
+					Button(onClick = {
+						showDbSelectDialog.value = false
+						val dialog = FileDialog(null as Frame?, "Select JSON")
+						dialog.mode = FileDialog.LOAD
+						dialog.isVisible = true
+						val file = dialog.file
+						viewModel.graph = JsonManager.loadJSON<V, K, W>(file)
+					}) {
+						Text("JSON")
 					}
 				}
 			},
