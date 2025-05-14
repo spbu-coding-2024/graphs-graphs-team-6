@@ -1,12 +1,10 @@
 package model
 
+import model.utils.GraphPath
 import model.utils.SSSPCalculator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import space.kscience.kmath.operations.IntRing
-import space.kscience.kmath.operations.Ring
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 
 class SSSPCalculatorTest {
 
@@ -51,7 +49,7 @@ class SSSPCalculatorTest {
 
         }
         val (pred, weight) = SSSPCalculator.bellmanFordAlgorithm<String, Int, Int>(testGraph, "A")
-        val path = SSSPCalculator.constructPath(pred, "E")
+        val path = GraphPath.construct(pred, "E")
         for (i in 0..3) assertEquals(i, path[i].key)
     }
     @Test
@@ -124,7 +122,7 @@ class SSSPCalculatorTest {
             addEdge("z", "s", index++, 2)
         }
         val (pred, weight) = SSSPCalculator.bellmanFordAlgorithm<String, Int, Int>(testGraph, "s")
-        val path = SSSPCalculator.constructPath(pred, "z")
+        val path = GraphPath.construct(pred, "z")
         assertEquals(1, path[0].key)
         assertEquals(7, path[1].key)
         assertEquals(4, path[2].key)
