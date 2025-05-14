@@ -74,6 +74,7 @@ object JsonManager {
      * @param graph graph to save
      */
     fun <V: Any, K: Any, W: Comparable<W>>saveJSON(filePath: String, graph: Graph<V, K, W>) {
+        require(graph.edges.any() && graph.vertices.any())
         val file = File(filePath)
 
         val metadata = writeJSON(GraphMetadata(
