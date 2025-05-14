@@ -61,7 +61,8 @@ class JsonManagerTest {
         Files.exists(path)
         JsonManager.saveJSON(path.pathString, graph)
         val lines = File(path.pathString).readLines()
-        assertTrue(lines[0] == "{\"isDirected\":false,\"ring\":\"Int32Ring\",\"keyType\":\"Int\",\"vertexType\":\"Int\",\"weightType\":\"Int\"}")
+        assertTrue(lines[0] == "{\"isDirected\":false,\"ring\":\"Int32Ring\"" +
+                ",\"keyType\":\"Int\",\"vertexType\":\"Int\",\"weightType\":\"Int\"}")
     }
 
     @Test
