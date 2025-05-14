@@ -1,6 +1,5 @@
 package model.graph
 
-import kotlinx.serialization.Serializable
 import space.kscience.kmath.operations.Ring
 import kotlin.collections.get
 
