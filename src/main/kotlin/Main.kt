@@ -3,24 +3,17 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import model.DirectedGraph
 import view.MainScreenView
 import viewmodel.MainScreenViewModel
-import model.UndirectedGraph
+import model.DirectedGraph
 import org.neo4j.ogm.session.SessionFactory
 import space.kscience.kmath.operations.IntRing
 
 const val TEMP_WEIGHT_VALUE = 231
 
+
 val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
-	addVertex("A")
-	addVertex("B")
-	addVertex("C")
-	addVertex("D")
-	addVertex("E")
-	addVertex("F")
-	addVertex("G")
-	addVertex("H")
+	listOf("A","B","C","D","E","F","G","H").forEach { addVertex(it) }
 
 	var index = 0
 	val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) {it * 2}

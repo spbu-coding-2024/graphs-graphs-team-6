@@ -2,10 +2,13 @@ package viewmodel
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import model.utils.BridgeFinder
+import model.Constants.SEMI_BLACK
+import model.Constants.BRIGHT_RED
 import model.Graph
 import model.Vertex
 import model.Edge
-import model.Constants.SEMI_BLACK
+import model.UndirectedGraph
 import model.utils.SCCCalculator
 import model.neo4j.GraphService
 import model.utils.MSFFinder
@@ -39,6 +42,21 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 		val msfFinder by derivedStateOf { MSFFinder(graph) }
 		val msf = msfFinder.findMSF()
 		edgeColors = msf
+
+		ColorUtils.applyColors(edgeColors, graphViewModel.edges.sortedBy { it.model.weight }, Color(SEMI_BLACK))
+	}
+
+	private val bridgeFinder = BridgeFinder()
+	private fun convertPairsToColorMap(pairs: Set<Pair<Vertex<V>, Vertex<V>>>): Map<Edge<V, K, W>, Color> {
+		return graph.edges
+			.filterIsInstance<UndirectedGraph.UndirectedEdge<V, K, W>>()
+			.filter { edge -> edge.startVertex to edge.endVertex in pairs }
+			.associateWith { Color(BRIGHT_RED) }
+	}
+	fun findBridges() {
+		require(graph is UndirectedGraph)
+		val bridges = bridgeFinder.runOn(graph as UndirectedGraph<V, K, W>)
+		edgeColors = convertPairsToColorMap(bridges)
 
 		ColorUtils.applyColors(edgeColors, graphViewModel.edges.sortedBy { it.model.weight }, Color(SEMI_BLACK))
 	}
