@@ -44,19 +44,4 @@ object SSSPCalculator {
         if (any == true) error("There's exist a negative cycle in a graph")
         return predecessorEdge.toMap() to distance.toMap()
     }
-
-    fun <V, K, W: Comparable<W>> constructPathUsingEdges(predecessors: Map<V, Edge<V, K, W>>,
-                                                         endVertex: V): List<Edge<V, K, W>> {
-        var current = predecessors[endVertex]
-        var acknowledged = endVertex
-        val array = ArrayList<Edge<V, K, W>>(predecessors.size)
-
-        while (current != null) {
-            array.addLast(current)
-            acknowledged = current.opposite(acknowledged)
-            current = predecessors[acknowledged]
-        }
-
-        return array.reversed()
-    }
 }

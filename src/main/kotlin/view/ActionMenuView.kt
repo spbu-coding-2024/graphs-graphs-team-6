@@ -46,7 +46,7 @@ import viewmodel.VertexViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun <V: Any, K: Any, W : Comparable<W>> actionMenuView(
+fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 	actionWindowVisibility: Boolean,
 	viewModel: MainScreenViewModel<V, K, W>
 ) {
@@ -84,7 +84,9 @@ fun <V: Any, K: Any, W : Comparable<W>> actionMenuView(
 			) {
 				Icon(Icons.Default.Check, "Apply algorithm")
 			}
-			if (currentAlgorithm == Algorithm.BellmanFord.ordinal || currentAlgorithm == Algorithm.CycleDetection.ordinal) {
+			if (currentAlgorithm == Algorithm.BellmanFord.ordinal ||
+                currentAlgorithm == Algorithm.CycleDetection.ordinal ||
+                currentAlgorithm == Algorithm.Dijkstra.ordinal) {
 				menuBox(
 					startVertex.model.value.toString(),
 					viewModel.graphViewModel.vertices, arrayOfVertexNames, "StartVertex"
@@ -92,7 +94,8 @@ fun <V: Any, K: Any, W : Comparable<W>> actionMenuView(
 					startVertex = vertex
 				}
 			}
-			if (currentAlgorithm == Algorithm.BellmanFord.ordinal) {
+			if (currentAlgorithm == Algorithm.BellmanFord.ordinal ||
+                currentAlgorithm == Algorithm.Dijkstra.ordinal) {
 				menuBox(
 					endVertex.model.value.toString(),
 					viewModel.graphViewModel.vertices, arrayOfVertexNames, "EndVertex"
@@ -112,7 +115,9 @@ enum class Algorithm {
 	BellmanFord,
 	Kruskal,
 	Louvain,
-	CycleDetection
+	CycleDetection,
+	Bridges,
+	Dijkstra
 }
 
 fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
@@ -127,6 +132,7 @@ fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
 		Algorithm.CycleDetection.ordinal -> viewModel.findCycles(startVertex)
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
 		Algorithm.Kruskal.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findMSF()
+        Algorithm.Bridges.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findBridges()
 		Algorithm.Louvain.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.assignCommunities()
 	}
 }

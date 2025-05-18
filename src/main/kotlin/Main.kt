@@ -3,23 +3,16 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import model.graph.DirectedGraph
 import view.MainScreenView
 import viewmodel.MainScreenViewModel
+import model.graph.DirectedGraph
 import space.kscience.kmath.operations.IntRing
-import space.kscience.kmath.operations.Ring
 
 const val TEMP_WEIGHT_VALUE = 231
 
+
 val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
-	addVertex("A")
-	addVertex("B")
-	addVertex("C")
-	addVertex("D")
-	addVertex("E")
-	addVertex("F")
-	addVertex("G")
-	addVertex("H")
+	listOf("A","B","C","D","E","F","G","H").forEach { addVertex(it) }
 
 	var index = 0
 	val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) {it * 2}
@@ -49,8 +42,7 @@ val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
 @Preview
 fun app() {
 	MaterialTheme {
-		val vm = MainScreenViewModel(graph)
-		MainScreenView(vm)
+		MainScreenView<String, Int, Int>(MainScreenViewModel(graph))
 	}
 }
 
