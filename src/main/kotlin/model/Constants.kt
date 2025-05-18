@@ -22,4 +22,7 @@ object Constants {
     const val SHOW_LABEL_MOD = 3
 
     const val DEFAULT_PATH_COLOR = 0xFFFF0000
+
+    const val MAX_ZOOM_MULTIPLIER = 2F
+    const val MIN_ZOOM_MULTIPLIER = 0.25F
 }

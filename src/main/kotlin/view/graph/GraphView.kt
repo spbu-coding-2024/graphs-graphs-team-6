@@ -20,8 +20,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import model.Constants.DEFAULT_ZOOM_SCALE_COEF
 import viewmodel.GraphViewModel
-import androidx.compose.runtime.State
-
+import model.Constants.MAX_ZOOM_MULTIPLIER
+import model.Constants.MIN_ZOOM_MULTIPLIER
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -30,6 +30,7 @@ fun <V, K, W: Comparable<W>> GraphView(
 ) {
 	val density = LocalDensity.current
 	var mouseOffset by remember { mutableStateOf(Offset.Zero) }
+	var zoomModifier by remember { mutableStateOf(1f) }
 
 	// Modifier handling pan and zoom for the entire graph
 	val viewportModifier = Modifier
@@ -48,7 +49,14 @@ fun <V, K, W: Comparable<W>> GraphView(
 		.scrollable(
 			orientation = androidx.compose.foundation.gestures.Orientation.Vertical,
 			state = rememberScrollableState { delta ->
-				val scale = 1f + delta * DEFAULT_ZOOM_SCALE_COEF
+				val newZoomMod = zoomModifier * (1f + delta * DEFAULT_ZOOM_SCALE_COEF)
+				val scale: Float = if (newZoomMod > MIN_ZOOM_MULTIPLIER && newZoomMod < MAX_ZOOM_MULTIPLIER) {
+					zoomModifier = newZoomMod
+					1f + delta * DEFAULT_ZOOM_SCALE_COEF
+				} else {
+					1f
+				}
+
 				graphViewModel.vertices.forEach {
 					val xPx = with(density) { it.x.toPx() }
 					val yPx = with(density) { it.y.toPx() }
