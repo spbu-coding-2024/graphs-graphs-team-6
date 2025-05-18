@@ -1,5 +1,6 @@
 package model
 
+import model.graph.UndirectedGraph
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -74,5 +75,20 @@ class UndirectedGraphTest {
         assertEquals(0, edge.endVertex.value)
 
         assertEquals(IntRing.one, edge.weight)
+    }
+    @DisplayName("getEdge works correctly on linkedlist-like graph")
+    @Test
+    fun getEdgeTest1() {
+        for (i in 0..99) {
+            graph.addVertex(i)
+        }
+
+        for (i in 0..98) {
+            graph.addEdge(i, i + 1, 98 - i)
+        }
+
+        for (i in 0..98) {
+            assertEquals(graph.getEdge(i, i+1).key, 98 -i)
+        }
     }
 }

@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import model.Constants.DEFAULT_BORDER_WIDTH
 import model.Constants.DEFAULT_EDGE_COLOR
@@ -36,15 +37,11 @@ import model.Constants.DEFAULT_EDGE_WIDTH
 import model.Constants.DEFAULT_VERTEX_BORDER_COLOR
 import model.Constants.DEFAULT_VERTEX_COLOR
 import model.Constants.DEFAULT_VERTEX_RADIUS
-import model.UndirectedGraph
-import model.utils.DijkstraPathCalculator
-import model.utils.GraphPath
-import model.utils.Louvain
-import model.utils.SSSPCalculator
-import viewmodel.ColorUtils
+import model.graph.UndirectedGraph
 import viewmodel.GraphViewModel
 import viewmodel.MainScreenViewModel
 import viewmodel.VertexViewModel
+
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -54,8 +51,8 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 	viewModel: MainScreenViewModel<V, K, W>
 ) {
 	require(viewModel.graph.vertices.isNotEmpty())
-	var currentAlgorithm by remember { mutableStateOf(Algorithm.Louvain.ordinal) }
-	val algorithms = returnArrayOfAlgorithmLabels()
+	var currentAlgorithm by remember { mutableStateOf(Algorithm.BellmanFord.ordinal) }
+	val algorithms = Algorithm.entries.map { it.toString() }
 	val arrayOfVertexNames by remember {
 		mutableStateOf(
 			viewModel.graphViewModel.vertices.map
@@ -74,11 +71,12 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 			horizontalArrangement = Arrangement.Start,
 			verticalAlignment = Alignment.Bottom,
 		) {
-			menuBox(algorithms[currentAlgorithm], algorithms, algorithms.toTypedArray()) { i, _ ->
+			menuBox(algorithms[currentAlgorithm], algorithms, algorithms.toTypedArray(), "Algorithms") { i, _ ->
 				currentAlgorithm = i
 			}
 			Button(
 				modifier = Modifier
+					.testTag("ApplyAlgorithm")
 					.padding(5.dp),
 				onClick = {
 					applyAlgorithm(currentAlgorithm, viewModel, startVertex, endVertex)
@@ -87,18 +85,20 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 				Icon(Icons.Default.Check, "Apply algorithm")
 			}
 			if (currentAlgorithm == Algorithm.BellmanFord.ordinal ||
-				currentAlgorithm == Algorithm.Dijkstra.ordinal) {
+                currentAlgorithm == Algorithm.CycleDetection.ordinal ||
+                currentAlgorithm == Algorithm.Dijkstra.ordinal) {
 				menuBox(
 					startVertex.model.value.toString(),
-					viewModel.graphViewModel.vertices,
-					arrayOfVertexNames
+					viewModel.graphViewModel.vertices, arrayOfVertexNames, "StartVertex"
 				) { _, vertex ->
 					startVertex = vertex
 				}
+			}
+			if (currentAlgorithm == Algorithm.BellmanFord.ordinal ||
+                currentAlgorithm == Algorithm.Dijkstra.ordinal) {
 				menuBox(
 					endVertex.model.value.toString(),
-					viewModel.graphViewModel.vertices,
-					arrayOfVertexNames
+					viewModel.graphViewModel.vertices, arrayOfVertexNames, "EndVertex"
 				) { _, vertex ->
 					endVertex = vertex
 				}
@@ -110,30 +110,17 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 	}
 }
 
-fun returnArrayOfAlgorithmLabels(): List<String> {
-    return List<String>(Algorithm.entries.size) {
-      when(it) {
-		  Algorithm.BellmanFord.ordinal -> "Bellman-Ford Shortest Path"
-		  Algorithm.Dijkstra.ordinal -> "Dijkstra Shortest Path"
-          Algorithm.Tarjan.ordinal -> "Tarjan Strong Connected Component"
-          Algorithm.Kruskal.ordinal -> "Kruskal Minimal Spanning Tree"
-          Algorithm.Bridges.ordinal -> "Finding bridges"
-          Algorithm.Louvain.ordinal -> "Louvain Community Detection"
-          else -> error("No string for enum")
-        }
-    }
-}
-
 enum class Algorithm {
 	Tarjan,
 	BellmanFord,
 	Kruskal,
+	Louvain,
+	CycleDetection,
 	Bridges,
-	Dijkstra,
-	Louvain
+	Dijkstra
 }
 
-fun <V : Any, K : Any, W : Comparable<W>> applyAlgorithm(
+fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
 	algoNum: Int,
 	viewModel: MainScreenViewModel<V, K, W>,
 	startVertex: VertexViewModel<V>,
@@ -141,53 +128,37 @@ fun <V : Any, K : Any, W : Comparable<W>> applyAlgorithm(
 ) {
 	resetGraphViewModel(viewModel.graphViewModel)
 	when (algoNum) {
-		Algorithm.BellmanFord.ordinal -> {
-			val (predecessors, _) = SSSPCalculator.bellmanFordAlgorithm(
-				viewModel.graph,
-				startVertex.model.value
-			)
-
-			val path = GraphPath.construct(predecessors, endVertex.model.value)
-				.map { viewModel.graphViewModel.getEdgeViewModel(it) }
-			ColorUtils.applyOneColor(path, Color.Red)
-		}
-
-		Algorithm.Dijkstra.ordinal -> {
-			val (predecessors, _) = DijkstraPathCalculator().runOn(
-				viewModel.graph,
-				startVertex.model.value
-			)
-
-			val path = GraphPath.construct(predecessors, endVertex.model.value)
-				.map { viewModel.graphViewModel.getEdgeViewModel(it) }
-			ColorUtils.applyOneColor(path, Color.Red)
-		}
-
+		Algorithm.BellmanFord.ordinal -> viewModel.findSSSPBellmanFord(startVertex, endVertex)
+		Algorithm.CycleDetection.ordinal -> viewModel.findCycles(startVertex)
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
 		Algorithm.Kruskal.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findMSF()
-    Algorithm.Bridges.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findBridges()
+        Algorithm.Bridges.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findBridges()
 		Algorithm.Louvain.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.assignCommunities()
 	}
 }
 
 @Composable
-fun <V : Any, K : Any, W : Comparable<W>> LouvainAlertDialog(viewModel: MainScreenViewModel<V, K, W>) {
+fun <V: Any, K: Any, W: Comparable<W>> LouvainAlertDialog(viewModel: MainScreenViewModel<V, K, W>){
 	AlertDialog(
+		modifier = Modifier
+			.testTag("AlertDialog"),
 		onDismissRequest = {
-			viewModel.showIncompatibleWeightTypeDialog = false
+            viewModel.showIncompatibleWeightTypeDialog = false
 		},
 		title = { Text("Incompatible Edge Weight Type") },
 		text = {
 			Text(
-				"Your graph uses edge weight weight type that is not supported yet. " +
+				"Your graph uses edge weight type that is not supported yet. " +
 					"Please try exploring graph with numerical weight" +
 					"\n${viewModel.exceptionMessage}"
 			)
 		},
 		confirmButton = {
-			TextButton(onClick = {
-				viewModel.showIncompatibleWeightTypeDialog = false
-			}) {
+			TextButton(
+				modifier = Modifier
+					.testTag("AlertDialogButton"),
+				onClick = { viewModel.showIncompatibleWeightTypeDialog = false }
+			) {
 				Text("ОК")
 			}
 		}
@@ -198,10 +169,13 @@ fun <V : Any, K : Any, W : Comparable<W>> LouvainAlertDialog(viewModel: MainScre
 @Composable
 fun <T> menuBox(
 	firstTextField: String, collection: Collection<T>,
-	arrayOfNames: Array<String>, onClick: (Int, T) -> Unit
+	arrayOfNames: Array<String>, description: String,
+	onClick: (Int, T) -> Unit
 ) {
 	var isExpanded by remember { mutableStateOf(false) }
 	ExposedDropdownMenuBox(
+		modifier = Modifier
+			.testTag(description),
 		expanded = isExpanded,
 		onExpandedChange = {
 			isExpanded = !isExpanded
@@ -219,6 +193,8 @@ fun <T> menuBox(
 		) {
 			collection.forEachIndexed { i, item ->
 				DropdownMenuItem(
+					modifier = Modifier
+						.testTag("${description}: ${arrayOfNames[i]}"),
 					onClick = {
 						isExpanded = false
 						onClick(i, item)

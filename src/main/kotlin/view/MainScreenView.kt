@@ -15,6 +15,7 @@ import androidx.compose.material.DrawerValue
 import androidx.compose.material.Button
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Checkbox
+import androidx.compose.material.DrawerState
 import androidx.compose.material.TextButton
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
@@ -24,10 +25,17 @@ import androidx.compose.material.ModalDrawer
 import viewmodel.MainScreenViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -42,12 +50,17 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import model.utils.SSSPCalculator
 import view.graph.GraphView
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.TopEnd
-import model.Graph
+import kotlinx.coroutines.CoroutineScope
+import model.graph.DirectedGraph
+import model.JsonManager
+import model.graph.Graph
 import model.neo4j.GraphService
+import space.kscience.kmath.operations.IntRing
+import java.awt.FileDialog
+import java.awt.Frame
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -69,13 +82,13 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 				Button(onClick = { coroutine.launch { drawerState.close() } }) {
 					Icon(Icons.Default.Close, "Close")
 				}
-				Spacer(Modifier.height(8.dp))
-				drawerButton("Open", description = "OpenButton") {
-					coroutine.launch { drawerState.close() }
+				drawerButton("Open", Icons.Default.Add, "OpenButton", coroutine, drawerState) {
 					showDbSelectDialog.value = true
 				}
-				drawerButton("Action", icon = Icons.Default.Star, description = "ActionButton") {
-					coroutine.launch { drawerState.close() }
+				drawerButton("Save", Icons.Default.ArrowDropDown, "SaveButton", coroutine, drawerState) {
+					drawerSave(viewModel)
+				}
+				drawerButton("Action", Icons.Default.Star, "ActionButton", coroutine, drawerState) {
 					actionWindowVisibility = true
 				}
 			}
@@ -88,32 +101,28 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 			modifier = Modifier
 				.fillMaxSize()
 				.padding(16.dp)
-				.testTag("MainButton")
-		) {
+				) {
 			Button(
+				modifier = Modifier
+					.testTag("MainButton"),
 				onClick = {
-					if (actionWindowVisibility && viewModel.graphViewModel.vertices.isNotEmpty()) {
+					if (actionWindowVisibility == true) {
 						actionWindowVisibility = false
 						resetGraphViewModel(viewModel.graphViewModel)
-					} else if (viewModel.graphViewModel.vertices.isNotEmpty()) {
+					} else {
 						coroutine.launch { drawerState.open() }
 					}
 				}
 			) {
-				Icon(
-					if (actionWindowVisibility) Icons.Default.Close else Icons.Default.Menu,
-					"Main button"
-				)
+				Icon(if (actionWindowVisibility) Icons.Default.Close else Icons.Default.Menu, "Main button")
 			}
 		}
 		if (viewModel.graphViewModel.vertices.isNotEmpty()) {
 			actionMenuView(actionWindowVisibility, viewModel)
 		}
 	}
-
 	WeightsCheckBox(viewModel)
 	dbMenu(viewModel, showDbSelectDialog)
-
 }
 
 @Composable
@@ -140,6 +149,17 @@ fun <V : Any, K : Any, W : Comparable<W>> dbMenu(
 							showOpsDialog.value = true
 					}) {
 						Text("Neo4j")
+					}
+					Spacer(Modifier.height(8.dp))
+					Button(onClick = {
+						showDbSelectDialog.value = false
+						val dialog = FileDialog(null as Frame?, "Select JSON")
+						dialog.mode = FileDialog.LOAD
+						dialog.isVisible = true
+						val file = dialog.file
+						viewModel.graph = JsonManager.loadJSON<V, K, W>(file)
+					}) {
+						Text("JSON")
 					}
 				}
 			},
@@ -264,6 +284,8 @@ fun drawerButton(
 	textString: String,
 	icon: ImageVector = Icons.Default.Add,
 	description: String,
+	coroutine: CoroutineScope,
+	drawerState: DrawerState,
 	onClickMethod: () -> Unit
 ) {
 	Column {
@@ -273,7 +295,10 @@ fun drawerButton(
 				.height(100.dp)
 				.padding(16.dp)
 				.testTag(description),
-			onClick = onClickMethod,
+			onClick = {
+				coroutine.launch { drawerState.close() }
+				onClickMethod()
+			},
 			shape = RectangleShape,
 		) {
 			Icon(icon, description, modifier = Modifier.padding(5.dp))
@@ -299,11 +324,29 @@ fun <V : Any, K : Any, W : Comparable<W>> WeightsCheckBox(
 	modifier: Modifier = Modifier
 ) {
 	Box(modifier = modifier.fillMaxSize().padding(16.dp)) {
-		Row(modifier = modifier.align(TopEnd), verticalAlignment = Alignment.CenterVertically) {
+		Row(
+			modifier = modifier
+				.align(TopEnd),
+			verticalAlignment = Alignment.CenterVertically
+		) {
 			Checkbox(
+				modifier = Modifier
+					.testTag("WeightCheckBox"),
 				checked = viewModel.showEdgesWeights,
 				onCheckedChange = { viewModel.showEdgesWeights = it })
 			Text("Show weights")
 		}
 	}
+}
+
+fun <V: Any, K: Any, W: Comparable<W>> drawerSave(viewModel: MainScreenViewModel<V, K, W>) {
+	val extension = ".json"
+	val dialog = FileDialog(null as Frame?, "Select JSON")
+	dialog.mode = FileDialog.SAVE
+	dialog.isVisible = true
+	var file = dialog.file
+	if (file.length < extension.length || file.substring(file.length - extension.length) != ".json") {
+		file += extension
+	}
+	JsonManager.saveJSON<V,K,W>(file, viewModel.graph)
 }

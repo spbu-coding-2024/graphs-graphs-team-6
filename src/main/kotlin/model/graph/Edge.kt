@@ -1,4 +1,4 @@
-package model
+package model.graph
 
 interface Edge<V, K, W : Comparable<W>> {
 	var startVertex: Vertex<V>

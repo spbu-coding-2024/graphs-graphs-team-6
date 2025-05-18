@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import viewmodel.VertexViewModel
 
@@ -25,7 +26,9 @@ fun VertexView(
 	vertexViewModel: VertexViewModel<*>, modifier: Modifier = Modifier
 ) {
 	Box(
-		modifier = modifier.offset(x = vertexViewModel.x, y = vertexViewModel.y)
+		modifier = modifier
+			.offset(x = vertexViewModel.x, y = vertexViewModel.y)
+			.testTag("Vertex: ${vertexViewModel.model.value}")
 			.size(vertexViewModel.radius * 2).pointerInput(vertexViewModel) {
 				detectDragGestures { change, dragAmount ->
 					change.consume()

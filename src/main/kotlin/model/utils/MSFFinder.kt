@@ -1,9 +1,9 @@
 package model.utils
 
 import androidx.compose.ui.graphics.Color
-import model.Edge
-import model.Graph
-import model.Vertex
+import model.graph.Edge
+import model.graph.Graph
+import model.graph.Vertex
 import viewmodel.ColorUtils
 import kotlin.random.Random
 

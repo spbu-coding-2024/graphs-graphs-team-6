@@ -1,8 +1,8 @@
 package model.utils
 
-import model.Edge
-import model.Graph
-import model.Vertex
+import model.graph.Edge
+import model.graph.Graph
+import model.graph.Vertex
 import org.jetbrains.research.ictl.louvain.Link
 import org.jetbrains.research.ictl.louvain.getPartition
 

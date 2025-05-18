@@ -2,7 +2,7 @@ import org.junit.jupiter.api.*
 import org.neo4j.harness.Neo4j
 import org.neo4j.harness.Neo4jBuilders
 import model.neo4j.GraphService
-import model.DirectedGraph
+import model.graph.DirectedGraph
 import space.kscience.kmath.operations.IntRing
 import kotlin.test.assertEquals
 
