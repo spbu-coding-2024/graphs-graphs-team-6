@@ -345,6 +345,7 @@ fun <V: Any, K: Any, W: Comparable<W>> drawerSave(viewModel: MainScreenViewModel
 	dialog.mode = FileDialog.SAVE
 	dialog.isVisible = true
 	var file = dialog.file
+	if (file == null) return
 	if (file.length < extension.length || file.substring(file.length - extension.length) != ".json") {
 		file += extension
 	}

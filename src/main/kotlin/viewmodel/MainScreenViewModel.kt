@@ -18,6 +18,7 @@ import model.neo4j.GraphService
 import model.utils.BridgeFinder
 import model.utils.CycleDetection
 import model.utils.GraphPath
+import model.utils.KamadaKawai
 import model.utils.MSFFinder
 import model.utils.Louvain
 import model.utils.SSSPCalculator
@@ -128,5 +129,10 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 
 	fun saveNeo4j(graph: Graph<V, K, W>) {
 		GraphService.saveGraph(graph)
+	}
+
+	fun drawGraph() {
+		val kamadaKawai = KamadaKawai<V, K, W>(graphViewModel)
+		kamadaKawai.compute(graphViewModel)
 	}
 }
