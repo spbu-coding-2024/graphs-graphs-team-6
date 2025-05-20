@@ -101,6 +101,7 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 	}
 
 	var exceptionMessage: String? by mutableStateOf(null)
+	var aboutDialog by mutableStateOf(false)
 
 	fun assignCommunities() {
 		try {

@@ -45,7 +45,5 @@ fun app() {
 }
 
 fun main() = application {
-	Window(onCloseRequest = ::exitApplication) {
-		app()
-	}
+	app()
 }
