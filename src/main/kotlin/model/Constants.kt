@@ -25,4 +25,6 @@ object Constants {
 
     const val MAX_ZOOM_MULTIPLIER = 2F
     const val MIN_ZOOM_MULTIPLIER = 0.25F
+    const val DEFAULT_STRENGTH_CONSTANT = 10F
+    const val EPSILON = 0.1F
 }

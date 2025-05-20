@@ -14,7 +14,7 @@ class CycleDetection {
         val list = ArrayList<Edge<V, K, W>>()
         do {
             if (startEdge == null) break
-            val edge = graph.getEdge(startEdge, endEdge)
+            val edge = graph.getEdge(startEdge, endEdge) ?: error("No such edge")
             list.addLast(edge)
             val temp = startEdge
             startEdge = predecessors[startEdge]

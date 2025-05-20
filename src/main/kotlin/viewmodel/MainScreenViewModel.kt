@@ -100,18 +100,15 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 		ColorUtils.applyColors(edgeColors, graphViewModel.edges.sortedBy { it.model.weight }, Color(SEMI_BLACK))
 	}
 
-	var exceptionMessage: String? = null
-	var showIncompatibleWeightTypeDialog by mutableStateOf(false)
+	var exceptionMessage: String? by mutableStateOf(null)
 
 	fun assignCommunities() {
 		try {
-
 			val louvainDetector by derivedStateOf { Louvain(graph) }
 			val grouping = louvainDetector.detectCommunities()
 			val colorMap = ColorUtils.assignColorsGrouped(grouping)
 			ColorUtils.applyColors(colorMap, graphViewModel.vertices)
 		} catch (e: IllegalArgumentException) {
-			showIncompatibleWeightTypeDialog = true
 			exceptionMessage = e.message
 		}
 	}
@@ -133,6 +130,10 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 
 	fun drawGraph() {
 		val kamadaKawai = KamadaKawai<V, K, W>(graphViewModel)
-		kamadaKawai.compute(graphViewModel)
+		try {
+			kamadaKawai.compute(graphViewModel)
+		} catch(e: IllegalArgumentException) {
+			exceptionMessage = e.message
+		}
 	}
 }

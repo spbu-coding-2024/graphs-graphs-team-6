@@ -28,8 +28,8 @@ class UndirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Gra
 	override val edges: Collection<UndirectedEdge<V, K, W>>
 		get() = _edges.values
 
-	override fun getEdge(firstVertex: V, secondVertex: V): UndirectedEdge<V, K, W> {
-		return _edges[_edgeMap[firstVertex to secondVertex]] ?: error("No such edge")
+	override fun getEdge(firstVertex: V, secondVertex: V): UndirectedEdge<V, K, W>? {
+		return _edges[_edgeMap[firstVertex to secondVertex]]
 	}
 	override fun addEdge(firstVertex: V, secondVertex: V, key: K, weight: W): Edge<V, K, W> {
 		val firstV = _vertices[firstVertex]
@@ -54,7 +54,7 @@ class UndirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Gra
 		return _vertices.getOrPut(vertex) { UndirectedVertex(vertex) }
 	}
 
-	override fun getVertex(vertex: V): Vertex<V> {
-		return _vertices[vertex] ?: error("No such vertex with a given value")
+	override fun getVertex(vertex: V): Vertex<V>? {
+		return _vertices[vertex]
 	}
 }
