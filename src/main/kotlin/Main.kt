@@ -22,7 +22,7 @@ val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
 	addVertex("H")
 
 	var index = 0
-	val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) {it * 2}
+	val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) {it * 2 + 1}
 
 	addEdge("C", "F", index, weight[index]); index++
 

@@ -70,9 +70,9 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 			.fillMaxWidth()
 	)
 	{
-		MenuButton("File", "FileMenu", fileMenuExpanded)
-		MenuButton("Graph", "GraphMenu", graphMenuExpanded)
-		MenuButton("About", "AboutMenu", viewModel.aboutDialog)
+		MenuButton("FileMenu", "File", fileMenuExpanded)
+		MenuButton("GraphMenu", "Graph", graphMenuExpanded)
+		MenuButton("AboutMenu", "About", viewModel.aboutDialog)
 		MainScreenDropdownMenu(fileMenuExpanded, listOf(
 			Triple("OpenMenuButton", "Open", showDbSelectDialog),
 			Triple("SaveMenuButton", "Save", saveDialogState)
@@ -107,7 +107,7 @@ fun MainScreenDropdownMenu(expanded: MutableState<Boolean>,
 }
 
 @Composable
-fun MenuButton(text: String, testTag: String, state: MutableState<Boolean>) {
+fun MenuButton(testTag: String, text: String, state: MutableState<Boolean>) {
 	Button(
 		modifier = Modifier
 			.testTag(testTag)
@@ -168,22 +168,28 @@ fun <V : Any, K : Any, W : Comparable<W>> dbMenu(
 
 	if (showDbSelectDialog.value) {
 		AlertDialog(
+			modifier = Modifier.testTag("OpenDialog"),
 			onDismissRequest = { showDbSelectDialog.value = false },
 			title = { Text("Select Database") },
 			text = {
 				Column {
 					Spacer(Modifier.height(8.dp))
-					Button(onClick = {
+					Button(
+						modifier = Modifier.testTag("Neo4jOpenDialogButton"),
+						onClick = {
 						showDbSelectDialog.value = false
 						if (GraphService.sessionFactory == null)
 							showNeo4jDialog.value = true
 						else
 							showOpsDialog.value = true
-					}) {
+						}
+					) {
 						Text("Neo4j")
 					}
 					Spacer(Modifier.height(8.dp))
-					Button(onClick = {
+					Button(
+						modifier = Modifier.testTag("JsonOpenDialogButton"),
+						onClick = {
 						showDbSelectDialog.value = false
 						val dialog = FileDialog(null as Frame?, "Select JSON")
 						dialog.mode = FileDialog.LOAD

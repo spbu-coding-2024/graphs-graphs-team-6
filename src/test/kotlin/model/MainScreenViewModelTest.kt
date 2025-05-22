@@ -57,13 +57,15 @@ class MainScreenViewModelTest {
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun `Empty graph case`() = runComposeUiTest {
-
         var vm = MainScreenViewModel<String, Int, Int>(testGraph)
 
         setContent {
             MainScreenView(vm)
         }
-        onNodeWithTag("File").isDisplayed()
+        onNodeWithTag("GraphMenu").isDisplayed()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
+        onNodeWithTag("Algorithms").assertDoesNotExist()
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -74,16 +76,16 @@ class MainScreenViewModelTest {
         setContent {
             MainScreenView(vm)
         }
-
+        onNodeWithTag("GraphMenu").isDisplayed()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
         onNodeWithTag("Vertex: A").assertExists("One vertex does not exist")
-        onNodeWithTag("MainButton").assertExists("Main button does not exist")
-        onNodeWithTag("OpenButton").assertIsNotDisplayed()
-        onNodeWithTag("ActionButton").assertIsNotDisplayed()
+        onNodeWithTag("Algorithms").assertExists()
     }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun `Main drawer can be opened and closed`() = runComposeUiTest {
+    fun `Menus can be opened and closed`() = runComposeUiTest {
         testGraph.addVertex("A")
         testGraph.addVertex("B")
         testGraph.addEdge("A", "B", 0, 5)
@@ -91,12 +93,13 @@ class MainScreenViewModelTest {
         setContent {
             MainScreenView(MainScreenViewModel(testGraph))
         }
-        onNodeWithTag("MainButton").assertHasClickAction()
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").assertTextEquals("Action")
-        onNodeWithTag("ActionButton").assertHasClickAction()
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").assertIsNotDisplayed()
+        onNodeWithTag("GraphMenu").isDisplayed()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ApplyAlgorithmMenuButton").assertExists()
+        onNodeWithTag("ShowWeightsMenuButton").assertExists()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ApplyAlgorithmMenuButton").assertDoesNotExist()
+        onNodeWithTag("ShowWeightsMenuButton").assertDoesNotExist()
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -109,38 +112,13 @@ class MainScreenViewModelTest {
         setContent {
             MainScreenView(MainScreenViewModel(testGraph))
         }
-        onNodeWithTag("MainButton").assertHasClickAction()
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").assertTextEquals("Action")
-        onNodeWithTag("ActionButton").assertHasClickAction()
-        onNodeWithTag("OpenButton").performClick()
-        onNodeWithTag("OpenButton").assertIsNotDisplayed()
-        onNodeWithTag("ActionButton").assertIsNotDisplayed()
+        onNodeWithTag("FileMenu").isDisplayed()
+        onNodeWithTag("FileMenu").performClick()
+        onNodeWithTag("OpenMenuButton").performClick()
+        onNodeWithTag("OpenDialog").assertExists()
+        onNodeWithTag("JsonOpenDialogButton").assertExists()
+        onNodeWithTag("Neo4jOpenDialogButton").assertExists()
     }
-
-    @OptIn(ExperimentalTestApi::class)
-    @Test
-    fun `Action can be open and closed`() = runComposeUiTest {
-        testGraph.addVertex("A")
-        testGraph.addVertex("B")
-        testGraph.addEdge("A", "B", 0, 5)
-
-        setContent {
-            MainScreenView(MainScreenViewModel(testGraph))
-        }
-        onNodeWithTag("MainButton").assertHasClickAction()
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").assertTextEquals("Action")
-        onNodeWithTag("ActionButton").assertHasClickAction()
-        onNodeWithTag("ActionButton").performClick()
-        onNodeWithTag("Algorithms").assertIsDisplayed()
-        onNodeWithTag("ApplyAlgorithm").assertIsDisplayed()
-        onNodeWithTag("MainButton").assertHasClickAction()
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("Algorithms").assertDoesNotExist()
-        onNodeWithTag("ApplyAlgorithm").assertDoesNotExist()
-    }
-
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun `Action expandable`() = runComposeUiTest {
@@ -151,8 +129,10 @@ class MainScreenViewModelTest {
         setContent {
             MainScreenView(MainScreenViewModel(testGraph))
         }
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").performClick()
+        onNodeWithTag("GraphMenu").isDisplayed()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
+
         onNodeWithTag("Algorithms").performClick()
         onNodeWithTag("Algorithms: BellmanFord").assertExists()
         onNodeWithTag("Algorithms: Louvain").assertExists()
@@ -161,7 +141,9 @@ class MainScreenViewModelTest {
         onNodeWithTag("Algorithms: BellmanFord").assertDoesNotExist()
         onNodeWithTag("Algorithms: Louvain").assertDoesNotExist()
 
-        onNodeWithTag("MainButton").performClick()
+        onNodeWithTag("GraphMenu").isDisplayed()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
         onNodeWithTag("Algorithms").assertDoesNotExist()
     }
 
@@ -175,8 +157,9 @@ class MainScreenViewModelTest {
         setContent {
             MainScreenView(MainScreenViewModel(testGraph))
         }
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").performClick()
+        onNodeWithTag("GraphMenu").isDisplayed()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
         onNodeWithTag("Algorithms").performClick()
         onNodeWithTag("Algorithms: BellmanFord").assertExists()
         onNodeWithTag("Algorithms: BellmanFord").performClick()
@@ -184,7 +167,9 @@ class MainScreenViewModelTest {
         onNodeWithTag("StartVertex").assertExists()
         onNodeWithTag("EndVertex").assertExists()
 
-        onNodeWithTag("MainButton").performClick()
+        onNodeWithTag("GraphMenu").isDisplayed()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
         onNodeWithTag("Algorithms: BellmanFord").assertDoesNotExist()
         onNodeWithTag("StartVertex").assertDoesNotExist()
         onNodeWithTag("EndVertex").assertDoesNotExist()
@@ -203,9 +188,9 @@ class MainScreenViewModelTest {
         setContent {
             MainScreenView(vm)
         }
-
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").performClick()
+        onNodeWithTag("GraphMenu").isDisplayed()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
         onNodeWithTag("Algorithms").performClick()
         onNodeWithTag("Algorithms: BellmanFord").performClick()
         onNodeWithTag("ApplyAlgorithm").performClick()
@@ -231,9 +216,9 @@ class MainScreenViewModelTest {
         setContent {
             MainScreenView(vm)
         }
-
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").performClick()
+        onNodeWithTag("GraphMenu").isDisplayed()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
         onNodeWithTag("Algorithms").performClick()
         onNodeWithTag("Algorithms: BellmanFord").performClick()
 
@@ -269,9 +254,9 @@ class MainScreenViewModelTest {
         setContent {
             MainScreenView(vm)
         }
-
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").performClick()
+        onNodeWithTag("GraphMenu").isDisplayed()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
         onNodeWithTag("Algorithms").performClick()
         onNodeWithTag("Algorithms: BellmanFord").performClick()
 
@@ -316,9 +301,9 @@ class MainScreenViewModelTest {
         setContent {
             MainScreenView(vm)
         }
-
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").performClick()
+        onNodeWithTag("GraphMenu").isDisplayed()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
         onNodeWithTag("Algorithms").performClick()
         onNodeWithTag("Algorithms: Louvain").performClick()
         val list = undirectedGraph.vertices.toList()
@@ -377,9 +362,9 @@ class MainScreenViewModelTest {
         setContent {
             MainScreenView(vm)
         }
-
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").performClick()
+        onNodeWithTag("GraphMenu").isDisplayed()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
         onNodeWithTag("Algorithms").performClick()
         onNodeWithTag("Algorithms: Kruskal").performClick()
         onNodeWithTag("ApplyAlgorithm").performClick()
@@ -431,8 +416,9 @@ class MainScreenViewModelTest {
             MainScreenView(vm)
         }
 
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").performClick()
+        onNodeWithTag("GraphMenu").isDisplayed()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
         onNodeWithTag("Algorithms").performClick()
         onNodeWithTag("Algorithms: Tarjan").performClick()
         onNodeWithTag("ApplyAlgorithm").performClick()
@@ -488,8 +474,9 @@ class MainScreenViewModelTest {
             MainScreenView(vm)
         }
 
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").performClick()
+        onNodeWithTag("GraphMenu").isDisplayed()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
         onNodeWithTag("Algorithms").performClick()
         onNodeWithTag("Algorithms: CycleDetection").performClick()
         onNodeWithTag("ApplyAlgorithm").performClick()
@@ -510,6 +497,7 @@ class MainScreenViewModelTest {
         testGraph.addVertex("B")
         testGraph.addEdge("A", "B", 1, 1)
         var vm = MainScreenViewModel(testGraph)
+        vm.exceptionMessage = "message"
         setContent {
             MainScreenView(vm)
         }
@@ -536,7 +524,7 @@ class MainScreenViewModelTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun `test Weight check box`() = runComposeUiTest {
+    fun `Test weights`() = runComposeUiTest {
         testGraph.addVertex("A")
         testGraph.addVertex("B")
         testGraph.addEdge("A", "B", 0, 5)
@@ -546,13 +534,13 @@ class MainScreenViewModelTest {
         setContent {
             MainScreenView(vm)
         }
-
-        onNodeWithTag("WeightCheckBox").assertExists()
         onNodeWithTag("EdgeLabel: 0").assertDoesNotExist()
-        assertFalse(vm.showEdgesWeights)
-
-        onNodeWithTag("WeightCheckBox").performClick()
-        assertTrue(vm.showEdgesWeights)
+        assertFalse(vm.showEdgesWeights.value)
+        onNodeWithTag("GraphMenu").assertExists()
+        onNodeWithTag("GraphMenu").performClick()
+        onNodeWithTag("ShowWeightsMenuButton").assertExists()
+        onNodeWithTag("ShowWeightsMenuButton").performClick()
+        assertTrue(vm.showEdgesWeights.value)
         onNodeWithTag("EdgeLabel: 0").assertExists()
         onNodeWithTag("EdgeLabel: 0").assertTextEquals("5")
     }
