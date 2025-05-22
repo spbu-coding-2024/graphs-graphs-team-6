@@ -3,6 +3,7 @@ package model.utils
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import model.Constants.DEFAULT_KAMADAKAWAI_LENGTH
 import model.Constants.DEFAULT_STRENGTH_CONSTANT
 import model.Constants.EPSILON
 import model.graph.Graph
@@ -27,16 +28,16 @@ class KamadaKawai<V, K, W: Comparable<W>> (viewModel: GraphViewModel<V, K, W>) {
             val firstValue = edges.startVertex.value
             val secondValue = edges.endVertex.value
             val value = graph.getEdge(firstValue, secondValue)?.weightToFloat()
-            if (value != null && value <= 0) throw IllegalArgumentException("Weights must be positive")
+            require(value == null || value > 0)
             dist[firstValue to secondValue] = value
         }
         for (startVertex in graph.vertices) {
             for (middleVertex in graph.vertices) {
                 for (endVertex in graph.vertices) {
-                    val straightPath = dist[startVertex.value to endVertex.value] ?: continue
-
-                    val first = dist[startVertex.value to middleVertex.value] ?: continue
-                    val second = dist[middleVertex.value to endVertex.value] ?: continue
+                    val straightPath = dist[startVertex.value to endVertex.value]
+                    val first = dist[startVertex.value to middleVertex.value]
+                    val second = dist[middleVertex.value to endVertex.value]
+                    if (straightPath == null || first == null || second == null) continue
                     val sum = first + second
                     if (straightPath > sum) {
                         dist[startVertex.value to endVertex.value] = sum
@@ -59,10 +60,10 @@ class KamadaKawai<V, K, W: Comparable<W>> (viewModel: GraphViewModel<V, K, W>) {
             var derivativeX = 0F
             var derivativeY = 0F
             for (vertex in viewModel.vertices) {
-                if (mVertex.model == vertex.model) continue
                 val pair = mVertex.model.value to vertex.model.value
-                val strength = strength[pair] ?: continue
-                val length = length[pair] ?: continue
+                val strength = strength[pair]
+                val length = length[pair]
+                if (mVertex.model == vertex.model || strength == null || length == null) continue
 
                 val (currentX, currentY) = vertex.returnFloat()
                 val (mX, mY) = mVertex.returnFloat()
@@ -81,12 +82,8 @@ class KamadaKawai<V, K, W: Comparable<W>> (viewModel: GraphViewModel<V, K, W>) {
         return particle
     }
 
-    fun compute(viewModel: GraphViewModel<V, K, W>) {
-        val dist = shortestPath(viewModel.graph)
+    private fun returnMaxDist(viewModel: GraphViewModel<V, K, W>, dist: Map<Pair<V, V>, Float?>): Float {
         var maxDist = 0F
-
-        val strength: MutableMap<Pair<V, V>, Float> = mutableMapOf()
-        val length: MutableMap<Pair<V, V>, Float> = mutableMapOf()
         for (firstVertex in viewModel.graph.vertices) {
             for (secondVertex in viewModel.graph.vertices) {
                 val currentDistance = dist[firstVertex.value to secondVertex.value] ?: continue
@@ -95,11 +92,19 @@ class KamadaKawai<V, K, W: Comparable<W>> (viewModel: GraphViewModel<V, K, W>) {
                 }
             }
         }
-        val lengthConstant = 500 / maxDist
+        return maxDist
+    }
+
+    fun compute(viewModel: GraphViewModel<V, K, W>) {
+        val dist = shortestPath(viewModel.graph)
+        var maxDist = returnMaxDist(viewModel, dist)
+        val strength: MutableMap<Pair<V, V>, Float> = mutableMapOf()
+        val length: MutableMap<Pair<V, V>, Float> = mutableMapOf()
+        val lengthConstant = DEFAULT_KAMADAKAWAI_LENGTH / maxDist
         for (firstVertex in viewModel.graph.vertices) {
             for (secondVertex in viewModel.graph.vertices) {
-                if (firstVertex == secondVertex) continue
-                val currentDist = dist[firstVertex.value to secondVertex.value] ?: continue
+                val currentDist = dist[firstVertex.value to secondVertex.value]
+                if (firstVertex == secondVertex || currentDist == null) continue
                 val strengthCurrentValue = DEFAULT_STRENGTH_CONSTANT / (currentDist * currentDist)
                 val lengthCurrentValue =  lengthConstant * currentDist
                 strength[firstVertex.value to secondVertex.value] = strengthCurrentValue
@@ -108,7 +113,6 @@ class KamadaKawai<V, K, W: Comparable<W>> (viewModel: GraphViewModel<V, K, W>) {
                 length[secondVertex.value to firstVertex.value] = lengthCurrentValue
             }
         }
-
         var mVertex = calculateMaxDelta(viewModel, strength, length)
         while (deltaMap[mVertex.model.value] != null && deltaMap[mVertex.model.value]!! > EPSILON) {
             while (deltaMap[mVertex.model.value] != null && deltaMap[mVertex.model.value]!! > EPSILON) {
@@ -118,10 +122,10 @@ class KamadaKawai<V, K, W: Comparable<W>> (viewModel: GraphViewModel<V, K, W>) {
                 var derivativeX = 0F
                 var derivativeY = 0F
                 for (vertex in viewModel.vertices) {
-                    if (mVertex.model == vertex.model) continue
                     val pair = mVertex.model.value to vertex.model.value
-                    val strength = strength[pair] ?: continue
-                    val length = length[pair] ?: continue
+                    val strength = strength[pair]
+                    val length = length[pair]
+                    if (mVertex.model == vertex.model || strength == null || length == null) continue
 
                     val (currentX, currentY) = vertex.returnFloat()
                     val (mX, mY) = mVertex.returnFloat()
@@ -132,9 +136,9 @@ class KamadaKawai<V, K, W: Comparable<W>> (viewModel: GraphViewModel<V, K, W>) {
                     derivativeX += strength * (mX - currentX) * (1 - length / norm)
                     derivativeY += strength * (mY - currentY) * (1 - length / norm)
 
-                    derivativeXX += strength * (1 - (length * (mY - currentY).pow(2)) /norm.pow(3))
-                    derivativeXY += strength * ((length * (mX - currentX) * (mY - currentY) )/ norm.pow(3))
-                    derivativeYY += strength * (1 - (length * (mX - currentX).pow(2))/ norm.pow(3))
+                    derivativeXX += strength * (1 - (length * (mY - currentY).pow(2)) /(norm * norm * norm))
+                    derivativeXY += strength * ((length * (mX - currentX) * (mY - currentY) )/ (norm * norm * norm))
+                    derivativeYY += strength * (1 - (length * (mX - currentX).pow(2))/ (norm * norm * norm))
                 }
                 val determinant = derivativeXX * derivativeYY - derivativeXY * derivativeXY
                 val deltaX = -(derivativeX * derivativeYY - derivativeY * derivativeXY) / determinant

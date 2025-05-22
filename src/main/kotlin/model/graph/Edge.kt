@@ -22,11 +22,11 @@ interface Edge<V, K, W : Comparable<W>> {
 	 */
 	fun weightToFloat(): Float {
 		val num = weight
-		when (num) {
-			is Byte -> return num.toFloat()
-			is Short -> return num.toFloat()
-			is Int -> return num.toFloat()
-			is Long -> return num.toFloat()
+		return when (num) {
+			is Byte -> num.toFloat()
+			is Short -> num.toFloat()
+			is Int -> num.toFloat()
+			is Long -> num.toFloat()
 			else -> error("Type cannot be converted to float")
 		}
 	}

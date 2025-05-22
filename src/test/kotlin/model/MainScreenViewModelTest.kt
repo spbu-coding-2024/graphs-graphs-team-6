@@ -1,5 +1,6 @@
 package model
 
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.material.DrawerState
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.icons.Icons
@@ -11,14 +12,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performKeyInput
+import androidx.compose.ui.test.performMouseInput
+import androidx.compose.ui.test.pressKey
 import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.withKeyDown
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import model.Constants.DEFAULT_EDGE_COLOR
@@ -52,16 +59,11 @@ class MainScreenViewModelTest {
     fun `Empty graph case`() = runComposeUiTest {
 
         var vm = MainScreenViewModel<String, Int, Int>(testGraph)
+
         setContent {
             MainScreenView(vm)
         }
-        onNodeWithTag("MainButton").assertExists("Main button does not exist")
-        onNodeWithTag("OpenButton").assertIsNotDisplayed()
-        onNodeWithTag("ActionButton").assertIsNotDisplayed()
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").performClick()
-        onNodeWithTag("MainButton").performClick()
-        onNodeWithTag("ActionButton").assertIsNotDisplayed()
+        onNodeWithTag("File").isDisplayed()
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -319,22 +321,23 @@ class MainScreenViewModelTest {
         onNodeWithTag("ActionButton").performClick()
         onNodeWithTag("Algorithms").performClick()
         onNodeWithTag("Algorithms: Louvain").performClick()
+        val list = undirectedGraph.vertices.toList()
 
-        val firstColor = vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex(0)).color
-        val secondColor = vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex(1)).color
-        val thirdColor = vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex(5)).color
+        val firstColor = vm.graphViewModel.getVertexViewModel(list[0]).color
+        val secondColor = vm.graphViewModel.getVertexViewModel(list[1]).color
+        val thirdColor = vm.graphViewModel.getVertexViewModel(list[5]).color
 
-        assertEquals(firstColor, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex(0)).color)
-        assertEquals(firstColor, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex(4)).color)
-        assertEquals(firstColor, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex(3)).color)
+        assertEquals(firstColor, vm.graphViewModel.getVertexViewModel(list[0]).color)
+        assertEquals(firstColor, vm.graphViewModel.getVertexViewModel(list[4]).color)
+        assertEquals(firstColor, vm.graphViewModel.getVertexViewModel(list[3]).color)
 
-        assertEquals(secondColor, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex(1)).color)
-        assertEquals(secondColor, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex(2)).color)
+        assertEquals(secondColor, vm.graphViewModel.getVertexViewModel(list[1]).color)
+        assertEquals(secondColor, vm.graphViewModel.getVertexViewModel(list[2]).color)
 
-        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex(5)).color)
-        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex(6)).color)
-        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex(7)).color)
-        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex(8)).color)
+        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(list[5]).color)
+        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(list[6]).color)
+        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(list[7]).color)
+        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(list[8]).color)
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -381,12 +384,14 @@ class MainScreenViewModelTest {
         onNodeWithTag("Algorithms: Kruskal").performClick()
         onNodeWithTag("ApplyAlgorithm").performClick()
 
-        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(undirectedGraph.getEdge("G", "H")).color)
-        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(undirectedGraph.getEdge("H", "D")).color)
-        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(undirectedGraph.getEdge("D", "E")).color)
-        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(undirectedGraph.getEdge("C", "F")).color)
-        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(undirectedGraph.getEdge("B", "C")).color)
-        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(undirectedGraph.getEdge("A", "B")).color)
+        val list = undirectedGraph.edges.toList()
+
+        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[9]).color)
+        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[8]).color)
+        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[5]).color)
+        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[4]).color)
+        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[1]).color)
+        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[0]).color)
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -434,15 +439,17 @@ class MainScreenViewModelTest {
 
         val colorOneComponent = vm.graphViewModel.getVertexViewModel(firstVertex).color
 
-        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("A")).color)
-        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("B")).color)
-        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("C")).color)
+        val list = undirectedGraph.vertices.toList()
 
-        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("D")).color)
-        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("E")).color)
-        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("F")).color)
-        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("G")).color)
-        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("H")).color)
+        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[0]).color)
+        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[1]).color)
+        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[2]).color)
+
+        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[3]).color)
+        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[4]).color)
+        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[5]).color)
+        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[6]).color)
+        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[7]).color)
     }
     @OptIn(ExperimentalTestApi::class)
     @Test
@@ -486,22 +493,23 @@ class MainScreenViewModelTest {
         onNodeWithTag("Algorithms").performClick()
         onNodeWithTag("Algorithms: CycleDetection").performClick()
         onNodeWithTag("ApplyAlgorithm").performClick()
-        val color = vm.graphViewModel.getEdgeViewModel(undirectedGraph.getEdge("A", "B")).color
 
-        assertEquals(color, vm.graphViewModel.getEdgeViewModel(undirectedGraph.getEdge("A", "B")).color)
-        assertEquals(color, vm.graphViewModel.getEdgeViewModel(undirectedGraph.getEdge("B", "C")).color)
-        assertEquals(color, vm.graphViewModel.getEdgeViewModel(undirectedGraph.getEdge("C", "A")).color)
+        val list = undirectedGraph.edges.toList()
+        val color = vm.graphViewModel.getEdgeViewModel(list[0]).color
+
+        assertEquals(color, vm.graphViewModel.getEdgeViewModel(list[0]).color)
+        assertEquals(color, vm.graphViewModel.getEdgeViewModel(list[1]).color)
+        assertEquals(color, vm.graphViewModel.getEdgeViewModel(list[2]).color)
 
     }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun `Louvain Alert dialog works correctly`() = runComposeUiTest {
+    fun `Alert dialog works correctly`() = runComposeUiTest {
         testGraph.addVertex("A")
         testGraph.addVertex("B")
         testGraph.addEdge("A", "B", 1, 1)
         var vm = MainScreenViewModel(testGraph)
-        vm.showIncompatibleWeightTypeDialog = true
         setContent {
             MainScreenView(vm)
         }

@@ -31,15 +31,9 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 			_graph.value = value
 		}
 
-	private var _showEdgesWeights = mutableStateOf(false)
+	var showEdgesWeights = mutableStateOf(false)
 
-	var showEdgesWeights
-		get() = _showEdgesWeights.value
-		set(value) {
-			_showEdgesWeights.value = value
-		}
-
-	val graphViewModel = GraphViewModel(_graph, _showEdgesWeights)
+	val graphViewModel = GraphViewModel(_graph, showEdgesWeights)
 
 	// Current vertex colorscheme
 	var vertexColors by mutableStateOf(mapOf<Vertex<V>, Color>())
@@ -101,7 +95,7 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 	}
 
 	var exceptionMessage: String? by mutableStateOf(null)
-	var aboutDialog by mutableStateOf(false)
+	var aboutDialog = mutableStateOf(false)
 
 	fun assignCommunities() {
 		try {
