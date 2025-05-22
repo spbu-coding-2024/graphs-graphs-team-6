@@ -38,6 +38,7 @@ import model.Constants.DEFAULT_VERTEX_BORDER_COLOR
 import model.Constants.DEFAULT_VERTEX_COLOR
 import model.Constants.DEFAULT_VERTEX_RADIUS
 import model.graph.UndirectedGraph
+import model.utils.KamadaKawai
 import viewmodel.GraphViewModel
 import viewmodel.MainScreenViewModel
 import viewmodel.VertexViewModel
@@ -105,8 +106,8 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 			}
 		}
 	}
-	if (viewModel.showIncompatibleWeightTypeDialog) {
-		LouvainAlertDialog(viewModel)
+	if (viewModel.exceptionMessage != null) {
+		alertDialog(viewModel)
 	}
 }
 
@@ -117,7 +118,8 @@ enum class Algorithm {
 	Louvain,
 	CycleDetection,
 	Bridges,
-	Dijkstra
+	Dijkstra,
+	KamadaKawai
 }
 
 fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
@@ -128,6 +130,7 @@ fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
 ) {
 	resetGraphViewModel(viewModel.graphViewModel)
 	when (algoNum) {
+		Algorithm.KamadaKawai.ordinal -> viewModel.drawGraph()
 		Algorithm.BellmanFord.ordinal -> viewModel.findSSSPBellmanFord(startVertex, endVertex)
 		Algorithm.CycleDetection.ordinal -> viewModel.findCycles(startVertex)
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
@@ -138,18 +141,17 @@ fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
 }
 
 @Composable
-fun <V: Any, K: Any, W: Comparable<W>> LouvainAlertDialog(viewModel: MainScreenViewModel<V, K, W>){
+fun <V: Any, K: Any, W: Comparable<W>> alertDialog(viewModel: MainScreenViewModel<V, K, W>){
 	AlertDialog(
 		modifier = Modifier
 			.testTag("AlertDialog"),
 		onDismissRequest = {
-            viewModel.showIncompatibleWeightTypeDialog = false
+            viewModel.exceptionMessage = null
 		},
-		title = { Text("Incompatible Edge Weight Type") },
+		title = { Text("Oops!") },
 		text = {
 			Text(
-				"Your graph uses edge weight type that is not supported yet. " +
-					"Please try exploring graph with numerical weight" +
+				"There's something wrong with the graph " +
 					"\n${viewModel.exceptionMessage}"
 			)
 		},
@@ -157,7 +159,7 @@ fun <V: Any, K: Any, W: Comparable<W>> LouvainAlertDialog(viewModel: MainScreenV
 			TextButton(
 				modifier = Modifier
 					.testTag("AlertDialogButton"),
-				onClick = { viewModel.showIncompatibleWeightTypeDialog = false }
+				onClick = { viewModel.exceptionMessage = null }
 			) {
 				Text("ОК")
 			}

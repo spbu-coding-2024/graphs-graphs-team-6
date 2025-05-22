@@ -42,4 +42,8 @@ class VertexViewModel<V>(
 		_y.value += offset.y.dp
 	}
 
+	fun returnFloat(): Pair<Float, Float> {
+		return x.value to y.value
+	}
+
 }

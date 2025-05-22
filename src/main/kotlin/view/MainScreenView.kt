@@ -1,129 +1,161 @@
 package view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.Box
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.rememberDrawerState
-import androidx.compose.material.DrawerValue
 import androidx.compose.material.Button
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.Checkbox
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.DrawerState
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.TextButton
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Icon
-import androidx.compose.material.ModalDrawer
 import viewmodel.MainScreenViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import view.graph.GraphView
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.TopEnd
+import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.CoroutineScope
-import model.graph.DirectedGraph
+import model.Constants.DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_BUTTON
+import model.Constants.DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_MENU
 import model.JsonManager
-import model.graph.Graph
 import model.neo4j.GraphService
-import space.kscience.kmath.operations.IntRing
 import java.awt.FileDialog
 import java.awt.Frame
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K, W>) {
-	val drawerState = rememberDrawerState(DrawerValue.Closed)
-	val coroutine = rememberCoroutineScope()
-
-	var actionWindowVisibility by remember { mutableStateOf(false) }
+	var actionWindowVisibility = remember { mutableStateOf(false) }
 	var showDbSelectDialog = remember { mutableStateOf(false) }
+	var fileMenuExpanded = remember { mutableStateOf(false) }
+	var graphMenuExpanded = remember { mutableStateOf(false) }
+	var saveDialogState = remember { mutableStateOf(false) }
 
+	GraphView(viewModel.graphViewModel)
+	if (viewModel.graphViewModel.vertices.isNotEmpty()) actionMenuView(actionWindowVisibility.value, viewModel)
+	if (viewModel.aboutDialog.value) aboutDialog(viewModel)
+	if (saveDialogState.value) drawerSave(viewModel)
+	dbMenu(viewModel, showDbSelectDialog)
 
-	ModalDrawer(
-		drawerContent = {
-			Column(
-				modifier = Modifier
-					.testTag("ModalDrawer")
-					.padding(16.dp)
-			) {
-				Button(onClick = { coroutine.launch { drawerState.close() } }) {
-					Icon(Icons.Default.Close, "Close")
-				}
-				drawerButton("Open", Icons.Default.Add, "OpenButton", coroutine, drawerState) {
-					showDbSelectDialog.value = true
-				}
-				drawerButton("Save", Icons.Default.ArrowDropDown, "SaveButton", coroutine, drawerState) {
-					drawerSave(viewModel)
-				}
-				drawerButton("Action", Icons.Default.Star, "ActionButton", coroutine, drawerState) {
-					actionWindowVisibility = true
-				}
-			}
-		},
-		drawerState = drawerState,
-		drawerShape = drawerShape()
-	) {
-		GraphView(viewModel.graphViewModel)
-		Column(
-			modifier = Modifier
-				.fillMaxSize()
-				.padding(16.dp)
-				) {
-			Button(
-				modifier = Modifier
-					.testTag("MainButton"),
+	Row(
+		modifier = Modifier
+			.testTag("Menu")
+			.background(Color(DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_MENU))
+			.fillMaxWidth()
+	)
+	{
+		MenuButton("FileMenu", "File", fileMenuExpanded)
+		MenuButton("GraphMenu", "Graph", graphMenuExpanded)
+		MenuButton("AboutMenu", "About", viewModel.aboutDialog)
+		MainScreenDropdownMenu(fileMenuExpanded, listOf(
+			Triple("OpenMenuButton", "Open", showDbSelectDialog),
+			Triple("SaveMenuButton", "Save", saveDialogState)
+		))
+		MainScreenDropdownMenu(graphMenuExpanded, listOf(
+			Triple("ApplyAlgorithmMenuButton", "Apply algorithms", actionWindowVisibility),
+			Triple("ShowWeightsMenuButton", "Show weights", viewModel.showEdgesWeights)
+		))
+	}
+}
+
+@Composable
+fun MainScreenDropdownMenu(expanded: MutableState<Boolean>,
+						   listOfEntries: List<Triple<String, String, MutableState<Boolean>>>) {
+	DropdownMenu(
+		expanded = expanded.value,
+		onDismissRequest = { expanded.value = false }
+	)
+	{
+		listOfEntries.forEach {
+			DropdownMenuItem(
+				modifier = Modifier.testTag(it.first),
 				onClick = {
-					if (actionWindowVisibility == true) {
-						actionWindowVisibility = false
-						resetGraphViewModel(viewModel.graphViewModel)
-					} else {
-						coroutine.launch { drawerState.open() }
-					}
+					expanded.value = false
+					it.third.value = !it.third.value
 				}
 			) {
-				Icon(if (actionWindowVisibility) Icons.Default.Close else Icons.Default.Menu, "Main button")
+				Text(it.second)
 			}
-		}
-		if (viewModel.graphViewModel.vertices.isNotEmpty()) {
-			actionMenuView(actionWindowVisibility, viewModel)
 		}
 	}
-	WeightsCheckBox(viewModel)
-	dbMenu(viewModel, showDbSelectDialog)
 }
+
+@Composable
+fun MenuButton(testTag: String, text: String, state: MutableState<Boolean>) {
+	Button(
+		modifier = Modifier
+			.testTag(testTag)
+			.padding(horizontal = 5.dp)
+			.background(Color(DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_MENU)),
+		onClick = { state.value = true },
+		colors = ButtonDefaults.buttonColors(backgroundColor = Color(DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_BUTTON))
+	) {
+		Text(text)
+	}
+}
+
+
+@Composable
+fun <V: Any, K: Any, W: Comparable<W>>aboutDialog(viewModel: MainScreenViewModel<V, K, W>) {
+	AlertDialog(
+		modifier = Modifier
+			.testTag("AboutDialog"),
+		onDismissRequest = {
+			viewModel.aboutDialog.value = false
+		},
+		title = { Text("About") },
+		text = {
+			Text(
+				"Welcome to a graph visualisation program!\n" +
+						"\n" +
+						"To save or load graph you need to choose \"File\" menu.\n" +
+						"You can use JSON or even databases like Neo4j to load/save graphs\n" +
+						"Choose \"Graph\" menu and then \"Apply algorithms\" to try some algorithms on a graph, " +
+						"a few menus will appear.\n" +
+						"Some algorithms require you to choose specific vertices.\n" +
+						"\n" +
+						"You can also zoom or drag graph.\n"
+
+			)
+		},
+		confirmButton = {
+			TextButton(
+				modifier = Modifier
+					.testTag("AboutDialogButton"),
+				onClick = { viewModel.aboutDialog.value = false }
+			) {
+				Text("ОК")
+			}
+		}
+	)
+}
+
 
 @Composable
 fun <V : Any, K : Any, W : Comparable<W>> dbMenu(
@@ -136,22 +168,28 @@ fun <V : Any, K : Any, W : Comparable<W>> dbMenu(
 
 	if (showDbSelectDialog.value) {
 		AlertDialog(
+			modifier = Modifier.testTag("OpenDialog"),
 			onDismissRequest = { showDbSelectDialog.value = false },
 			title = { Text("Select Database") },
 			text = {
 				Column {
 					Spacer(Modifier.height(8.dp))
-					Button(onClick = {
+					Button(
+						modifier = Modifier.testTag("Neo4jOpenDialogButton"),
+						onClick = {
 						showDbSelectDialog.value = false
 						if (GraphService.sessionFactory == null)
 							showNeo4jDialog.value = true
 						else
 							showOpsDialog.value = true
-					}) {
+						}
+					) {
 						Text("Neo4j")
 					}
 					Spacer(Modifier.height(8.dp))
-					Button(onClick = {
+					Button(
+						modifier = Modifier.testTag("JsonOpenDialogButton"),
+						onClick = {
 						showDbSelectDialog.value = false
 						val dialog = FileDialog(null as Frame?, "Select JSON")
 						dialog.mode = FileDialog.LOAD
@@ -307,44 +345,13 @@ fun drawerButton(
 	}
 }
 
-fun drawerShape() = object : Shape {
-	override fun createOutline(
-		size: Size,
-		layoutDirection: LayoutDirection,
-		density: Density
-	): Outline {
-		return Outline.Rectangle(Rect(0f, 0f, size.width / 2, size.height))
-	}
-
-}
-
-@Composable
-fun <V : Any, K : Any, W : Comparable<W>> WeightsCheckBox(
-	viewModel: MainScreenViewModel<V, K, W>,
-	modifier: Modifier = Modifier
-) {
-	Box(modifier = modifier.fillMaxSize().padding(16.dp)) {
-		Row(
-			modifier = modifier
-				.align(TopEnd),
-			verticalAlignment = Alignment.CenterVertically
-		) {
-			Checkbox(
-				modifier = Modifier
-					.testTag("WeightCheckBox"),
-				checked = viewModel.showEdgesWeights,
-				onCheckedChange = { viewModel.showEdgesWeights = it })
-			Text("Show weights")
-		}
-	}
-}
-
 fun <V: Any, K: Any, W: Comparable<W>> drawerSave(viewModel: MainScreenViewModel<V, K, W>) {
 	val extension = ".json"
-	val dialog = FileDialog(null as Frame?, "Select JSON")
+	val dialog = FileDialog(null as Frame?, "Save JSON")
 	dialog.mode = FileDialog.SAVE
 	dialog.isVisible = true
 	var file = dialog.file
+	if (file == null) return
 	if (file.length < extension.length || file.substring(file.length - extension.length) != ".json") {
 		file += extension
 	}

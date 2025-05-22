@@ -43,7 +43,7 @@ interface Graph<V, K, W: Comparable<W>>{
 	 * @param secondVertex Second end point
 	 * @return Corresponding edge
 	 */
-	fun getEdge(firstVertex: V, secondVertex: V): Edge<V, K, W>
+	fun getEdge(firstVertex: V, secondVertex: V): Edge<V, K, W>?
 
 	/**
 	 * Given value of vertex, get its actual vertex
@@ -51,6 +51,6 @@ interface Graph<V, K, W: Comparable<W>>{
 	 * @param vertex value of vertex
 	 * @return Corresponding vertex
 	 */
-	fun getVertex(vertex: V): Vertex<V>
+	fun getVertex(vertex: V): Vertex<V>?
 
 }

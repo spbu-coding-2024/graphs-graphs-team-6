@@ -88,7 +88,7 @@ class UndirectedGraphTest {
         }
 
         for (i in 0..98) {
-            assertEquals(graph.getEdge(i, i+1).key, 98 -i)
+            assertEquals(graph.getEdge(i, i+1)?.key, 98 -i)
         }
     }
 }

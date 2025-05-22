@@ -18,6 +18,7 @@ import model.neo4j.GraphService
 import model.utils.BridgeFinder
 import model.utils.CycleDetection
 import model.utils.GraphPath
+import model.utils.KamadaKawai
 import model.utils.MSFFinder
 import model.utils.Louvain
 import model.utils.SSSPCalculator
@@ -30,15 +31,9 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 			_graph.value = value
 		}
 
-	private var _showEdgesWeights = mutableStateOf(false)
+	var showEdgesWeights = mutableStateOf(false)
 
-	var showEdgesWeights
-		get() = _showEdgesWeights.value
-		set(value) {
-			_showEdgesWeights.value = value
-		}
-
-	val graphViewModel = GraphViewModel(_graph, _showEdgesWeights)
+	val graphViewModel = GraphViewModel(_graph, showEdgesWeights)
 
 	// Current vertex colorscheme
 	var vertexColors by mutableStateOf(mapOf<Vertex<V>, Color>())
@@ -99,18 +94,16 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 		ColorUtils.applyColors(edgeColors, graphViewModel.edges.sortedBy { it.model.weight }, Color(SEMI_BLACK))
 	}
 
-	var exceptionMessage: String? = null
-	var showIncompatibleWeightTypeDialog by mutableStateOf(false)
+	var exceptionMessage: String? by mutableStateOf(null)
+	var aboutDialog = mutableStateOf(false)
 
 	fun assignCommunities() {
 		try {
-
 			val louvainDetector by derivedStateOf { Louvain(graph) }
 			val grouping = louvainDetector.detectCommunities()
 			val colorMap = ColorUtils.assignColorsGrouped(grouping)
 			ColorUtils.applyColors(colorMap, graphViewModel.vertices)
 		} catch (e: IllegalArgumentException) {
-			showIncompatibleWeightTypeDialog = true
 			exceptionMessage = e.message
 		}
 	}
@@ -128,5 +121,14 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 
 	fun saveNeo4j(graph: Graph<V, K, W>) {
 		GraphService.saveGraph(graph)
+	}
+
+	fun drawGraph() {
+		val kamadaKawai = KamadaKawai<V, K, W>(graphViewModel)
+		try {
+			kamadaKawai.compute(graphViewModel)
+		} catch(e: IllegalArgumentException) {
+			exceptionMessage = e.message
+		}
 	}
 }
