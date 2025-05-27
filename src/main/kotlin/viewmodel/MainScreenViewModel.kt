@@ -25,10 +25,15 @@ import model.utils.SSSPCalculator
 class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph<V, K, W>) {
 	var graph by mutableStateOf(graphParam)
 
-	var showEdgesWeights = mutableStateOf(false)
+	private var _showEdgesWeights = mutableStateOf(false)
 
+	var showEdgesWeights: Boolean
+		get() = _showEdgesWeights.value
+		set(value) {
+			_showEdgesWeights.value = value
+		}
 
-	val graphViewModel = GraphViewModel(graph, showEdgesWeights)
+	val graphViewModel = GraphViewModel(graph, _showEdgesWeights)
 
 	// Current vertex colorscheme
 	var vertexColors by mutableStateOf(mapOf<Vertex<V>, Color>())
