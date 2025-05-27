@@ -4,7 +4,7 @@ A desktop app to analyse graphs.
 ## Features
 ### Main Algorithms
 - Louvain community detection;
-- Key vertices search *WIP*;
+- Key vertices search `WIP`;
 - Kamada Kawai graph layout.
 
 ### Classic Algorithms
@@ -18,4 +18,4 @@ A desktop app to analyse graphs.
 ### Actions
 - Load & Save graph from/to Neo4j;
 - Load & Save graph as JSON;
-- Load & Save graph from/to SQLite *WIP*.
+- Load & Save graph from/to SQLite `WIP`.
