@@ -62,6 +62,7 @@ import org.neo4j.ogm.exception.ConnectionException
 import space.kscience.kmath.operations.IntRing
 import java.awt.FileDialog
 import java.awt.Frame
+import model.Constants
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -208,7 +209,7 @@ fun <V : Any, K : Any, W : Comparable<W>> neo4jMenu(
 				TextButton(onClick = {
 					viewModel.connectNeo4j(neo4jUri, neo4jUser, neo4jPassword)
 					viewModel.showNeo4jDialog = false
-					if (!viewModel.showNeo4jConnectionFailedDialog) 
+					if (!viewModel.showNeo4jConnectionFailedDialog)
 						viewModel.showNeo4jOpsDialog = true
 				}) {
 					Text("Connect")
@@ -349,7 +350,8 @@ fun <V : Any, K : Any, W : Comparable<W>> WeightsCheckBox(
 	Box(modifier = modifier.fillMaxSize().padding(16.dp)) {
 		Row(
 			modifier = modifier
-				.align(TopEnd),
+				.align(TopEnd)
+				.padding(vertical = if (viewModel.isIncompatibleAlgorithm) Constants.BANNER_HEIGHT.dp else 0.dp),
 			verticalAlignment = Alignment.CenterVertically
 		) {
 			Checkbox(

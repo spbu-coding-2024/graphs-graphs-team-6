@@ -33,6 +33,8 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 			_showEdgesWeights.value = value
 		}
 
+	var isIncompatibleAlgorithm by mutableStateOf(false)
+
 	val graphViewModel = GraphViewModel(graph, _showEdgesWeights)
 
 	// Current vertex colorscheme
@@ -43,40 +45,65 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 		private set
 
 	fun calculateSCC() {
-		val calculator by derivedStateOf { SCCCalculator<V, K, W>() }
-		vertexColors = calculator.calculateComponents(graph)
-		ColorUtils.applyColors(vertexColors, graphViewModel.vertices)
-	}
-
-	fun findSSSPBellmanFord(startVertex: VertexViewModel<V>, endVertex: VertexViewModel<V>) {
-		val (predecessors, _) = SSSPCalculator.bellmanFordAlgorithm(
-			graph,
-			startVertex.model.value
-		)
-		val path = GraphPath.construct(predecessors, endVertex.model.value)
-			.map { graphViewModel.getEdgeViewModel(it) }
-		ColorUtils.applyOneColor(path, Color.Red)
-	}
-
-	fun findCycles(vertex: VertexViewModel<V>) {
-		require(graph is DirectedGraph)
-		val cycleDetection = CycleDetection()
-		val list = cycleDetection.findCyclesFromGivenVertex(graph as DirectedGraph, vertex.model as DirectedVertex)
-
-		list.forEachIndexed { i, cycle ->
-			val cycleViewModel = cycle.map { graphViewModel.getEdgeViewModel(it) }
-			val color = ColorUtils.generateColor(i)
-			ColorUtils.applyOneColor(cycleViewModel, color)
+		if (graph is DirectedGraph) {
+			val calculator by derivedStateOf { SCCCalculator<V, K, W>() }
+			vertexColors = calculator.calculateComponents(graph)
+			ColorUtils.applyColors(vertexColors, graphViewModel.vertices)
+		}
+		else {
+			isIncompatibleAlgorithm = true
 		}
 
 	}
 
-	fun findMSF() {
-		val msfFinder by derivedStateOf { MSFFinder(graph) }
-		val msf = msfFinder.findMSF()
-		edgeColors = msf
+	fun findSSSPBellmanFord(startVertex: VertexViewModel<V>, endVertex: VertexViewModel<V>) {
+		if (graph is DirectedGraph) {
+			val (predecessors, _) = SSSPCalculator.bellmanFordAlgorithm(
+				graph,
+				startVertex.model.value
+			)
+			val path = GraphPath.construct(predecessors, endVertex.model.value)
+				.map { graphViewModel.getEdgeViewModel(it) }
+			ColorUtils.applyOneColor(path, Color.Red)
+		} else {
+			isIncompatibleAlgorithm = true
+		}
+	}
 
-		ColorUtils.applyColors(edgeColors, graphViewModel.edges.sortedBy { it.model.weight }, Color(SEMI_BLACK))
+	fun findCycles(vertex: VertexViewModel<V>) {
+		if (graph is DirectedGraph) {
+			val cycleDetection = CycleDetection()
+			val list =
+				cycleDetection.findCyclesFromGivenVertex(
+					graph as DirectedGraph,
+					vertex.model as DirectedVertex
+				)
+
+			list.forEachIndexed { i, cycle ->
+				val cycleViewModel = cycle.map { graphViewModel.getEdgeViewModel(it) }
+				val color = ColorUtils.generateColor(i)
+				ColorUtils.applyOneColor(cycleViewModel, color)
+			}
+		} else {
+			isIncompatibleAlgorithm = true
+		}
+	}
+
+	fun findMSF() {
+		if (graph is UndirectedGraph) {
+			val msfFinder by derivedStateOf { MSFFinder(graph) }
+			val msf = msfFinder.findMSF()
+			edgeColors = msf
+
+			ColorUtils.applyColors(
+				edgeColors,
+				graphViewModel.edges.sortedBy { it.model.weight },
+				Color(SEMI_BLACK)
+			)
+		} else {
+			isIncompatibleAlgorithm = true
+		}
+
 	}
 
 	private val bridgeFinder = BridgeFinder()
@@ -86,28 +113,41 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 			.filter { edge -> edge.startVertex to edge.endVertex in pairs }
 			.associateWith { Color(BRIGHT_RED) }
 	}
-	fun findBridges() {
-		require(graph is UndirectedGraph)
-		val bridges = bridgeFinder.runOn<V, K, W>(graph as UndirectedGraph<V, K, W>)
-		edgeColors = convertPairsToColorMap(bridges)
 
-		ColorUtils.applyColors(edgeColors, graphViewModel.edges.sortedBy { it.model.weight }, Color(SEMI_BLACK))
+	fun findBridges() {
+		if (graph is UndirectedGraph) {
+			val bridges = bridgeFinder.runOn<V, K, W>(graph as UndirectedGraph<V, K, W>)
+			edgeColors = convertPairsToColorMap(bridges)
+
+			ColorUtils.applyColors(
+				edgeColors,
+				graphViewModel.edges.sortedBy { it.model.weight },
+				Color(SEMI_BLACK)
+			)
+		} else {
+			isIncompatibleAlgorithm = true
+		}
 	}
 
 	var exceptionMessage: String? = null
 	var showIncompatibleWeightTypeDialog by mutableStateOf(false)
 
 	fun assignCommunities() {
-		try {
+		if (graph is UndirectedGraph) {
+			try {
 
-			val louvainDetector by derivedStateOf { Louvain(graph) }
-			val grouping = louvainDetector.detectCommunities()
-			val colorMap = ColorUtils.assignColorsGrouped(grouping)
-			ColorUtils.applyColors(colorMap, graphViewModel.vertices)
-		} catch (e: IllegalArgumentException) {
-			showIncompatibleWeightTypeDialog = true
-			exceptionMessage = e.message
+				val louvainDetector by derivedStateOf { Louvain(graph) }
+				val grouping = louvainDetector.detectCommunities()
+				val colorMap = ColorUtils.assignColorsGrouped(grouping)
+				ColorUtils.applyColors(colorMap, graphViewModel.vertices)
+			} catch (e: IllegalArgumentException) {
+				showIncompatibleWeightTypeDialog = true
+				exceptionMessage = e.message
+			}
+		} else {
+			isIncompatibleAlgorithm = true
 		}
+
 	}
 
 	// Neo4j
@@ -120,8 +160,7 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 			GraphService.uri = uri
 			GraphService.user = user
 			GraphService.pass = password
-		}
-		catch(e: IllegalArgumentException) {
+		} catch (e: IllegalArgumentException) {
 			showNeo4jConnectionFailedDialog = true
 			exceptionMessage = e.message
 		}

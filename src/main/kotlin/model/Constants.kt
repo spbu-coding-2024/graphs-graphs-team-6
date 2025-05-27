@@ -22,4 +22,6 @@ object Constants {
     const val SHOW_LABEL_MOD = 3
 
     const val DEFAULT_PATH_COLOR = 0xFFFF0000
+
+    const val BANNER_HEIGHT = 50
 }

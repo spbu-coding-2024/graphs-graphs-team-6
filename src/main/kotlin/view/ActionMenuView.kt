@@ -41,8 +41,12 @@ import model.graph.UndirectedGraph
 import viewmodel.GraphViewModel
 import viewmodel.MainScreenViewModel
 import viewmodel.VertexViewModel
-
-
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.expandVertically
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.background
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -71,7 +75,12 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 			horizontalArrangement = Arrangement.Start,
 			verticalAlignment = Alignment.Bottom,
 		) {
-			menuBox(algorithms[currentAlgorithm], algorithms, algorithms.toTypedArray(), "Algorithms") { i, _ ->
+			menuBox(
+				algorithms[currentAlgorithm],
+				algorithms,
+				algorithms.toTypedArray(),
+				"Algorithms"
+			) { i, _ ->
 				currentAlgorithm = i
 			}
 			Button(
@@ -85,8 +94,9 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 				Icon(Icons.Default.Check, "Apply algorithm")
 			}
 			if (currentAlgorithm == Algorithm.BellmanFord.ordinal ||
-                currentAlgorithm == Algorithm.CycleDetection.ordinal ||
-                currentAlgorithm == Algorithm.Dijkstra.ordinal) {
+				currentAlgorithm == Algorithm.CycleDetection.ordinal ||
+				currentAlgorithm == Algorithm.Dijkstra.ordinal
+			) {
 				menuBox(
 					startVertex.model.value.toString(),
 					viewModel.graphViewModel.vertices, arrayOfVertexNames, "StartVertex"
@@ -95,7 +105,8 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 				}
 			}
 			if (currentAlgorithm == Algorithm.BellmanFord.ordinal ||
-                currentAlgorithm == Algorithm.Dijkstra.ordinal) {
+				currentAlgorithm == Algorithm.Dijkstra.ordinal
+			) {
 				menuBox(
 					endVertex.model.value.toString(),
 					viewModel.graphViewModel.vertices, arrayOfVertexNames, "EndVertex"
@@ -107,6 +118,9 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 	}
 	if (viewModel.showIncompatibleWeightTypeDialog) {
 		LouvainAlertDialog(viewModel)
+	}
+	if (viewModel.isIncompatibleAlgorithm) {
+		IncompatibilityBanner(viewModel.isIncompatibleAlgorithm, {viewModel.isIncompatibleAlgorithm = false})
 	}
 }
 
@@ -120,7 +134,7 @@ enum class Algorithm {
 	Dijkstra
 }
 
-fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
+fun <V : Any, K : Any, W : Comparable<W>> applyAlgorithm(
 	algoNum: Int,
 	viewModel: MainScreenViewModel<V, K, W>,
 	startVertex: VertexViewModel<V>,
@@ -131,19 +145,19 @@ fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
 		Algorithm.BellmanFord.ordinal -> viewModel.findSSSPBellmanFord(startVertex, endVertex)
 		Algorithm.CycleDetection.ordinal -> viewModel.findCycles(startVertex)
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
-		Algorithm.Kruskal.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findMSF()
-        Algorithm.Bridges.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findBridges()
-		Algorithm.Louvain.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.assignCommunities()
+		Algorithm.Kruskal.ordinal -> viewModel.findMSF()
+		Algorithm.Bridges.ordinal -> viewModel.findBridges()
+		Algorithm.Louvain.ordinal -> viewModel.assignCommunities()
 	}
 }
 
 @Composable
-fun <V: Any, K: Any, W: Comparable<W>> LouvainAlertDialog(viewModel: MainScreenViewModel<V, K, W>){
+fun <V : Any, K : Any, W : Comparable<W>> LouvainAlertDialog(viewModel: MainScreenViewModel<V, K, W>) {
 	AlertDialog(
 		modifier = Modifier
 			.testTag("AlertDialog"),
 		onDismissRequest = {
-            viewModel.showIncompatibleWeightTypeDialog = false
+			viewModel.showIncompatibleWeightTypeDialog = false
 		},
 		title = { Text("Incompatible Edge Weight Type") },
 		text = {
@@ -202,6 +216,58 @@ fun <T> menuBox(
 				) {
 					Text(text = arrayOfNames[i])
 				}
+			}
+		}
+	}
+}
+
+//@Composable
+//fun <V : Any, K : Any, W : Comparable<W>> incompatibleAlgorithmMenu(viewModel: MainScreenViewModel<V, K, W>) {
+//	AlertDialog(
+//		onDismissRequest = {
+//			viewModel.isIncompatibleAlgorithm = false
+//		},
+//		title = { Text("Incorrect type of graph") },
+//		text = {
+//			Text(
+//				"This algorithm cannot be applied to graph of this type. Please, try exploring " +
+//					if (viewModel.graph is UndirectedGraph) "directed graph" else "undirected graph"
+//			)
+//		},
+//	confirmButton = {
+//			TextButton(onClick = {
+//				viewModel.isIncompatibleAlgorithm = false
+//			}) {
+//				Text("ОК")
+//			}
+//		}
+//	)
+//}
+
+@Composable
+fun IncompatibilityBanner(
+	show: Boolean,
+	onDismiss: () -> Unit
+) {
+	AnimatedVisibility(
+		visible = show,
+		enter = fadeIn() + expandVertically(),
+		exit  = fadeOut() + shrinkVertically()
+	) {
+		Row(
+			modifier = Modifier
+				.fillMaxWidth()
+				.background(Color(0xFFFAF3C0))
+				.padding(12.dp),
+			verticalAlignment = Alignment.CenterVertically,
+			horizontalArrangement = Arrangement.SpaceBetween
+		) {
+			Text(
+				text = "This algorithm cannot be applied to this graph type",
+				color = Color.Black
+			)
+			TextButton(onClick = onDismiss) {
+				Text("OK")
 			}
 		}
 	}
