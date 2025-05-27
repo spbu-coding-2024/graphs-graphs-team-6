@@ -40,6 +40,7 @@ import space.kscience.kmath.operations.IntRing
 import view.MainScreenView
 import view.drawerButton
 import viewmodel.MainScreenViewModel
+import javax.swing.JButton
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals

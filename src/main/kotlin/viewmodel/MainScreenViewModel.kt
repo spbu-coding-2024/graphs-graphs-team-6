@@ -59,9 +59,8 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 	}
 
 	fun findCycles(vertex: VertexViewModel<V>) {
-		require(graph is DirectedGraph)
 		val cycleDetection = CycleDetection()
-		val list = cycleDetection.findCyclesFromGivenVertex(graph as DirectedGraph, vertex.model as DirectedVertex)
+		val list = cycleDetection.findCyclesFromGivenVertex(graph, vertex.model)
 
 		list.forEachIndexed { i, cycle ->
 			val cycleViewModel = cycle.map { graphViewModel.getEdgeViewModel(it) }
