@@ -209,29 +209,6 @@ fun <T> menuBox(
 	}
 }
 
-//@Composable
-//fun <V : Any, K : Any, W : Comparable<W>> incompatibleAlgorithmMenu(viewModel: MainScreenViewModel<V, K, W>) {
-//	AlertDialog(
-//		onDismissRequest = {
-//			viewModel.isIncompatibleAlgorithm = false
-//		},
-//		title = { Text("Incorrect type of graph") },
-//		text = {
-//			Text(
-//				"This algorithm cannot be applied to graph of this type. Please, try exploring " +
-//					if (viewModel.graph is UndirectedGraph) "directed graph" else "undirected graph"
-//			)
-//		},
-//	confirmButton = {
-//			TextButton(onClick = {
-//				viewModel.isIncompatibleAlgorithm = false
-//			}) {
-//				Text("ОК")
-//			}
-//		}
-//	)
-//}
-
 @Composable
 fun IncompatibilityBanner(
 	show: Boolean,
