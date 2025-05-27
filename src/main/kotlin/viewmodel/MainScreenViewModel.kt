@@ -14,6 +14,7 @@ import model.utils.SCCCalculator
 import model.neo4j.GraphService
 import model.utils.BridgeFinder
 import model.utils.CycleDetection
+import model.utils.DijkstraPathCalculator
 import model.utils.GraphPath
 import model.utils.MSFFinder
 import model.utils.Louvain
@@ -50,6 +51,16 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 
 	fun findSSSPBellmanFord(startVertex: VertexViewModel<V>, endVertex: VertexViewModel<V>) {
 		val (predecessors, _) = SSSPCalculator.bellmanFordAlgorithm(
+			graph,
+			startVertex.model.value
+		)
+		val path = GraphPath.construct(predecessors, endVertex.model.value)
+			.map { graphViewModel.getEdgeViewModel(it) }
+		ColorUtils.applyOneColor(path, Color.Red)
+	}
+
+	fun findDijkstraPath(startVertex: VertexViewModel<V>, endVertex: VertexViewModel<V>) {
+		val (predecessors, _) = DijkstraPathCalculator().runOn(
 			graph,
 			startVertex.model.value
 		)
