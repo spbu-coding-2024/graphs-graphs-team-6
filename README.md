@@ -3,7 +3,7 @@ A desktop app to analyse graphs.
 
 ## Features
 ### Main Algorithms
-- Louvain community detection;
+- Louvain community detection (used [Jetbrains Louvain algorithm](https://github.com/JetBrains-Research/louvain));
 - Key vertices search `WIP`;
 - Kamada Kawai graph layout.
 
