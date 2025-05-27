@@ -47,6 +47,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.background
+import model.Constants
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -68,25 +69,16 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 
 	AnimatedVisibility(actionWindowVisibility, Modifier, EnterTransition.None, ExitTransition.None) {
 		Row(
-			modifier = Modifier.fillMaxSize()
-				.padding(20.dp)
-				.width(300.dp)
-				.height(300.dp),
+			modifier = Modifier.fillMaxSize().padding(20.dp).width(300.dp).height(300.dp),
 			horizontalArrangement = Arrangement.Start,
 			verticalAlignment = Alignment.Bottom,
 		) {
-			menuBox(
-				algorithms[currentAlgorithm],
-				algorithms,
-				algorithms.toTypedArray(),
-				"Algorithms"
-			) { i, _ ->
+			menuBox(algorithms[currentAlgorithm], algorithms, algorithms.toTypedArray(),
+				"Algorithms") { i, _ ->
 				currentAlgorithm = i
 			}
 			Button(
-				modifier = Modifier
-					.testTag("ApplyAlgorithm")
-					.padding(5.dp),
+				modifier = Modifier.testTag("ApplyAlgorithm").padding(5.dp),
 				onClick = {
 					applyAlgorithm(currentAlgorithm, viewModel, startVertex, endVertex)
 				}
@@ -97,12 +89,9 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 				currentAlgorithm == Algorithm.CycleDetection.ordinal ||
 				currentAlgorithm == Algorithm.Dijkstra.ordinal
 			) {
-				menuBox(
-					startVertex.model.value.toString(),
+				menuBox(startVertex.model.value.toString(),
 					viewModel.graphViewModel.vertices, arrayOfVertexNames, "StartVertex"
-				) { _, vertex ->
-					startVertex = vertex
-				}
+				) { _, vertex -> startVertex = vertex }
 			}
 			if (currentAlgorithm == Algorithm.BellmanFord.ordinal ||
 				currentAlgorithm == Algorithm.Dijkstra.ordinal
@@ -116,12 +105,11 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 			}
 		}
 	}
-	if (viewModel.showIncompatibleWeightTypeDialog) {
+	if (viewModel.showIncompatibleWeightTypeDialog)
 		LouvainAlertDialog(viewModel)
-	}
-	if (viewModel.isIncompatibleAlgorithm) {
+	if (viewModel.isIncompatibleAlgorithm)
 		IncompatibilityBanner(viewModel.isIncompatibleAlgorithm, {viewModel.isIncompatibleAlgorithm = false})
-	}
+
 }
 
 enum class Algorithm {
@@ -257,7 +245,7 @@ fun IncompatibilityBanner(
 		Row(
 			modifier = Modifier
 				.fillMaxWidth()
-				.background(Color(0xFFFAF3C0))
+				.background(Color(Constants.PALE_YELLOW))
 				.padding(12.dp),
 			verticalAlignment = Alignment.CenterVertically,
 			horizontalArrangement = Arrangement.SpaceBetween

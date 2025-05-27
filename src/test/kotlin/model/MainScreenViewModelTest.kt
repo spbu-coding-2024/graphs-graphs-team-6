@@ -393,7 +393,7 @@ class MainScreenViewModelTest {
     @Test
     fun `Apply Tarjan`() = runComposeUiTest {
         val firstVertex: Vertex<String>
-        val undirectedGraph = UndirectedGraph<String, Int, Int>(IntRing).apply {
+        val directedGraph = DirectedGraph<String, Int, Int>(IntRing).apply {
             firstVertex = addVertex("A")
             addVertex("B")
             addVertex("C")
@@ -421,7 +421,7 @@ class MainScreenViewModelTest {
             addEdge("G", "H", index, weight[index]); index++
         }
 
-        val vm = MainScreenViewModel(undirectedGraph)
+        val vm = MainScreenViewModel(directedGraph)
         setContent {
             MainScreenView(vm)
         }
@@ -434,16 +434,17 @@ class MainScreenViewModelTest {
 
         val colorOneComponent = vm.graphViewModel.getVertexViewModel(firstVertex).color
 
-        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("A")).color)
-        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("B")).color)
-        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("C")).color)
+        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(directedGraph.getVertex("A")).color)
+        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(directedGraph.getVertex("B")).color)
+        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(directedGraph.getVertex("C")).color)
 
-        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("D")).color)
-        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("E")).color)
-        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("F")).color)
-        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("G")).color)
-        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(undirectedGraph.getVertex("H")).color)
+        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(directedGraph.getVertex("D")).color)
+        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(directedGraph.getVertex("E")).color)
+        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(directedGraph.getVertex("F")).color)
+        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(directedGraph.getVertex("G")).color)
+        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(directedGraph.getVertex("H")).color)
     }
+
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun `Apply CycleDetection`() = runComposeUiTest {
