@@ -27,7 +27,7 @@ import kotlin.math.PI
 @Composable
 fun <V, K, W : Comparable<W>> showLabel(edgeViewModel: EdgeViewModel<V, K, W>) {
 
-	if (edgeViewModel.weightLabelVisible) {
+	if (edgeViewModel.weightLabelVisible.value) {
 		val x1 = edgeViewModel.firstVertexViewModel.x
 		val y1 = edgeViewModel.firstVertexViewModel.y
 		val x2 = edgeViewModel.secondVertexViewModel.x

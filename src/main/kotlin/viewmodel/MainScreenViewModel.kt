@@ -1,9 +1,6 @@
 package viewmodel
 
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import model.Constants.BRIGHT_RED
 import model.Constants.SEMI_BLACK
@@ -20,25 +17,23 @@ import model.utils.CycleDetection
 import model.utils.GraphPath
 import model.utils.MSFFinder
 import model.utils.Louvain
+import org.neo4j.ogm.exception.ConnectionException
+import space.kscience.kmath.operations.IntRing
+import space.kscience.kmath.operations.Ring
 import model.utils.SSSPCalculator
 
-class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K, W>) {
-	private var _graph = mutableStateOf(graph)
-	var graph: Graph<V, K, W>
-		get() = _graph.value
-		set(value) {
-			_graph.value = value
-		}
+class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph<V, K, W>) {
+	var graph by mutableStateOf(graphParam)
 
 	private var _showEdgesWeights = mutableStateOf(false)
 
-	var showEdgesWeights
+	var showEdgesWeights: Boolean
 		get() = _showEdgesWeights.value
 		set(value) {
 			_showEdgesWeights.value = value
 		}
 
-	val graphViewModel = GraphViewModel(_graph, _showEdgesWeights)
+	val graphViewModel = GraphViewModel(graph, _showEdgesWeights)
 
 	// Current vertex colorscheme
 	var vertexColors by mutableStateOf(mapOf<Vertex<V>, Color>())
@@ -116,10 +111,20 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 	}
 
 	// Neo4j
+	var showNeo4jConnectionFailedDialog by mutableStateOf(false)
+	var showNeo4jOpsDialog by mutableStateOf(false)
+	var showNeo4jDialog by mutableStateOf(false)
+
 	fun connectNeo4j(uri: String, user: String, password: String) {
-		GraphService.uri = uri
-		GraphService.user = user
-		GraphService.pass = password
+		try {
+			GraphService.uri = uri
+			GraphService.user = user
+			GraphService.pass = password
+		}
+		catch(e: IllegalArgumentException) {
+			showNeo4jConnectionFailedDialog = true
+			exceptionMessage = e.message
+		}
 	}
 
 	fun loadNeo4j(isDirected: Boolean) {

@@ -76,6 +76,11 @@ object ColorUtils {
 		}
 	}
 
+	/**
+	 * Applies a [color] to a collection of [Colorable] objects.
+	 * @param colorable Collection of [Colorable] objects to color.
+	 * @param color The color to apply to all objects.
+	 */
 	internal fun <T, C : Colorable<T>> applyOneColor(colorable: Collection<C>, color: Color) {
 		colorable.forEach { it.color = color }
 	}

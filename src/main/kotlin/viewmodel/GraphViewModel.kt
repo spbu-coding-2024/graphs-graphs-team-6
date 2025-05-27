@@ -20,11 +20,9 @@ import model.graph.Vertex
 
 
 class GraphViewModel<V, K, W : Comparable<W>>(
-	private val graphState: State<Graph<V, K, W>>,
+	private val graph: Graph<V, K, W>,
 	showEdgesWeights: State<Boolean>
 ) {
-	val graph: Graph<V, K, W>
-		get() = graphState.value
 
 	private val _verticesState by derivedStateOf {
 		graph.vertices.associateWith {
