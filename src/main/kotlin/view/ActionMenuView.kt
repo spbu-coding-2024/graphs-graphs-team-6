@@ -38,7 +38,6 @@ import model.Constants.DEFAULT_VERTEX_BORDER_COLOR
 import model.Constants.DEFAULT_VERTEX_COLOR
 import model.Constants.DEFAULT_VERTEX_RADIUS
 import model.graph.UndirectedGraph
-import model.utils.KamadaKawai
 import viewmodel.GraphViewModel
 import viewmodel.MainScreenViewModel
 import viewmodel.VertexViewModel

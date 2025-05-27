@@ -24,6 +24,11 @@ import kotlin.math.sin
 import kotlin.math.cos
 import kotlin.math.PI
 
+/**
+ * Shows weight value
+ *
+ * @param edgeViewModel Edge viewmodel
+ */
 @Composable
 fun <V, K, W : Comparable<W>> showLabel(edgeViewModel: EdgeViewModel<V, K, W>) {
 
@@ -60,8 +65,16 @@ fun <V, K, W : Comparable<W>> showLabel(edgeViewModel: EdgeViewModel<V, K, W>) {
 }
 
 /**
- * Draws an edge (straight line or self-loop) over the full viewport.
+ * Views an edge (straight line or self-loop) over the full viewport.
  * The passed modifier should handle viewport transformations (drag/zoom).
+ *
+ * If [edgeViewModel] is from directed graph, then draw arrow
+ *
+ * You can adjust setting of an arrow by changing constants in [Constants]
+ *
+ *
+ * @param edgeViewModel Edge viewmodel to view
+ * @param modifier Canvas edge modifier, crucial for zooming and dragging
  */
 @Composable
 fun <V, K, W : Comparable<W>> EdgeView(

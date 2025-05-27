@@ -60,7 +60,7 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 	GraphView(viewModel.graphViewModel)
 	if (viewModel.graphViewModel.vertices.isNotEmpty()) actionMenuView(actionWindowVisibility.value, viewModel)
 	if (viewModel.aboutDialog.value) aboutDialog(viewModel)
-	if (saveDialogState.value) drawerSave(viewModel)
+	if (saveDialogState.value) viewModel.saveJSON()
 	dbMenu(viewModel, showDbSelectDialog)
 
 	Row(
@@ -114,7 +114,7 @@ fun MenuButton(testTag: String, text: String, state: MutableState<Boolean>) {
 			.padding(horizontal = 5.dp)
 			.background(Color(DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_MENU)),
 		onClick = { state.value = true },
-		colors = ButtonDefaults.buttonColors(backgroundColor = Color(DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_BUTTON))
+		colors = ButtonDefaults.buttonColors(Color(DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_BUTTON))
 	) {
 		Text(text)
 	}
@@ -190,12 +190,8 @@ fun <V : Any, K : Any, W : Comparable<W>> dbMenu(
 					Button(
 						modifier = Modifier.testTag("JsonOpenDialogButton"),
 						onClick = {
-						showDbSelectDialog.value = false
-						val dialog = FileDialog(null as Frame?, "Select JSON")
-						dialog.mode = FileDialog.LOAD
-						dialog.isVisible = true
-						val file = dialog.file
-						viewModel.graph = JsonManager.loadJSON<V, K, W>(file)
+							showDbSelectDialog.value = false
+							viewModel.loadJSON()
 					}) {
 						Text("JSON")
 					}
@@ -345,15 +341,3 @@ fun drawerButton(
 	}
 }
 
-fun <V: Any, K: Any, W: Comparable<W>> drawerSave(viewModel: MainScreenViewModel<V, K, W>) {
-	val extension = ".json"
-	val dialog = FileDialog(null as Frame?, "Save JSON")
-	dialog.mode = FileDialog.SAVE
-	dialog.isVisible = true
-	var file = dialog.file
-	if (file == null) return
-	if (file.length < extension.length || file.substring(file.length - extension.length) != ".json") {
-		file += extension
-	}
-	JsonManager.saveJSON<V,K,W>(file, viewModel.graph)
-}

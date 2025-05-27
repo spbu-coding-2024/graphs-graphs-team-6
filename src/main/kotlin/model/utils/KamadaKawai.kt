@@ -1,7 +1,5 @@
 package model.utils
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import model.Constants.DEFAULT_KAMADAKAWAI_LENGTH
 import model.Constants.DEFAULT_STRENGTH_CONSTANT
@@ -9,7 +7,6 @@ import model.Constants.EPSILON
 import model.graph.Graph
 import viewmodel.GraphViewModel
 import viewmodel.VertexViewModel
-import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -65,8 +62,8 @@ class KamadaKawai<V, K, W: Comparable<W>> (viewModel: GraphViewModel<V, K, W>) {
                 val length = length[pair]
                 if (mVertex.model == vertex.model || strength == null || length == null) continue
 
-                val (currentX, currentY) = vertex.returnFloat()
-                val (mX, mY) = mVertex.returnFloat()
+                val (currentX, currentY) = vertex.toFloat()
+                val (mX, mY) = mVertex.toFloat()
                 val norm = sqrt((mX - currentX).pow(2) + (mY - currentY).pow(2))
 
                 derivativeX += strength * (mX - currentX) * ( 1 - length / norm )
@@ -127,8 +124,8 @@ class KamadaKawai<V, K, W: Comparable<W>> (viewModel: GraphViewModel<V, K, W>) {
                     val length = length[pair]
                     if (mVertex.model == vertex.model || strength == null || length == null) continue
 
-                    val (currentX, currentY) = vertex.returnFloat()
-                    val (mX, mY) = mVertex.returnFloat()
+                    val (currentX, currentY) = vertex.toFloat()
+                    val (mX, mY) = mVertex.toFloat()
 
 
                     val norm = sqrt((mX - currentX).pow(2) + (mY - currentY).pow(2))

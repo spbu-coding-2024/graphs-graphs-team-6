@@ -23,6 +23,11 @@ import viewmodel.GraphViewModel
 import model.Constants.MAX_ZOOM_MULTIPLIER
 import model.Constants.MIN_ZOOM_MULTIPLIER
 
+/**
+ * View a graph on a screen
+ *
+ * @param graphViewModel Graph viewmodel to view
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun <V, K, W: Comparable<W>> GraphView(
