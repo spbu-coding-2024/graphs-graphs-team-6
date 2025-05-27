@@ -1,6 +1,6 @@
 package model.utils
 
-import model.Edge
+import model.graph.Edge
 
 object GraphPath {
     fun <V, K, W: Comparable<W>> construct(predecessors: Map<V, Edge<V, K, W>>,

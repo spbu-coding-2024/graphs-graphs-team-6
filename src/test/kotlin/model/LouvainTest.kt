@@ -5,8 +5,9 @@ import org.junit.jupiter.api.Test
 import space.kscience.kmath.operations.Float64Field
 import io.mockk.every
 import io.mockk.mockk
-import model.UndirectedGraph.UndirectedEdge
-import model.UndirectedGraph.UndirectedVertex
+import model.graph.UndirectedGraph
+import model.graph.UndirectedGraph.UndirectedEdge
+import model.graph.UndirectedGraph.UndirectedVertex
 import model.utils.Louvain
 import space.kscience.kmath.operations.Ring
 

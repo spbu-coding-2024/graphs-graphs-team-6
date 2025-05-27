@@ -10,13 +10,13 @@ import model.Constants.DEFAULT_VERTEX_COLOR
 import model.Constants.DEFAULT_VERTEX_RADIUS
 import model.Constants.MAX_RANDOM_VALUE
 import model.Constants.MIN_RANDOM_VALUE
-import model.Edge
-import model.Graph
+import model.graph.Edge
+import model.graph.Graph
 import kotlin.random.Random
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import model.Vertex
+import model.graph.Vertex
 
 
 class GraphViewModel<V, K, W : Comparable<W>>(

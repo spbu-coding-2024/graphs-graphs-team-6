@@ -7,6 +7,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import model.Constants.DEFAULT_ARROW_TRIANGLE_HEIGHT
@@ -14,7 +15,7 @@ import model.Constants.DEFAULT_ARROW_TRIANGLE_WIDTH
 import model.Constants.DEFAULT_LOOP_MULTIPLIER
 import model.Constants.DEFAULT_LOOP_RADIUS_COEFF
 import model.Constants.SHOW_LABEL_MOD
-import model.DirectedGraph
+import model.graph.DirectedGraph.DirectedEdge
 import viewmodel.EdgeViewModel
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
@@ -48,7 +49,9 @@ fun <V, K, W : Comparable<W>> showLabel(edgeViewModel: EdgeViewModel<V, K, W>) {
 		Text(
 			text = edgeViewModel.weightLabel,
 			color = edgeViewModel.color,
-			modifier = Modifier.offset(
+			modifier = Modifier
+				.testTag("EdgeLabel: ${edgeViewModel.model.key}")
+				.offset(
 				x = midX + (ux * shift.value).dp,
 				y = midY + (uy * shift.value).dp
 			)
@@ -65,7 +68,10 @@ fun <V, K, W : Comparable<W>> EdgeView(
 	edgeViewModel: EdgeViewModel<V, K, W>,
 	modifier: Modifier = Modifier
 ) {
-	Canvas(modifier = modifier.fillMaxSize()) {
+	Canvas(modifier = modifier
+		.testTag("Edge: ${edgeViewModel.model.key}")
+		.fillMaxSize()
+	) {
 		val first = edgeViewModel.firstVertexViewModel
 		val second = edgeViewModel.secondVertexViewModel
 		val r = first.radius.toPx()
@@ -74,13 +80,14 @@ fun <V, K, W : Comparable<W>> EdgeView(
 			val start = Offset(first.x.toPx() + r, first.y.toPx() + r)
 			val end = Offset(second.x.toPx() + r, second.y.toPx() + r)
 			drawLine(
+
 				start = start,
 				end = end,
 				color = edgeViewModel.color,
 				strokeWidth = edgeViewModel.width.toPx()
 			)
 			// Draw arrowhead for directed edges
-			if (edgeViewModel.model is DirectedGraph.DirectedEdge) {
+			if (edgeViewModel.model is DirectedEdge) {
 				val dx = end.x - start.x
 				val dy = end.y - start.y
 				val angle = atan2(dx, -dy) - PI.toFloat() / 2f

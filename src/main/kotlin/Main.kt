@@ -5,8 +5,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import view.MainScreenView
 import viewmodel.MainScreenViewModel
-import model.DirectedGraph
-import org.neo4j.ogm.session.SessionFactory
+import model.graph.DirectedGraph
 import space.kscience.kmath.operations.IntRing
 
 const val TEMP_WEIGHT_VALUE = 231

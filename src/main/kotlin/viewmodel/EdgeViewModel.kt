@@ -4,9 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
-import model.DirectedGraph
-import model.Edge
-import model.UndirectedGraph.UndirectedEdge
+import model.graph.Edge
 
 class EdgeViewModel<V, K, W : Comparable<W>>(
 	val firstVertexViewModel: VertexViewModel<V>,

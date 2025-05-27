@@ -1,8 +1,7 @@
 package model.utils
 
-import model.UndirectedGraph
-import model.Vertex
-
+import model.graph.Vertex
+import model.graph.UndirectedGraph
 
 /**
  * Class for bridge finding algorithm implementation

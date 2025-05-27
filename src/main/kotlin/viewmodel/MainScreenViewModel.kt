@@ -2,20 +2,25 @@ package viewmodel
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
-import model.utils.BridgeFinder
-import model.Constants.SEMI_BLACK
 import model.Constants.BRIGHT_RED
-import model.Graph
-import model.Vertex
-import model.Edge
-import model.UndirectedGraph
+import model.Constants.SEMI_BLACK
+import model.graph.DirectedGraph
+import model.graph.DirectedGraph.DirectedVertex
+import model.graph.Graph
+import model.graph.Vertex
+import model.graph.Edge
+import model.graph.UndirectedGraph
 import model.utils.SCCCalculator
 import model.neo4j.GraphService
+import model.utils.BridgeFinder
+import model.utils.CycleDetection
+import model.utils.GraphPath
 import model.utils.MSFFinder
 import model.utils.Louvain
 import org.neo4j.ogm.exception.ConnectionException
 import space.kscience.kmath.operations.IntRing
 import space.kscience.kmath.operations.Ring
+import model.utils.SSSPCalculator
 
 class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph<V, K, W>) {
 	var graph by mutableStateOf(graphParam)
@@ -38,6 +43,29 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 		ColorUtils.applyColors(vertexColors, graphViewModel.vertices)
 	}
 
+	fun findSSSPBellmanFord(startVertex: VertexViewModel<V>, endVertex: VertexViewModel<V>) {
+		val (predecessors, _) = SSSPCalculator.bellmanFordAlgorithm(
+			graph,
+			startVertex.model.value
+		)
+		val path = GraphPath.construct(predecessors, endVertex.model.value)
+			.map { graphViewModel.getEdgeViewModel(it) }
+		ColorUtils.applyOneColor(path, Color.Red)
+	}
+
+	fun findCycles(vertex: VertexViewModel<V>) {
+		require(graph is DirectedGraph)
+		val cycleDetection = CycleDetection()
+		val list = cycleDetection.findCyclesFromGivenVertex(graph as DirectedGraph, vertex.model as DirectedVertex)
+
+		list.forEachIndexed { i, cycle ->
+			val cycleViewModel = cycle.map { graphViewModel.getEdgeViewModel(it) }
+			val color = ColorUtils.generateColor(i)
+			ColorUtils.applyOneColor(cycleViewModel, color)
+		}
+
+	}
+
 	fun findMSF() {
 		val msfFinder by derivedStateOf { MSFFinder(graph) }
 		val msf = msfFinder.findMSF()
@@ -55,7 +83,7 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 	}
 	fun findBridges() {
 		require(graph is UndirectedGraph)
-		val bridges = bridgeFinder.runOn(graph as UndirectedGraph<V, K, W>)
+		val bridges = bridgeFinder.runOn<V, K, W>(graph as UndirectedGraph<V, K, W>)
 		edgeColors = convertPairsToColorMap(bridges)
 
 		ColorUtils.applyColors(edgeColors, graphViewModel.edges.sortedBy { it.model.weight }, Color(SEMI_BLACK))
