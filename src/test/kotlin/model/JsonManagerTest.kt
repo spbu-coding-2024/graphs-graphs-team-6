@@ -3,7 +3,6 @@ package model
 import model.graph.DirectedGraph
 import model.graph.UndirectedGraph
 import org.junit.jupiter.api.RepeatedTest
-import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonParseException
 import space.kscience.kmath.operations.IntRing
 import java.io.File
 import java.nio.file.Files
