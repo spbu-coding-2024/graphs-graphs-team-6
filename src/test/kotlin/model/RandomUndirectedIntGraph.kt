@@ -11,7 +11,7 @@ object RandomUndirectedIntGraph {
      */
     fun get(maxVertices: Int = 1000, maxWeight: Int = 100): UndirectedGraph<Int, Int, Int> {
         val numOfVertices = Random.nextInt(1, maxVertices)
-        val numOfEdges = Random.nextInt(1, numOfVertices * (numOfVertices - 1) / 2 + 1)
+        val numOfEdges = Random.nextInt(0, numOfVertices * (numOfVertices - 1) / 2 + 1)
         val randomGraph = UndirectedGraph<Int, Int, Int>(IntRing).apply {
             for (i in 0..(numOfVertices - 1)) addVertex(i)
 
