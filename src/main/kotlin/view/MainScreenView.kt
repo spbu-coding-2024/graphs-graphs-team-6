@@ -40,6 +40,7 @@ import kotlinx.coroutines.launch
 import view.graph.GraphView
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import com.fasterxml.jackson.module.kotlin.jsonMapper
 import kotlinx.coroutines.CoroutineScope
 import model.Constants.DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_BUTTON
 import model.Constants.DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_MENU
@@ -60,7 +61,10 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 	GraphView(viewModel.graphViewModel)
 	if (viewModel.graphViewModel.vertices.isNotEmpty()) actionMenuView(actionWindowVisibility.value, viewModel)
 	if (viewModel.aboutDialog.value) aboutDialog(viewModel)
-	if (saveDialogState.value) viewModel.saveJSON()
+	if (saveDialogState.value) {
+		val path = JsonManager.saveDialog()
+		if (path != null ) JsonManager.saveJSON<V, K, W>(path, viewModel.graph)
+	}
 	dbMenu(viewModel, showDbSelectDialog)
 
 	Row(
@@ -191,7 +195,8 @@ fun <V : Any, K : Any, W : Comparable<W>> dbMenu(
 						modifier = Modifier.testTag("JsonOpenDialogButton"),
 						onClick = {
 							showDbSelectDialog.value = false
-							viewModel.loadJSON()
+							val path = JsonManager.loadDialog()
+							if (path != null) viewModel.graph = JsonManager.loadJSON<V, K, W>(path)
 					}) {
 						Text("JSON")
 					}

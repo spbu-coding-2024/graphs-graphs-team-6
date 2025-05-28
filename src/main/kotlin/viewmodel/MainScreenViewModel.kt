@@ -50,6 +50,8 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 	var edgeColors by mutableStateOf(mapOf<Edge<V, K, W>, Color>())
 		private set
 
+	val kamadaKawai = KamadaKawai(this)
+
 	fun calculateSCC() {
 		val calculator by derivedStateOf { SCCCalculator<V, K, W>() }
 		vertexColors = calculator.calculateComponents(graph)
@@ -130,44 +132,4 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 		GraphService.saveGraph(graph)
 	}
 
-	/**
-	 * Opens a dialog to load graph form a json
-	 */
-	fun loadJSON() {
-		val dialog = FileDialog(null as Frame?, "Select JSON")
-		dialog.mode = FileDialog.LOAD
-		dialog.isVisible = true
-		val file = dialog.file
-		graph = JsonManager.loadJSON<V, K, W>(file)
-	}
-
-	/**
-	 * Opens a dialog to save graph into a json
-	 */
-	fun saveJSON() {
-		val extension = ".json"
-		val dialog = FileDialog(null as Frame?, "Save JSON")
-		dialog.mode = FileDialog.SAVE
-		dialog.isVisible = true
-		var file = dialog.file
-		if (file == null) return
-		if (file.length < extension.length || file.substring(file.length - extension.length) != ".json") {
-			file += extension
-		}
-		JsonManager.saveJSON<V,K,W>(file, graph)
-	}
-
-	/**
-	 * Applies graph drawing
-	 *
-	 * On error, sets [exceptionMessage] with exception message
-	 */
-	fun drawGraph() {
-		val kamadaKawai = KamadaKawai<V, K, W>(graphViewModel)
-		try {
-			kamadaKawai.compute(graphViewModel)
-		} catch(e: IllegalArgumentException) {
-			exceptionMessage = e.message
-		}
-	}
 }

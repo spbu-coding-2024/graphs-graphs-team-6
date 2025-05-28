@@ -10,6 +10,8 @@ import space.kscience.kmath.operations.Int32Ring
 import space.kscience.kmath.operations.Int64Ring
 import space.kscience.kmath.operations.Int8Ring
 import space.kscience.kmath.operations.Ring
+import java.awt.FileDialog
+import java.awt.Frame
 import java.io.File
 import java.lang.Class
 
@@ -32,6 +34,32 @@ object JsonManager {
             "Int8Ring" -> Int8Ring
             else -> error("No such ring")
         }
+    }
+
+    /**
+     * Opens a dialog to load graph form a json
+     */
+    fun loadDialog(): String? {
+        val dialog = FileDialog(null as Frame?, "Select JSON")
+        dialog.mode = FileDialog.LOAD
+        dialog.isVisible = true
+        return dialog.file
+    }
+
+    /**
+     * Opens a dialog to save graph into a json
+     */
+    fun saveDialog(): String? {
+        val extension = ".json"
+        val dialog = FileDialog(null as Frame?, "Save JSON")
+        dialog.mode = FileDialog.SAVE
+        dialog.isVisible = true
+        var file = dialog.file
+        if (file == null) return null
+        if (file.length < extension.length || file.substring(file.length - extension.length) != ".json") {
+            file += extension
+        }
+        return file
     }
 
     /**
