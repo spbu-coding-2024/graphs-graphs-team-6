@@ -58,7 +58,6 @@ class DirectedGraphTest {
         assertTrue(vA.adjacencyList.contains(vA))
     }
 
-    @DisplayName("getEdge works correctly on linkedlist-like directed graph")
     @Test
     fun getEdgeTest1() {
         val verts = Array<String>(100) {it.toString()}

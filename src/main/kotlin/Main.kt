@@ -5,7 +5,6 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import view.MainScreenView
 import viewmodel.MainScreenViewModel
-import model.graph.DirectedGraph
 import model.graph.UndirectedGraph
 import space.kscience.kmath.operations.IntRing
 
@@ -25,7 +24,7 @@ val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 	addEdge("E", "A", index++,4)
 
 
-
+1
 }
 
 @Composable

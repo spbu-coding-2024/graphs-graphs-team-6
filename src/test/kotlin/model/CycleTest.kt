@@ -6,6 +6,7 @@ import model.graph.DirectedGraph.DirectedVertex
 import model.graph.Edge
 import model.graph.UndirectedGraph
 import model.graph.UndirectedGraph.UndirectedVertex
+import model.graph.Vertex
 import model.utils.CycleDetection
 import space.kscience.kmath.operations.IntRing
 import kotlin.test.Test
@@ -28,7 +29,7 @@ class CycleTest {
 
         val list: List<Edge<String, Int, Int>?> =
             cycleDetection.findCyclesFromGivenVertex<String, Int, Int>(graph,
-                graph.getVertex("A") as DirectedVertex).first()
+                graph.getVertex("A") as Vertex).first()
         assertEquals(graph.getEdge("C", "A"), list[0])
         assertEquals(graph.getEdge("B", "C"), list[1])
         assertEquals(graph.getEdge("A", "B"), list[2])

@@ -1,7 +1,5 @@
-package model
+package viewmodel
 
-import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.material.DrawerState
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -12,36 +10,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.assertHasClickAction
-import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performKeyInput
-import androidx.compose.ui.test.performMouseInput
-import androidx.compose.ui.test.pressKey
 import androidx.compose.ui.test.runComposeUiTest
-import androidx.compose.ui.test.withKeyDown
-import junit.framework.TestCase.assertFalse
-import junit.framework.TestCase.assertTrue
-import model.Constants.DEFAULT_EDGE_COLOR
-import model.Constants.DEFAULT_PATH_COLOR
-import model.Constants.SEMI_BLACK
+import junit.framework.TestCase
+import model.Constants
 import model.graph.DirectedGraph
 import model.graph.UndirectedGraph
 import model.graph.Vertex
-import kotlin.test.Test
-
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import space.kscience.kmath.operations.IntRing
 import view.MainScreenView
 import view.drawerButton
-import viewmodel.MainScreenViewModel
-import javax.swing.JButton
-import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
@@ -49,7 +34,7 @@ class MainScreenViewModelTest {
 
     var testGraph: DirectedGraph<String, Int, Int> = DirectedGraph<String, Int, Int>(IntRing)
 
-    @BeforeTest
+    @BeforeEach
     fun before() {
         if (testGraph.vertices.isNotEmpty()) {
             testGraph = DirectedGraph<String, Int, Int>(IntRing)
@@ -196,9 +181,9 @@ class MainScreenViewModelTest {
         onNodeWithTag("Algorithms: BellmanFord").performClick()
         onNodeWithTag("ApplyAlgorithm").performClick()
 
-        assertEquals(Color(DEFAULT_EDGE_COLOR),vm.graphViewModel.getEdgeViewModel(firstEdge).color)
-        assertEquals(Color(DEFAULT_EDGE_COLOR),vm.graphViewModel.getEdgeViewModel(secondEdge).color)
-        assertEquals(Color(DEFAULT_PATH_COLOR),vm.graphViewModel.getEdgeViewModel(thirdEdge).color)
+        assertEquals(Color(Constants.DEFAULT_EDGE_COLOR), vm.graphViewModel.getEdgeViewModel(firstEdge).color)
+        assertEquals(Color(Constants.DEFAULT_EDGE_COLOR), vm.graphViewModel.getEdgeViewModel(secondEdge).color)
+        assertEquals(Color(Constants.DEFAULT_PATH_COLOR), vm.graphViewModel.getEdgeViewModel(thirdEdge).color)
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -231,10 +216,10 @@ class MainScreenViewModelTest {
 
         onNodeWithTag("ApplyAlgorithm").performClick()
 
-        assertEquals(Color(DEFAULT_EDGE_COLOR), vm.graphViewModel.getEdgeViewModel(firstEdge).color)
-        assertEquals(Color(DEFAULT_PATH_COLOR), vm.graphViewModel.getEdgeViewModel(secondEdge).color)
-        assertEquals(Color(DEFAULT_EDGE_COLOR), vm.graphViewModel.getEdgeViewModel(thirdEdge).color)
-        assertEquals(Color(DEFAULT_PATH_COLOR), vm.graphViewModel.getEdgeViewModel(fourthEdge).color)
+        assertEquals(Color(Constants.DEFAULT_EDGE_COLOR), vm.graphViewModel.getEdgeViewModel(firstEdge).color)
+        assertEquals(Color(Constants.DEFAULT_PATH_COLOR), vm.graphViewModel.getEdgeViewModel(secondEdge).color)
+        assertEquals(Color(Constants.DEFAULT_EDGE_COLOR), vm.graphViewModel.getEdgeViewModel(thirdEdge).color)
+        assertEquals(Color(Constants.DEFAULT_PATH_COLOR), vm.graphViewModel.getEdgeViewModel(fourthEdge).color)
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -269,7 +254,7 @@ class MainScreenViewModelTest {
 
         onNodeWithTag("ApplyAlgorithm").performClick()
 
-        vm.graphViewModel.edges.forEach { assertEquals(Color(DEFAULT_EDGE_COLOR), it.color) }
+        vm.graphViewModel.edges.forEach { assertEquals(Color(Constants.DEFAULT_EDGE_COLOR), it.color) }
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -279,7 +264,7 @@ class MainScreenViewModelTest {
             for (i in 0..8) addVertex(i)
 
             var index = 0
-            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) {it * 2}
+            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) { it * 2 }
 
             addEdge(0, 1, index, weight[index]); index++
             addEdge(4, 1, index, weight[index]); index++
@@ -340,7 +325,7 @@ class MainScreenViewModelTest {
             addVertex("H")
 
             var index = 0
-            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) {it * 2}
+            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) { it * 2 }
 
             addEdge("A", "B", index, weight[index]); index++
             addEdge("B", "C", index, weight[index]); index++
@@ -372,12 +357,12 @@ class MainScreenViewModelTest {
 
         val list = undirectedGraph.edges.toList()
 
-        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[9]).color)
-        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[8]).color)
-        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[5]).color)
-        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[4]).color)
-        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[1]).color)
-        assertNotEquals(Color(SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[0]).color)
+        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[9]).color)
+        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[8]).color)
+        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[5]).color)
+        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[4]).color)
+        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[1]).color)
+        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[0]).color)
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -395,7 +380,7 @@ class MainScreenViewModelTest {
             addVertex("H")
 
             var index = 0
-            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) {it * 2}
+            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) { it * 2 }
 
             addEdge("A", "B", index, weight[index]); index++
             addEdge("B", "C", index, weight[index]); index++
@@ -453,7 +438,7 @@ class MainScreenViewModelTest {
             addVertex("H")
 
             var index = 0
-            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) {it * 2}
+            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) { it * 2 }
 
             addEdge("A", "B", index, weight[index]); index++
             addEdge("B", "C", index, weight[index]); index++
@@ -513,7 +498,7 @@ class MainScreenViewModelTest {
             val coroutine = rememberCoroutineScope()
             val drawerState = rememberDrawerState(DrawerValue.Closed)
             var title by remember { mutableStateOf("A button") }
-            drawerButton(title, Icons.Default.Check, "TestButton",coroutine, drawerState) {
+            drawerButton(title, Icons.Default.Check, "TestButton", coroutine, drawerState) {
                 title = "A pressed button"
             }
         }
@@ -536,13 +521,15 @@ class MainScreenViewModelTest {
             MainScreenView(vm)
         }
         onNodeWithTag("EdgeLabel: 0").assertDoesNotExist()
-        assertFalse(vm.showEdgesWeights.value)
+        Assertions.assertFalse(vm.showEdgesWeights.value)
         onNodeWithTag("GraphMenu").assertExists()
         onNodeWithTag("GraphMenu").performClick()
         onNodeWithTag("ShowWeightsMenuButton").assertExists()
         onNodeWithTag("ShowWeightsMenuButton").performClick()
-        assertTrue(vm.showEdgesWeights.value)
+        Assertions.assertTrue(vm.showEdgesWeights.value)
         onNodeWithTag("EdgeLabel: 0").assertExists()
         onNodeWithTag("EdgeLabel: 0").assertTextEquals("5")
     }
+
+
 }

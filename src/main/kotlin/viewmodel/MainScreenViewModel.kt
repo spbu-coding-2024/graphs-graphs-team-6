@@ -8,8 +8,6 @@ import androidx.compose.ui.graphics.Color
 import model.Constants.BRIGHT_RED
 import model.Constants.SEMI_BLACK
 import model.JsonManager
-import model.graph.DirectedGraph
-import model.graph.DirectedGraph.DirectedVertex
 import model.graph.Graph
 import model.graph.Vertex
 import model.graph.Edge
@@ -22,7 +20,7 @@ import model.utils.GraphPath
 import model.utils.KamadaKawai
 import model.utils.MSFFinder
 import model.utils.Louvain
-import model.utils.SSSPCalculator
+import model.utils.BellmanFordPathCalculator
 import java.awt.FileDialog
 import java.awt.Frame
 
@@ -59,7 +57,7 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 	}
 
 	fun findSSSPBellmanFord(startVertex: VertexViewModel<V>, endVertex: VertexViewModel<V>) {
-		val (predecessors, _) = SSSPCalculator.bellmanFordAlgorithm(
+		val (predecessors, _) = BellmanFordPathCalculator.bellmanFordAlgorithm(
 			graph,
 			startVertex.model.value
 		)
