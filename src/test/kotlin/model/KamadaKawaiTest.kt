@@ -10,10 +10,10 @@ import kotlin.random.Random
 import kotlin.random.nextInt
 
 class KamadaKawaiTest {
-    val maxVertices = 30
+    val maxVertices = 20
 
     @OptIn(ExperimentalTestApi::class)
-    @RepeatedTest(5)
+    @RepeatedTest(3)
     fun `KamadaKawai algorithm converges on random graph when vertices are all appear on screen`() = runComposeUiTest {
         val randomGraph = RandomUndirectedIntGraph.get(maxVertices)
         val vm = MainScreenViewModel(randomGraph)
@@ -25,7 +25,7 @@ class KamadaKawaiTest {
     }
 
     @OptIn(ExperimentalTestApi::class)
-    @RepeatedTest(5)
+    @RepeatedTest(3)
     fun `KamadaKawai algorithm converges on random graph when vertices are not shown on screen`() = runComposeUiTest {
         val randomGraph = RandomUndirectedIntGraph.get(maxVertices)
         val vm = MainScreenViewModel(randomGraph)

@@ -47,7 +47,6 @@ import viewmodel.VertexViewModel
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
-	actionWindowVisibility: Boolean,
 	viewModel: MainScreenViewModel<V, K, W>
 ) {
 	require(viewModel.graph.vertices.isNotEmpty())
@@ -62,7 +61,7 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 	var startVertex by remember { mutableStateOf(viewModel.graphViewModel.vertices.first()) }
 	var endVertex by remember { mutableStateOf(viewModel.graphViewModel.vertices.last()) }
 
-	AnimatedVisibility(actionWindowVisibility, Modifier, EnterTransition.None, ExitTransition.None) {
+	AnimatedVisibility(viewModel.actionWindowVisibility.value, Modifier, EnterTransition.None, ExitTransition.None) {
 		Row(
 			modifier = Modifier.fillMaxSize()
 				.padding(20.dp)

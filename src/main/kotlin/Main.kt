@@ -1,6 +1,8 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.input.key.KeyShortcut
+import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import view.MainScreenView
@@ -30,12 +32,12 @@ val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 @Preview
 fun app() {
 	MaterialTheme {
-		MainScreenView<String, Int, Int>(MainScreenViewModel(graph))
+		val vm = MainScreenViewModel(graph)
+		vm.actionWindowVisibility.value = true
+		MainScreenView<String, Int, Int>(vm)
 	}
 }
 
 fun main() = application {
-	Window(onCloseRequest = ::exitApplication){
-		app()
-	}
+	app()
 }

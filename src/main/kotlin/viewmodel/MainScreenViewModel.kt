@@ -40,7 +40,9 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 		}
 
 	var showEdgesWeights = mutableStateOf(false)
-
+	var actionWindowVisibility = mutableStateOf(false)
+	var showDbSelectDialog = mutableStateOf(false)
+	var saveDialogState = mutableStateOf(false)
 	val graphViewModel = GraphViewModel(_graph, showEdgesWeights)
 
 	// Current vertex colorscheme

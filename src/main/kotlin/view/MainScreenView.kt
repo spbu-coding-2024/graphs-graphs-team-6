@@ -1,6 +1,5 @@
 package view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -11,10 +10,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Button
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.DrawerState
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.TextButton
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
@@ -39,88 +35,58 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import view.graph.GraphView
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
-import com.fasterxml.jackson.module.kotlin.jsonMapper
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyShortcut
+import androidx.compose.ui.window.MenuBar
+import androidx.compose.ui.window.Window
 import kotlinx.coroutines.CoroutineScope
-import model.Constants.DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_BUTTON
-import model.Constants.DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_MENU
-import model.JsonManager
 import model.neo4j.GraphService
-import java.awt.FileDialog
-import java.awt.Frame
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K, W>) {
-	var actionWindowVisibility = remember { mutableStateOf(false) }
-	var showDbSelectDialog = remember { mutableStateOf(false) }
-	var fileMenuExpanded = remember { mutableStateOf(false) }
-	var graphMenuExpanded = remember { mutableStateOf(false) }
-	var saveDialogState = remember { mutableStateOf(false) }
-
-	GraphView(viewModel.graphViewModel)
-	if (viewModel.graphViewModel.vertices.isNotEmpty()) actionMenuView(actionWindowVisibility.value, viewModel)
-	if (viewModel.aboutDialog.value) aboutDialog(viewModel)
-	if (saveDialogState.value) viewModel.saveJSON()
-	dbMenu(viewModel, showDbSelectDialog)
-
-	Row(
-		modifier = Modifier
-			.testTag("Menu")
-			.background(Color(DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_MENU))
-			.fillMaxWidth()
-	)
-	{
-		MenuButton("FileMenu", "File", fileMenuExpanded)
-		MenuButton("GraphMenu", "Graph", graphMenuExpanded)
-		MenuButton("AboutMenu", "About", viewModel.aboutDialog)
-		MainScreenDropdownMenu(fileMenuExpanded, listOf(
-			Triple("OpenMenuButton", "Open", showDbSelectDialog),
-			Triple("SaveMenuButton", "Save", saveDialogState)
-		))
-		MainScreenDropdownMenu(graphMenuExpanded, listOf(
-			Triple("ApplyAlgorithmMenuButton", "Apply algorithms", actionWindowVisibility),
-			Triple("ShowWeightsMenuButton", "Show weights", viewModel.showEdgesWeights)
-		))
-	}
-}
-
-@Composable
-fun MainScreenDropdownMenu(expanded: MutableState<Boolean>,
-						   listOfEntries: List<Triple<String, String, MutableState<Boolean>>>) {
-	DropdownMenu(
-		expanded = expanded.value,
-		onDismissRequest = { expanded.value = false }
-	)
-	{
-		listOfEntries.forEach {
-			DropdownMenuItem(
-				modifier = Modifier.testTag(it.first),
-				onClick = {
-					expanded.value = false
-					it.third.value = !it.third.value
+	var isOpen = remember { mutableStateOf(true) }
+	if (isOpen.value) {
+		Window(onCloseRequest = { isOpen.value = false }) {
+			GraphView(viewModel.graphViewModel)
+			if (viewModel.graphViewModel.vertices.isNotEmpty()) actionMenuView(viewModel)
+			if (viewModel.aboutDialog.value) aboutDialog(viewModel)
+			if (viewModel.saveDialogState.value) {
+				viewModel.saveJSON()
+				viewModel.saveDialogState.value = false
+			}
+			dbMenu(viewModel)
+			MenuBar {
+				Menu("File", mnemonic = 'F') {
+					Item("Open", shortcut = KeyShortcut(Key.O, ctrl = true)) { viewModel.showDbSelectDialog.value = true }
+					Item("Save", shortcut = KeyShortcut(Key.S, ctrl = true)) { viewModel.saveDialogState.value = true }
 				}
-			) {
-				Text(it.second)
+				Menu("Graph", mnemonic = 'G') {
+					CheckboxItem(
+						"Apply algorithm",
+						checked = viewModel.actionWindowVisibility.value,
+						shortcut = KeyShortcut(Key.A, ctrl = true)
+					)
+					{
+						if (viewModel.actionWindowVisibility.value == true) resetGraphViewModel(viewModel.graphViewModel)
+						viewModel.actionWindowVisibility.value = !viewModel.actionWindowVisibility.value
+					}
+					CheckboxItem(
+						"Show weights",
+						checked = viewModel.showEdgesWeights.value,
+						shortcut = KeyShortcut(Key.W, ctrl = true)
+					)
+					{ viewModel.showEdgesWeights.value = !viewModel.showEdgesWeights.value }
+				}
+				Menu("Help", mnemonic = 'H') {
+					Item("About") {
+						viewModel.aboutDialog.value = true
+					}
+				}
 			}
 		}
 	}
 }
-
-@Composable
-fun MenuButton(testTag: String, text: String, state: MutableState<Boolean>) {
-	Button(
-		modifier = Modifier
-			.testTag(testTag)
-			.padding(horizontal = 5.dp)
-			.background(Color(DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_MENU)),
-		onClick = { state.value = true },
-		colors = ButtonDefaults.buttonColors(Color(DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_BUTTON))
-	) {
-		Text(text)
-	}
-}
-
 
 @Composable
 fun <V: Any, K: Any, W: Comparable<W>>aboutDialog(viewModel: MainScreenViewModel<V, K, W>) {
@@ -160,17 +126,16 @@ fun <V: Any, K: Any, W: Comparable<W>>aboutDialog(viewModel: MainScreenViewModel
 
 @Composable
 fun <V : Any, K : Any, W : Comparable<W>> dbMenu(
-	viewModel: MainScreenViewModel<V, K, W>,
-	showDbSelectDialog: MutableState<Boolean>
+	viewModel: MainScreenViewModel<V, K, W>
 ) {
 	var showNeo4jDialog = remember { mutableStateOf(false) }
 	var showOpsDialog = remember { mutableStateOf(false) }
 
 
-	if (showDbSelectDialog.value) {
+	if (viewModel.showDbSelectDialog.value) {
 		AlertDialog(
 			modifier = Modifier.testTag("OpenDialog"),
-			onDismissRequest = { showDbSelectDialog.value = false },
+			onDismissRequest = { viewModel.showDbSelectDialog.value = false },
 			title = { Text("Select Database") },
 			text = {
 				Column {
@@ -178,7 +143,7 @@ fun <V : Any, K : Any, W : Comparable<W>> dbMenu(
 					Button(
 						modifier = Modifier.testTag("Neo4jOpenDialogButton"),
 						onClick = {
-						showDbSelectDialog.value = false
+						viewModel.showDbSelectDialog.value = false
 						if (GraphService.sessionFactory == null)
 							showNeo4jDialog.value = true
 						else
@@ -191,7 +156,7 @@ fun <V : Any, K : Any, W : Comparable<W>> dbMenu(
 					Button(
 						modifier = Modifier.testTag("JsonOpenDialogButton"),
 						onClick = {
-							showDbSelectDialog.value = false
+							viewModel.showDbSelectDialog.value = false
 							viewModel.loadJSON()
 					}) {
 						Text("JSON")

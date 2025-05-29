@@ -195,8 +195,8 @@ class SSSPCalculatorTest {
         val randomGraph = RandomUndirectedIntGraph.get(maxVertices)
         val numOfVertices = randomGraph.vertices.size
 
-        val firstVert = Random.nextInt(0, numOfVertices - 1)
-        val secondVert = Random.nextInt(0, numOfVertices - 1)
+        val firstVert = Random.nextInt(0, numOfVertices)
+        val secondVert = Random.nextInt(0, numOfVertices)
         randomGraph.addEdge(firstVert, secondVert, maxVertices, -1)
 
         try {
