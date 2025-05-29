@@ -61,7 +61,9 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 	GraphView(viewModel.graphViewModel)
 	if (viewModel.graphViewModel.vertices.isNotEmpty()) actionMenuView(actionWindowVisibility.value, viewModel)
 	if (viewModel.aboutDialog.value) aboutDialog(viewModel)
+	if (!actionWindowVisibility.value) resetGraphViewModel(viewModel.graphViewModel)
 	if (saveDialogState.value) {
+		saveDialogState.value = false
 		val path = JsonManager.saveDialog()
 		if (path != null ) JsonManager.saveJSON<V, K, W>(path, viewModel.graph)
 	}
