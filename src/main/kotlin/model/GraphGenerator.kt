@@ -6,6 +6,9 @@ import model.graph.UndirectedGraph
 import kotlin.random.Random
 import space.kscience.kmath.operations.IntRing
 
+/**
+ * An API to create random large graphs.
+ */
 object GraphGenerator {
 	private val random = Random(System.currentTimeMillis())
 
@@ -25,6 +28,13 @@ object GraphGenerator {
 		}
 	}
 
+	/**
+	 * Generates [UndirectedGraph] undirected graph with [vertexCount] vertices & with [edgeProbability] edge
+	 * generation probability between them.
+	 * @param vertexCount The number of vertices in the graph.
+	 * @param edgeProbability The probability of appearing an edge between two vertices.
+	 * This value must be not lower than 1 and not greater than 1.
+	 */
 	fun generateUndirectedGraph(
 		vertexCount: Int = 1000,
 		edgeProbability: Double = 0.01
@@ -35,6 +45,13 @@ object GraphGenerator {
 		return graph
 	}
 
+	/**
+	 * Generates [UndirectedGraph] undirected graph with [vertexCount] vertices & with [edgeProbability] edge
+	 * generation probability between them.
+	 * @param vertexCount The number of vertices in the graph.
+	 * @param edgeProbability The probability of appearing an edge between two vertices.
+	 * This value must be not lower than 1 and not greater than 1.
+	 */
 	fun generateDirectedGraph(
 		vertexCount: Int = 1000,
 		edgeProbability: Double = 0.01
