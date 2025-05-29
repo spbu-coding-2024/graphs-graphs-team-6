@@ -18,21 +18,27 @@ object GraphGenerator {
 		for (i in 1..vertexCount) {
 			for (j in 1..vertexCount) {
 				if (i != j && random.nextDouble() < edgeProbability) {
-					val weight = random.nextInt(100)
+					val weight = random.nextInt(Constants.GENERATOR_WEIGHT_BOUND)
 					graph.addEdge("v$i", "v$j", edgeId++, weight)
 				}
 			}
 		}
 	}
 
-	fun generateUndirectedGraph(vertexCount: Int = 1000, edgeProbability: Double = 0.01): UndirectedGraph<String, Int, Int> {
+	fun generateUndirectedGraph(
+		vertexCount: Int = 1000,
+		edgeProbability: Double = 0.01
+	): UndirectedGraph<String, Int, Int> {
 		require(edgeProbability in 0.0..1.0)
 		val graph = UndirectedGraph<String, Int, Int>(IntRing)
 		expandGraph(graph, vertexCount, edgeProbability)
 		return graph
 	}
 
-	fun generateDirectedGraph(vertexCount: Int = 1000, edgeProbability: Double = 0.01): DirectedGraph<String, Int, Int> {
+	fun generateDirectedGraph(
+		vertexCount: Int = 1000,
+		edgeProbability: Double = 0.01
+	): DirectedGraph<String, Int, Int> {
 		require(edgeProbability in 0.0..1.0)
 		val graph = DirectedGraph<String, Int, Int>(IntRing)
 		expandGraph(graph, vertexCount, edgeProbability)

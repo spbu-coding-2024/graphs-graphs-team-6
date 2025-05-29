@@ -19,6 +19,8 @@ object Constants {
 
 	const val BANNER_HEIGHT = 50
 
+	const val GENERATOR_WEIGHT_BOUND = 100
+
 	//Colors
 	const val PALE_YELLOW = 0xFFFAF3C0
 	const val DEFAULT_PATH_COLOR = 0xFFFF0000
