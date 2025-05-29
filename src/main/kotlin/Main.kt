@@ -1,4 +1,3 @@
-
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -10,6 +9,7 @@ import model.graph.UndirectedGraph
 import space.kscience.kmath.operations.IntRing
 
 const val MAIN_GRAPH_WEIGHT = 4
+
 val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
 	addVertex("A")
 	addVertex("B")

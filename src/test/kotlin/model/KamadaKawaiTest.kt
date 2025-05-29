@@ -20,7 +20,7 @@ class KamadaKawaiTest {
         setContent {
             MainScreenView(vm)
         }
-        vm.kamadaKawai.drawGraph()
+        vm.drawGraph()
 
     }
 
@@ -37,7 +37,7 @@ class KamadaKawaiTest {
             MainScreenView(vm)
         }
 
-        vm.kamadaKawai.drawGraph()
+        vm.drawGraph()
 
     }
 }

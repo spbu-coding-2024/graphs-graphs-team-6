@@ -1,33 +1,17 @@
 package model.utils
 
 import androidx.compose.ui.unit.dp
-import com.sun.tools.javac.Main
 import model.Constants.DEFAULT_KAMADAKAWAI_LENGTH
 import model.Constants.DEFAULT_STRENGTH_CONSTANT
 import model.Constants.EPSILON
 import model.graph.Graph
 import viewmodel.GraphViewModel
-import viewmodel.MainScreenViewModel
 import viewmodel.VertexViewModel
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class KamadaKawai<V: Any, K: Any, W: Comparable<W>> (val viewModel: MainScreenViewModel<V, K, W>) {
+class KamadaKawai<V, K, W: Comparable<W>> (viewModel: GraphViewModel<V, K, W>) {
     private var deltaMap: MutableMap<V, Float> = mutableMapOf()
-
-    /**
-     * Applies graph drawing
-     *
-     * On error, sets [exceptionMessage] with exception message
-     *
-     */
-    fun drawGraph() {
-        try {
-            compute()
-        } catch(e: IllegalArgumentException) {
-            viewModel.exceptionMessage = e.message
-        }
-    }
 
     init {
         for (vertex in viewModel.graph.vertices) {
@@ -63,15 +47,16 @@ class KamadaKawai<V: Any, K: Any, W: Comparable<W>> (val viewModel: MainScreenVi
     }
 
     private fun calculateMaxDelta(
+        viewModel: GraphViewModel<V, K, W>,
         strength: Map<Pair<V, V>, Float>, length: Map<Pair<V, V>, Float>
     ): VertexViewModel<V> {
 
-        var particle = viewModel.graphViewModel.vertices.first()
+        var particle = viewModel.vertices.first()
         var maxDelta = -1F
-        for (mVertex in viewModel.graphViewModel.vertices) {
+        for (mVertex in viewModel.vertices) {
             var derivativeX = 0F
             var derivativeY = 0F
-            for (vertex in viewModel.graphViewModel.vertices) {
+            for (vertex in viewModel.vertices) {
                 val pair = mVertex.model.value to vertex.model.value
                 val strength = strength[pair]
                 val length = length[pair]
@@ -94,7 +79,7 @@ class KamadaKawai<V: Any, K: Any, W: Comparable<W>> (val viewModel: MainScreenVi
         return particle
     }
 
-    private fun returnMaxDist(dist: Map<Pair<V, V>, Float?>): Float {
+    private fun returnMaxDist(viewModel: GraphViewModel<V, K, W>, dist: Map<Pair<V, V>, Float?>): Float {
         var maxDist = 0F
         for (firstVertex in viewModel.graph.vertices) {
             for (secondVertex in viewModel.graph.vertices) {
@@ -107,9 +92,9 @@ class KamadaKawai<V: Any, K: Any, W: Comparable<W>> (val viewModel: MainScreenVi
         return maxDist
     }
 
-    private fun compute() {
+    fun compute(viewModel: GraphViewModel<V, K, W>) {
         val dist = shortestPath(viewModel.graph)
-        var maxDist = returnMaxDist(dist)
+        var maxDist = returnMaxDist(viewModel, dist)
         val strength: MutableMap<Pair<V, V>, Float> = mutableMapOf()
         val length: MutableMap<Pair<V, V>, Float> = mutableMapOf()
         val lengthConstant = DEFAULT_KAMADAKAWAI_LENGTH / maxDist
@@ -125,7 +110,7 @@ class KamadaKawai<V: Any, K: Any, W: Comparable<W>> (val viewModel: MainScreenVi
                 length[secondVertex.value to firstVertex.value] = lengthCurrentValue
             }
         }
-        var mVertex = calculateMaxDelta(strength, length)
+        var mVertex = calculateMaxDelta(viewModel, strength, length)
         while (deltaMap[mVertex.model.value] != null && deltaMap[mVertex.model.value]!! > EPSILON) {
             while (deltaMap[mVertex.model.value] != null && deltaMap[mVertex.model.value]!! > EPSILON) {
                 var derivativeXX = 0F
@@ -133,7 +118,7 @@ class KamadaKawai<V: Any, K: Any, W: Comparable<W>> (val viewModel: MainScreenVi
                 var derivativeXY = 0F
                 var derivativeX = 0F
                 var derivativeY = 0F
-                for (vertex in viewModel.graphViewModel.vertices) {
+                for (vertex in viewModel.vertices) {
                     val pair = mVertex.model.value to vertex.model.value
                     val strength = strength[pair]
                     val length = length[pair]
@@ -161,7 +146,7 @@ class KamadaKawai<V: Any, K: Any, W: Comparable<W>> (val viewModel: MainScreenVi
 
                 deltaMap[mVertex.model.value] = sqrt(derivativeX.pow(2) + derivativeY.pow(2))
             }
-            mVertex = calculateMaxDelta(strength, length)
+            mVertex = calculateMaxDelta(viewModel, strength, length)
         }
     }
 }
