@@ -131,6 +131,7 @@ fun <V : Any, K : Any, W : Comparable<W>> applyAlgorithm(
 	resetGraphViewModel(viewModel.graphViewModel)
 	when (algoNum) {
 		Algorithm.BellmanFord.ordinal -> viewModel.findSSSPBellmanFord(startVertex, endVertex)
+		Algorithm.Dijkstra.ordinal -> viewModel.findDijkstraPath(startVertex, endVertex)
 		Algorithm.CycleDetection.ordinal -> viewModel.findCycles(startVertex)
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
 		Algorithm.Kruskal.ordinal -> viewModel.findMSF()
