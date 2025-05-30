@@ -1,40 +1,48 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.input.key.KeyShortcut
-import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import view.MainScreenView
 import viewmodel.MainScreenViewModel
-import model.graph.UndirectedGraph
+import model.graph.DirectedGraph
 import space.kscience.kmath.operations.IntRing
 
-const val MAIN_GRAPH_WEIGHT = 4
+const val TEMP_WEIGHT_VALUE = 231
 
-val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
-	addVertex("A")
-	addVertex("B")
-	addVertex("C")
-	addVertex("D")
-	addVertex("E")
+
+val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
+	listOf("A","B","C","D","E","F","G","H").forEach { addVertex(it) }
 
 	var index = 0
+	val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) {it * 2}
 
-	addEdge("A", "B", index++, MAIN_GRAPH_WEIGHT)
-	addEdge("B", "C", index++, MAIN_GRAPH_WEIGHT)
-	addEdge("C", "D", index++, MAIN_GRAPH_WEIGHT)
-	addEdge("D", "E", index++, MAIN_GRAPH_WEIGHT)
-	addEdge("E", "A", index++, MAIN_GRAPH_WEIGHT)
+	addEdge("A", "B", index, weight[index]); index++
+	addEdge("B", "C", index, weight[index]); index++
+	addEdge("C", "A", index, weight[index]); index++
+	addEdge("C", "C", index, weight[index]); index++
+
+	addEdge("C", "F", index, weight[index]); index++
+
+	addEdge("D", "E", index, weight[index]); index++
+	addEdge("E", "F", index, weight[index]); index++
+	addEdge("F", "D", index, weight[index]); index++
+
+
+	addEdge("H", "D", index, weight[index]); index++
+
+	addEdge("G", "H", index, weight[index]); index++
+	addEdge("H", "G", index, TEMP_WEIGHT_VALUE); index++
+//	addVertex("X")
+//	addVertex("Y")
+//	addVertex("Z")
 }
 
 @Composable
 @Preview
 fun app() {
 	MaterialTheme {
-		val vm = MainScreenViewModel(graph)
-		vm.actionWindowVisibility.value = true
-		MainScreenView<String, Int, Int>(vm)
+		MainScreenView<String, Int, Int>(MainScreenViewModel(graph))
 	}
 }
 

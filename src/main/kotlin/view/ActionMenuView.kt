@@ -130,6 +130,7 @@ fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
 	when (algoNum) {
 		Algorithm.KamadaKawai.ordinal -> viewModel.drawGraph()
 		Algorithm.BellmanFord.ordinal -> viewModel.findSSSPBellmanFord(startVertex, endVertex)
+		Algorithm.Dijkstra.ordinal -> viewModel.findDijkstraPath(startVertex, endVertex)
 		Algorithm.CycleDetection.ordinal -> viewModel.findCycles(startVertex)
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
 		Algorithm.Kruskal.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findMSF()

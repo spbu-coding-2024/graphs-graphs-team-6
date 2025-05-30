@@ -1,9 +1,6 @@
 package viewmodel
 
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import model.Constants.BRIGHT_RED
 import model.Constants.SEMI_BLACK
@@ -14,15 +11,17 @@ import model.graph.Edge
 import model.graph.UndirectedGraph
 import model.utils.SCCCalculator
 import model.neo4j.GraphService
+import model.utils.BellmanFordPathCalculator
 import model.utils.BridgeFinder
 import model.utils.CycleDetection
+import model.utils.DijkstraPathCalculator
 import model.utils.GraphPath
 import model.utils.KamadaKawai
 import model.utils.MSFFinder
 import model.utils.Louvain
-import model.utils.BellmanFordPathCalculator
 import java.awt.FileDialog
 import java.awt.Frame
+
 
 /**
  * General viewmodel for a program
@@ -31,19 +30,21 @@ import java.awt.Frame
  *
  * @param graph A graph to visualize
  */
-class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K, W>) {
-	private var _graph = mutableStateOf(graph)
-	var graph: Graph<V, K, W>
-		get() = _graph.value
-		set(value) {
-			_graph.value = value
-		}
+class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph<V, K, W>) {
+	var graph by mutableStateOf(graphParam)
 
-	var showEdgesWeights = mutableStateOf(false)
 	var actionWindowVisibility = mutableStateOf(false)
 	var showDbSelectDialog = mutableStateOf(false)
 	var saveDialogState = mutableStateOf(false)
-	val graphViewModel = GraphViewModel(_graph, showEdgesWeights)
+	private var _showEdgesWeights = mutableStateOf(false)
+
+	var showEdgesWeights: Boolean
+		get() = _showEdgesWeights.value
+		set(value) {
+			_showEdgesWeights.value = value
+		}
+
+	val graphViewModel = GraphViewModel(graph, _showEdgesWeights)
 
 	// Current vertex colorscheme
 	var vertexColors by mutableStateOf(mapOf<Vertex<V>, Color>())
@@ -60,6 +61,16 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 
 	fun findSSSPBellmanFord(startVertex: VertexViewModel<V>, endVertex: VertexViewModel<V>) {
 		val (predecessors, _) = BellmanFordPathCalculator.bellmanFordAlgorithm(
+			graph,
+			startVertex.model.value
+		)
+		val path = GraphPath.construct(predecessors, endVertex.model.value)
+			.map { graphViewModel.getEdgeViewModel(it) }
+		ColorUtils.applyOneColor(path, Color.Red)
+	}
+
+	fun findDijkstraPath(startVertex: VertexViewModel<V>, endVertex: VertexViewModel<V>) {
+		val (predecessors, _) = DijkstraPathCalculator().runOn(
 			graph,
 			startVertex.model.value
 		)
@@ -118,10 +129,20 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graph: Graph<V, K
 	}
 
 	// Neo4j
+	var showNeo4jConnectionFailedDialog by mutableStateOf(false)
+	var showNeo4jOpsDialog by mutableStateOf(false)
+	var showNeo4jDialog by mutableStateOf(false)
+
 	fun connectNeo4j(uri: String, user: String, password: String) {
-		GraphService.uri = uri
-		GraphService.user = user
-		GraphService.pass = password
+		try {
+			GraphService.uri = uri
+			GraphService.user = user
+			GraphService.pass = password
+		}
+		catch(e: IllegalArgumentException) {
+			showNeo4jConnectionFailedDialog = true
+			exceptionMessage = e.message
+		}
 	}
 
 	fun loadNeo4j(isDirected: Boolean) {

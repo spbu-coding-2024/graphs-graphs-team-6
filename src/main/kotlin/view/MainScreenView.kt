@@ -41,13 +41,18 @@ import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.Window
 import kotlinx.coroutines.CoroutineScope
 import model.neo4j.GraphService
+import org.neo4j.ogm.exception.ConnectionException
+import space.kscience.kmath.operations.IntRing
+import java.awt.FileDialog
+import java.awt.Frame
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K, W>) {
 	var isOpen = remember { mutableStateOf(true) }
 	if (isOpen.value) {
-		Window(onCloseRequest = { isOpen.value = false }) {
+		Window(onCloseRequest = { isOpen.value = false },
+			title = "Graphs-Graphs") {
 			GraphView(viewModel.graphViewModel)
 			if (viewModel.graphViewModel.vertices.isNotEmpty()) actionMenuView(viewModel)
 			if (viewModel.aboutDialog.value) aboutDialog(viewModel)
@@ -73,10 +78,10 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 					}
 					CheckboxItem(
 						"Show weights",
-						checked = viewModel.showEdgesWeights.value,
+						checked = viewModel.showEdgesWeights,
 						shortcut = KeyShortcut(Key.W, ctrl = true)
 					)
-					{ viewModel.showEdgesWeights.value = !viewModel.showEdgesWeights.value }
+					{ viewModel.showEdgesWeights = !viewModel.showEdgesWeights }
 				}
 				Menu("Help", mnemonic = 'H') {
 					Item("About") {
@@ -128,15 +133,11 @@ fun <V: Any, K: Any, W: Comparable<W>>aboutDialog(viewModel: MainScreenViewModel
 fun <V : Any, K : Any, W : Comparable<W>> dbMenu(
 	viewModel: MainScreenViewModel<V, K, W>
 ) {
-	var showNeo4jDialog = remember { mutableStateOf(false) }
-	var showOpsDialog = remember { mutableStateOf(false) }
-
-
 	if (viewModel.showDbSelectDialog.value) {
 		AlertDialog(
 			modifier = Modifier.testTag("OpenDialog"),
 			onDismissRequest = { viewModel.showDbSelectDialog.value = false },
-			title = { Text("Select Database") },
+			title = { Text("Select source") },
 			text = {
 				Column {
 					Spacer(Modifier.height(8.dp))
@@ -145,11 +146,11 @@ fun <V : Any, K : Any, W : Comparable<W>> dbMenu(
 						onClick = {
 						viewModel.showDbSelectDialog.value = false
 						if (GraphService.sessionFactory == null)
-							showNeo4jDialog.value = true
+							viewModel.showNeo4jDialog = true
 						else
-							showOpsDialog.value = true
-						}
-					) {
+                            viewModel.showNeo4jOpsDialog = true
+                        }
+                    ) {
 						Text("Neo4j")
 					}
 					Spacer(Modifier.height(8.dp))
@@ -166,23 +167,21 @@ fun <V : Any, K : Any, W : Comparable<W>> dbMenu(
 			buttons = {}
 		)
 	}
-	neo4jMenu(viewModel, showNeo4jDialog, showOpsDialog)
+	neo4jMenu(viewModel)
 }
 
 @Composable
 fun <V : Any, K : Any, W : Comparable<W>> neo4jMenu(
 	viewModel: MainScreenViewModel<V, K, W>,
-	showNeo4jDialog: MutableState<Boolean>,
-	showOpsDialog: MutableState<Boolean>
 ) {
 	var neo4jUri by remember { mutableStateOf("") }
 	var neo4jUser by remember { mutableStateOf("") }
 	var neo4jPassword by remember { mutableStateOf("") }
 	var neo4jLoadGraphIsDirected = remember { mutableStateOf(false) }
 
-	if (showNeo4jDialog.value && GraphService.sessionFactory == null) {
+	if (viewModel.showNeo4jDialog && GraphService.sessionFactory == null) {
 		AlertDialog(
-			onDismissRequest = { showNeo4jDialog.value = false },
+			onDismissRequest = { viewModel.showNeo4jDialog = false },
 			title = { Text("Connect to Neo4j") },
 			text = {
 				Column(Modifier.fillMaxWidth()) {
@@ -212,32 +211,32 @@ fun <V : Any, K : Any, W : Comparable<W>> neo4jMenu(
 			confirmButton = {
 				TextButton(onClick = {
 					viewModel.connectNeo4j(neo4jUri, neo4jUser, neo4jPassword)
-					showNeo4jDialog.value = false
-					showOpsDialog.value = true
+					viewModel.showNeo4jDialog = false
+					if (!viewModel.showNeo4jConnectionFailedDialog)
+						viewModel.showNeo4jOpsDialog = true
 				}) {
 					Text("Connect")
 				}
 			},
 			dismissButton = {
-				TextButton(onClick = { showNeo4jDialog.value = false }) {
+				TextButton(onClick = { viewModel.showNeo4jDialog = false }) {
 					Text("Cancel")
 				}
 			}
 		)
 	}
-	opsDialog(viewModel, showOpsDialog, neo4jLoadGraphIsDirected)
-
+	opsDialog(viewModel, neo4jLoadGraphIsDirected)
+	neo4jConnectionExceptionDialog(viewModel)
 }
 
 @Composable
 fun <V : Any, K : Any, W : Comparable<W>> opsDialog(
 	viewModel: MainScreenViewModel<V, K, W>,
-	showOpsDialog: MutableState<Boolean>,
 	neo4jLoadGraphIsDirected: MutableState<Boolean>
 ) {
-	if (showOpsDialog.value) {
+	if (viewModel.showNeo4jOpsDialog) {
 		AlertDialog(
-			onDismissRequest = { showOpsDialog.value = false },
+			onDismissRequest = { viewModel.showNeo4jOpsDialog = false },
 			title = { Text("Neo4j Operations") },
 			text = {
 				Column(Modifier.fillMaxWidth().padding(16.dp)) {
@@ -262,7 +261,7 @@ fun <V : Any, K : Any, W : Comparable<W>> opsDialog(
 			confirmButton = {
 				TextButton(onClick = {
 					viewModel.loadNeo4j(neo4jLoadGraphIsDirected.value)
-					showOpsDialog.value = false
+					viewModel.showNeo4jOpsDialog = false
 				}) {
 					Text("Load Graph")
 				}
@@ -270,7 +269,7 @@ fun <V : Any, K : Any, W : Comparable<W>> opsDialog(
 			dismissButton = {
 				TextButton(onClick = {
 					viewModel.saveNeo4j(viewModel.graph)
-					showOpsDialog.value = false
+					viewModel.showNeo4jOpsDialog = false
 				}) {
 					Text("Save Graph")
 				}
@@ -278,6 +277,34 @@ fun <V : Any, K : Any, W : Comparable<W>> opsDialog(
 		)
 	}
 }
+
+@Composable
+fun <V: Any, K: Any, W: Comparable<W>> neo4jConnectionExceptionDialog(viewModel: MainScreenViewModel<V, K, W>) {
+	if (viewModel.showNeo4jConnectionFailedDialog) {
+		AlertDialog(
+			onDismissRequest = {
+				viewModel.showNeo4jConnectionFailedDialog = false
+			},
+			title = { Text("Connection Failed!") },
+			text = {
+				Text(
+					"Cannot connect to Neo4j database. Check if credentials are not correct." +
+						"Exception message:" +
+						"\n${viewModel.exceptionMessage}"
+				)
+			},
+			confirmButton = {
+				TextButton(onClick = {
+					viewModel.showNeo4jConnectionFailedDialog = false
+				}) {
+					Text("ОК")
+				}
+			}
+		)
+	}
+
+}
+
 
 @Composable
 fun drawerButton(
