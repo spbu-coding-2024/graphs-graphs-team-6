@@ -14,7 +14,8 @@ class KamadaKawaiTest {
 //
 //    @OptIn(ExperimentalTestApi::class)
 //    @RepeatedTest(3)
-//    fun `KamadaKawai algorithm converges on random graph when vertices are all appear on screen`() = runComposeUiTest {
+//    fun `KamadaKawai algorithm converges on random graph when vertices are all appear on screen`()
+//    = runComposeUiTest {
 //        val randomGraph = RandomUndirectedIntGraph.get(maxVertices)
 //        val vm = MainScreenViewModel(randomGraph)
 //        setContent {
@@ -26,7 +27,8 @@ class KamadaKawaiTest {
 //
 //    @OptIn(ExperimentalTestApi::class)
 //    @RepeatedTest(3)
-//    fun `KamadaKawai algorithm converges on random graph when vertices are not shown on screen`() = runComposeUiTest {
+//    fun `KamadaKawai algorithm converges on random graph when vertices are not shown on screen`()
+//    = runComposeUiTest {
 //        val randomGraph = RandomUndirectedIntGraph.get(maxVertices)
 //        val vm = MainScreenViewModel(randomGraph)
 //        for (vertex in vm.graphViewModel.vertices) {
