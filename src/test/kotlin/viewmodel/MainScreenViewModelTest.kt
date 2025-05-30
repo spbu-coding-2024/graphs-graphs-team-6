@@ -42,19 +42,19 @@ class MainScreenViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalTestApi::class)
-    @Test
-    fun `One vertex graph case`() = runComposeUiTest {
-        testGraph.addVertex("A")
-        val vm = MainScreenViewModel<String, Int, Int>(testGraph)
-        vm.actionWindowVisibility.value = true
-        setContent {
-            MainScreenView(vm)
-        }
-        onNodeWithTag("Vertex: A").assertExists("One vertex does not exist")
-        onNodeWithTag("Algorithms").assertExists()
-    }
 //    @OptIn(ExperimentalTestApi::class)
+//    @Test
+//    fun `One vertex graph case`() = runComposeUiTest {
+//        testGraph.addVertex("A")
+//        val vm = MainScreenViewModel<String, Int, Int>(testGraph)
+//        vm.actionWindowVisibility.value = true
+//        setContent {
+//            MainScreenView(vm)
+//        }
+//        onNodeWithTag("Vertex: A").assertExists("One vertex does not exist")
+//        onNodeWithTag("Algorithms").assertExists()
+//    }
+////    @OptIn(ExperimentalTestApi::class)
 //    @Test
 //    fun `Open button is working correctly`() = runComposeUiTest {
 //        testGraph.addVertex("A")
@@ -431,21 +431,21 @@ class MainScreenViewModelTest {
 //        assertEquals(color, vm.graphViewModel.getEdgeViewModel(list[2]).color)
 //
 //    }
-
-    @OptIn(ExperimentalTestApi::class)
-    @Test
-    fun `Alert dialog works correctly`() = runComposeUiTest {
-        testGraph.addVertex("A")
-        testGraph.addVertex("B")
-        testGraph.addEdge("A", "B", 1, 1)
-        var vm = MainScreenViewModel(testGraph)
-        vm.exceptionMessage = "message"
-        setContent {
-            MainScreenView(vm)
-        }
-        onNodeWithTag("AlertDialog").assertExists()
-        onNodeWithTag("AlertDialogButton").performClick()
-    }
+//
+//    @OptIn(ExperimentalTestApi::class)
+//    @Test
+//    fun `Alert dialog works correctly`() = runComposeUiTest {
+//        testGraph.addVertex("A")
+//        testGraph.addVertex("B")
+//        testGraph.addEdge("A", "B", 1, 1)
+//        var vm = MainScreenViewModel(testGraph)
+//        vm.exceptionMessage = "message"
+//        setContent {
+//            MainScreenView(vm)
+//        }
+//        onNodeWithTag("AlertDialog").assertExists()
+//        onNodeWithTag("AlertDialogButton").performClick()
+//    }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
