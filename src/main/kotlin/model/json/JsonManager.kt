@@ -1,8 +1,7 @@
-package model
+package model.json
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import model.graph.DirectedGraph
-import model.graph.Edge
 import model.graph.Graph
 import model.graph.UndirectedGraph
 import space.kscience.kmath.operations.Int16Ring
@@ -11,7 +10,6 @@ import space.kscience.kmath.operations.Int64Ring
 import space.kscience.kmath.operations.Int8Ring
 import space.kscience.kmath.operations.Ring
 import java.io.File
-import java.lang.Class
 
 object JsonManager {
     val mapper = jacksonObjectMapper()

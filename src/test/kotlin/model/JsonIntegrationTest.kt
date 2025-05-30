@@ -2,6 +2,7 @@ package model
 
 import model.graph.Edge
 import model.graph.Vertex
+import model.json.JsonManager
 import model.utils.BellmanFordPathCalculator
 import model.utils.CycleDetection
 import model.utils.GraphPath

@@ -4,7 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import model.Constants.BRIGHT_RED
 import model.Constants.SEMI_BLACK
-import model.JsonManager
+import model.json.JsonManager
 import model.graph.Graph
 import model.graph.Vertex
 import model.graph.Edge

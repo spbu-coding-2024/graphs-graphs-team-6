@@ -2,6 +2,7 @@ package model
 
 import model.graph.DirectedGraph
 import model.graph.UndirectedGraph
+import model.json.JsonManager
 import org.junit.jupiter.api.RepeatedTest
 import space.kscience.kmath.operations.IntRing
 import java.io.File

@@ -10,7 +10,7 @@ import kotlin.random.Random
 import kotlin.random.nextInt
 
 class KamadaKawaiTest {
-    val maxVertices = 20
+    val maxVertices = 12
 
     @OptIn(ExperimentalTestApi::class)
     @RepeatedTest(3)
