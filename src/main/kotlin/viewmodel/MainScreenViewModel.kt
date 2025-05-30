@@ -4,11 +4,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import model.Constants.BRIGHT_RED
 import model.Constants.SEMI_BLACK
+import model.graph.*
 import model.json.JsonManager
-import model.graph.Graph
-import model.graph.Vertex
-import model.graph.Edge
-import model.graph.UndirectedGraph
 import model.utils.SCCCalculator
 import model.neo4j.GraphService
 import model.utils.BellmanFordPathCalculator
@@ -56,9 +53,14 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 		private set
 
 	fun calculateSCC() {
-		val calculator by derivedStateOf { SCCCalculator<V, K, W>() }
-		vertexColors = calculator.calculateComponents(graph)
-		ColorUtils.applyColors(vertexColors, graphViewModel.vertices)
+		if (graph is DirectedGraph) {
+			val calculator by derivedStateOf { SCCCalculator<V, K, W>() }
+			vertexColors = calculator.calculateComponents(graph)
+			ColorUtils.applyColors(vertexColors, graphViewModel.vertices)
+		}
+		else {
+			isIncompatibleAlgorithm = true
+		}
 	}
 
 	fun findSSSPBellmanFord(startVertex: VertexViewModel<V>, endVertex: VertexViewModel<V>) {
@@ -76,13 +78,18 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 	}
 
 	fun findDijkstraPath(startVertex: VertexViewModel<V>, endVertex: VertexViewModel<V>) {
-		val (predecessors, _) = DijkstraPathCalculator().runOn(
-			graph,
-			startVertex.model.value
-		)
-		val path = GraphPath.construct(predecessors, endVertex.model.value)
-			.map { graphViewModel.getEdgeViewModel(it) }
-		ColorUtils.applyOneColor(path, Color.Red)
+		if (graph is DirectedGraph) {
+			val (predecessors, _) = DijkstraPathCalculator().runOn(
+				graph,
+				startVertex.model.value
+			)
+			val path = GraphPath.construct(predecessors, endVertex.model.value)
+				.map { graphViewModel.getEdgeViewModel(it) }
+			ColorUtils.applyOneColor(path, Color.Red)
+		}
+		else {
+			isIncompatibleAlgorithm = true
+		}
 	}
 
 	fun findCycles(vertex: VertexViewModel<V>) {
@@ -91,7 +98,7 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 			val list =
 				cycleDetection.findCyclesFromGivenVertex(
 					graph as DirectedGraph,
-					vertex.model as DirectedVertex
+					vertex.model as DirectedGraph.DirectedVertex
 				)
 
 			list.forEachIndexed { i, cycle ->
@@ -119,7 +126,6 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 		} else {
 			isIncompatibleAlgorithm = true
 		}
-
 	}
 
 	private val bridgeFinder = BridgeFinder()

@@ -9,7 +9,7 @@ import viewmodel.MainScreenViewModel
 import model.graph.DirectedGraph
 import space.kscience.kmath.operations.IntRing
 
-val graph = GraphGenerator.generateUndirectedGraph()
+val graph = GraphGenerator.generateDirectedGraph()
 
 @Composable
 @Preview

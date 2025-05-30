@@ -105,9 +105,8 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 			}
 		}
 	}
-	if (viewModel.exceptionMessage != null) {
+	if (viewModel.exceptionMessage != null)
 		alertDialog(viewModel)
-	}
 	if (viewModel.isIncompatibleAlgorithm)
 		IncompatibilityBanner(viewModel.isIncompatibleAlgorithm, {viewModel.isIncompatibleAlgorithm = false})
 

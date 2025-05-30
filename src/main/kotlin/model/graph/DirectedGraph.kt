@@ -4,8 +4,6 @@ import space.kscience.kmath.operations.Ring
 import kotlin.collections.get
 
 class DirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph<V, K, W> {
-	//var idCounter = AtomicLong(0)
-
 	class DirectedVertex<V>(
 		override var value: V,
 		override val adjacencyList: MutableList<DirectedVertex<V>> = mutableListOf()
