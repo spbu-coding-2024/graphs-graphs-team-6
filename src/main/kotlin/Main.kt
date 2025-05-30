@@ -20,8 +20,5 @@ fun app() {
 }
 
 fun main() = application {
-	Window(onCloseRequest = ::exitApplication,
-	title = "Graphs-Graphs") {
-		app()
-	}
+	app()
 }
