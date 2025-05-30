@@ -1,18 +1,13 @@
 package model
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import model.graph.DirectedGraph
 import model.graph.UndirectedGraph
+import model.json.JsonManager
 import org.junit.jupiter.api.RepeatedTest
-import org.junit.jupiter.api.assertAll
-import org.junit.jupiter.api.io.TempDir
 import space.kscience.kmath.operations.IntRing
 import java.io.File
 import java.nio.file.Files
-import java.nio.file.Path
-import kotlin.io.path.createTempDirectory
 import kotlin.io.path.createTempFile
-import kotlin.io.path.name
 import kotlin.io.path.pathString
 import kotlin.io.path.writeText
 import kotlin.random.Random
@@ -112,20 +107,7 @@ class JsonManagerTest {
         val path = createTempFile("tempGraph")
         Files.exists(path)
 
-        val maxVertices = 1000
-        val maxWeight = 100
-        val numOfVertices = Random.nextInt(0, maxVertices)
-        val numOfEdges = Random.nextInt(0, numOfVertices * (numOfVertices - 1) / 2 + 1)
-        val randomGraph = UndirectedGraph<Int, Int, Int>(IntRing).apply {
-            for (i in 0..(numOfVertices - 1)) addVertex(i)
-
-            for (i in 0..(numOfEdges - 1)) {
-                val firstVert = Random.nextInt(0, numOfVertices - 1)
-                val secondVert = Random.nextInt(0, numOfVertices - 1)
-                val randomWeight = Random.nextInt(0, maxWeight)
-                addEdge(firstVert, secondVert, i, randomWeight)
-            }
-        }
+        val randomGraph = RandomUndirectedIntGraph.get()
         JsonManager.saveJSON(path.pathString, randomGraph)
 
         val newGraph = JsonManager.loadJSON<Int, Int, Int>(path.pathString)
@@ -136,4 +118,20 @@ class JsonManagerTest {
         assertEquals(newGraph.edges.map { it.weight }, randomGraph.edges.map { it.weight })
     }
 
+    @RepeatedTest(10)
+    fun `Fuzzing test for loadJson`() {
+        val fuzzLength = Random.nextInt(100, 1000)
+        val allowedChar = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+        val randomString = (1..fuzzLength).map { allowedChar.random()}.joinToString()
+        val path = createTempFile("graphTemp")
+        path.writeText(randomString)
+        var error = false
+        try {
+            JsonManager.loadJSON<Int, Int, Int>(path.pathString)
+        } catch (e: Exception) {
+            assertTrue(e.message != null)
+            error = true
+        }
+        assertTrue(error)
+    }
 }

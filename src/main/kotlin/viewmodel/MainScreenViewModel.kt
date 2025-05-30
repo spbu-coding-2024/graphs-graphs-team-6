@@ -4,28 +4,38 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import model.Constants.BRIGHT_RED
 import model.Constants.SEMI_BLACK
-import model.graph.DirectedGraph
-import model.graph.DirectedGraph.DirectedVertex
+import model.json.JsonManager
 import model.graph.Graph
 import model.graph.Vertex
 import model.graph.Edge
 import model.graph.UndirectedGraph
 import model.utils.SCCCalculator
 import model.neo4j.GraphService
+import model.utils.BellmanFordPathCalculator
 import model.utils.BridgeFinder
 import model.utils.CycleDetection
 import model.utils.DijkstraPathCalculator
 import model.utils.GraphPath
+import model.utils.KamadaKawai
 import model.utils.MSFFinder
 import model.utils.Louvain
-import org.neo4j.ogm.exception.ConnectionException
-import space.kscience.kmath.operations.IntRing
-import space.kscience.kmath.operations.Ring
-import model.utils.SSSPCalculator
+import java.awt.FileDialog
+import java.awt.Frame
 
+
+/**
+ * General viewmodel for a program
+ *
+ * Includes a single graph and it's viewmodel
+ *
+ * @param graph A graph to visualize
+ */
 class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph<V, K, W>) {
 	var graph by mutableStateOf(graphParam)
 
+	var actionWindowVisibility = mutableStateOf(false)
+	var showDbSelectDialog = mutableStateOf(false)
+	var saveDialogState = mutableStateOf(false)
 	private var _showEdgesWeights = mutableStateOf(false)
 
 	var showEdgesWeights: Boolean
@@ -50,7 +60,7 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 	}
 
 	fun findSSSPBellmanFord(startVertex: VertexViewModel<V>, endVertex: VertexViewModel<V>) {
-		val (predecessors, _) = SSSPCalculator.bellmanFordAlgorithm(
+		val (predecessors, _) = BellmanFordPathCalculator.bellmanFordAlgorithm(
 			graph,
 			startVertex.model.value
 		)
@@ -70,9 +80,8 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 	}
 
 	fun findCycles(vertex: VertexViewModel<V>) {
-		require(graph is DirectedGraph)
 		val cycleDetection = CycleDetection()
-		val list = cycleDetection.findCyclesFromGivenVertex(graph as DirectedGraph, vertex.model as DirectedVertex)
+		val list = cycleDetection.findCyclesFromGivenVertex(graph, vertex.model)
 
 		list.forEachIndexed { i, cycle ->
 			val cycleViewModel = cycle.map { graphViewModel.getEdgeViewModel(it) }
@@ -105,18 +114,16 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 		ColorUtils.applyColors(edgeColors, graphViewModel.edges.sortedBy { it.model.weight }, Color(SEMI_BLACK))
 	}
 
-	var exceptionMessage: String? = null
-	var showIncompatibleWeightTypeDialog by mutableStateOf(false)
+	var exceptionMessage: String? by mutableStateOf(null)
+	var aboutDialog = mutableStateOf(false)
 
 	fun assignCommunities() {
 		try {
-
 			val louvainDetector by derivedStateOf { Louvain(graph) }
 			val grouping = louvainDetector.detectCommunities()
 			val colorMap = ColorUtils.assignColorsGrouped(grouping)
 			ColorUtils.applyColors(colorMap, graphViewModel.vertices)
 		} catch (e: IllegalArgumentException) {
-			showIncompatibleWeightTypeDialog = true
 			exceptionMessage = e.message
 		}
 	}
@@ -144,5 +151,46 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 
 	fun saveNeo4j(graph: Graph<V, K, W>) {
 		GraphService.saveGraph(graph)
+	}
+
+	/**
+	 * Opens a dialog to load graph form a json
+	 */
+	fun loadJSON() {
+		val dialog = FileDialog(null as Frame?, "Select JSON")
+		dialog.mode = FileDialog.LOAD
+		dialog.isVisible = true
+		val file = dialog.file
+		graph = JsonManager.loadJSON<V, K, W>(file)
+	}
+
+	/**
+	 * Opens a dialog to save graph into a json
+	 */
+	fun saveJSON() {
+		val extension = ".json"
+		val dialog = FileDialog(null as Frame?, "Save JSON")
+		dialog.mode = FileDialog.SAVE
+		dialog.isVisible = true
+		var file = dialog.file
+		if (file == null) return
+		if (file.length < extension.length || file.substring(file.length - extension.length) != ".json") {
+			file += extension
+		}
+		JsonManager.saveJSON<V,K,W>(file, graph)
+	}
+
+	/**
+	 * Applies graph drawing
+	 *
+	 * On error, sets [exceptionMessage] with exception message
+	 */
+	fun drawGraph() {
+		val kamadaKawai = KamadaKawai<V, K, W>(graphViewModel)
+		try {
+			kamadaKawai.compute(graphViewModel)
+		} catch(e: IllegalArgumentException) {
+			exceptionMessage = e.message
+		}
 	}
 }

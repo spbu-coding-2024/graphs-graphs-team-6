@@ -47,7 +47,6 @@ import viewmodel.VertexViewModel
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
-	actionWindowVisibility: Boolean,
 	viewModel: MainScreenViewModel<V, K, W>
 ) {
 	require(viewModel.graph.vertices.isNotEmpty())
@@ -62,7 +61,7 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 	var startVertex by remember { mutableStateOf(viewModel.graphViewModel.vertices.first()) }
 	var endVertex by remember { mutableStateOf(viewModel.graphViewModel.vertices.last()) }
 
-	AnimatedVisibility(actionWindowVisibility, Modifier, EnterTransition.None, ExitTransition.None) {
+	AnimatedVisibility(viewModel.actionWindowVisibility.value, Modifier, EnterTransition.None, ExitTransition.None) {
 		Row(
 			modifier = Modifier.fillMaxSize()
 				.padding(20.dp)
@@ -105,8 +104,8 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 			}
 		}
 	}
-	if (viewModel.showIncompatibleWeightTypeDialog) {
-		LouvainAlertDialog(viewModel)
+	if (viewModel.exceptionMessage != null) {
+		alertDialog(viewModel)
 	}
 }
 
@@ -117,7 +116,8 @@ enum class Algorithm {
 	Louvain,
 	CycleDetection,
 	Bridges,
-	Dijkstra
+	Dijkstra,
+	KamadaKawai
 }
 
 fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
@@ -128,6 +128,7 @@ fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
 ) {
 	resetGraphViewModel(viewModel.graphViewModel)
 	when (algoNum) {
+		Algorithm.KamadaKawai.ordinal -> viewModel.drawGraph()
 		Algorithm.BellmanFord.ordinal -> viewModel.findSSSPBellmanFord(startVertex, endVertex)
 		Algorithm.Dijkstra.ordinal -> viewModel.findDijkstraPath(startVertex, endVertex)
 		Algorithm.CycleDetection.ordinal -> viewModel.findCycles(startVertex)
@@ -139,18 +140,17 @@ fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
 }
 
 @Composable
-fun <V: Any, K: Any, W: Comparable<W>> LouvainAlertDialog(viewModel: MainScreenViewModel<V, K, W>){
+fun <V: Any, K: Any, W: Comparable<W>> alertDialog(viewModel: MainScreenViewModel<V, K, W>){
 	AlertDialog(
 		modifier = Modifier
 			.testTag("AlertDialog"),
 		onDismissRequest = {
-            viewModel.showIncompatibleWeightTypeDialog = false
+            viewModel.exceptionMessage = null
 		},
-		title = { Text("Incompatible Edge Weight Type") },
+		title = { Text("Oops!") },
 		text = {
 			Text(
-				"Your graph uses edge weight type that is not supported yet. " +
-					"Please try exploring graph with numerical weight" +
+				"There's something wrong with the graph " +
 					"\n${viewModel.exceptionMessage}"
 			)
 		},
@@ -158,7 +158,7 @@ fun <V: Any, K: Any, W: Comparable<W>> LouvainAlertDialog(viewModel: MainScreenV
 			TextButton(
 				modifier = Modifier
 					.testTag("AlertDialogButton"),
-				onClick = { viewModel.showIncompatibleWeightTypeDialog = false }
+				onClick = { viewModel.exceptionMessage = null }
 			) {
 				Text("ОК")
 			}

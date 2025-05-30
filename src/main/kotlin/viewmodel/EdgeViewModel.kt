@@ -6,6 +6,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import model.graph.Edge
 
+/**
+ * ViewModel of edge
+ *
+ * @param model Edge model
+ * @param Color Edge color
+ * @param width the thickness of edge
+ * @param weightLabelVisieState a show state for a weight labels
+ */
 class EdgeViewModel<V, K, W : Comparable<W>>(
 	val firstVertexViewModel: VertexViewModel<V>,
 	val secondVertexViewModel: VertexViewModel<V>,
