@@ -45,6 +45,7 @@ import org.neo4j.ogm.exception.ConnectionException
 import space.kscience.kmath.operations.IntRing
 import java.awt.FileDialog
 import java.awt.Frame
+import model.Constants
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -54,7 +55,7 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 		Window(onCloseRequest = { isOpen.value = false },
 			title = "Graphs-Graphs") {
 			GraphView(viewModel.graphViewModel)
-			if (viewModel.graphViewModel.vertices.isNotEmpty()) actionMenuView(viewModel)
+			if (viewModel.graphViewModel.vertices.isNotEmpty()) actionMenuView(viewModel.actionWindowVisibility.value, viewModel)
 			if (viewModel.aboutDialog.value) aboutDialog(viewModel)
 			if (viewModel.saveDialogState.value) {
 				viewModel.saveJSON()

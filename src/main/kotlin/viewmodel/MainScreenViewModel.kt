@@ -4,11 +4,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import model.Constants.BRIGHT_RED
 import model.Constants.SEMI_BLACK
+import model.graph.*
 import model.json.JsonManager
-import model.graph.Graph
-import model.graph.Vertex
-import model.graph.Edge
-import model.graph.UndirectedGraph
 import model.utils.SCCCalculator
 import model.neo4j.GraphService
 import model.utils.BellmanFordPathCalculator
@@ -44,6 +41,8 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 			_showEdgesWeights.value = value
 		}
 
+	var isIncompatibleAlgorithm by mutableStateOf(false)
+
 	val graphViewModel = GraphViewModel(graph, _showEdgesWeights)
 
 	// Current vertex colorscheme
@@ -54,49 +53,79 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 		private set
 
 	fun calculateSCC() {
-		val calculator by derivedStateOf { SCCCalculator<V, K, W>() }
-		vertexColors = calculator.calculateComponents(graph)
-		ColorUtils.applyColors(vertexColors, graphViewModel.vertices)
+		if (graph is DirectedGraph) {
+			val calculator by derivedStateOf { SCCCalculator<V, K, W>() }
+			vertexColors = calculator.calculateComponents(graph)
+			ColorUtils.applyColors(vertexColors, graphViewModel.vertices)
+		}
+		else {
+			isIncompatibleAlgorithm = true
+		}
 	}
 
 	fun findSSSPBellmanFord(startVertex: VertexViewModel<V>, endVertex: VertexViewModel<V>) {
-		val (predecessors, _) = BellmanFordPathCalculator.bellmanFordAlgorithm(
-			graph,
-			startVertex.model.value
-		)
-		val path = GraphPath.construct(predecessors, endVertex.model.value)
-			.map { graphViewModel.getEdgeViewModel(it) }
-		ColorUtils.applyOneColor(path, Color.Red)
+		if (graph is DirectedGraph) {
+			val (predecessors, _) = BellmanFordPathCalculator.bellmanFordAlgorithm(
+				graph,
+				startVertex.model.value
+			)
+			val path = GraphPath.construct(predecessors, endVertex.model.value)
+				.map { graphViewModel.getEdgeViewModel(it) }
+			ColorUtils.applyOneColor(path, Color.Red)
+		} else {
+			isIncompatibleAlgorithm = true
+		}
 	}
 
 	fun findDijkstraPath(startVertex: VertexViewModel<V>, endVertex: VertexViewModel<V>) {
-		val (predecessors, _) = DijkstraPathCalculator().runOn(
-			graph,
-			startVertex.model.value
-		)
-		val path = GraphPath.construct(predecessors, endVertex.model.value)
-			.map { graphViewModel.getEdgeViewModel(it) }
-		ColorUtils.applyOneColor(path, Color.Red)
+		if (graph is DirectedGraph) {
+			val (predecessors, _) = DijkstraPathCalculator().runOn(
+				graph,
+				startVertex.model.value
+			)
+			val path = GraphPath.construct(predecessors, endVertex.model.value)
+				.map { graphViewModel.getEdgeViewModel(it) }
+			ColorUtils.applyOneColor(path, Color.Red)
+		}
+		else {
+			isIncompatibleAlgorithm = true
+		}
 	}
 
 	fun findCycles(vertex: VertexViewModel<V>) {
-		val cycleDetection = CycleDetection()
-		val list = cycleDetection.findCyclesFromGivenVertex(graph, vertex.model)
+		if (graph is DirectedGraph) {
+			val cycleDetection = CycleDetection()
+			val list =
+				cycleDetection.findCyclesFromGivenVertex(
+					graph as DirectedGraph,
+					vertex.model as DirectedGraph.DirectedVertex
+				)
 
-		list.forEachIndexed { i, cycle ->
-			val cycleViewModel = cycle.map { graphViewModel.getEdgeViewModel(it) }
-			val color = ColorUtils.generateColor(i)
-			ColorUtils.applyOneColor(cycleViewModel, color)
+			list.forEachIndexed { i, cycle ->
+				val cycleViewModel = cycle.map { graphViewModel.getEdgeViewModel(it) }
+				val color = ColorUtils.generateColor(i)
+				ColorUtils.applyOneColor(cycleViewModel, color)
+			}
+		} else {
+			isIncompatibleAlgorithm = true
 		}
 
 	}
 
 	fun findMSF() {
-		val msfFinder by derivedStateOf { MSFFinder(graph) }
-		val msf = msfFinder.findMSF()
-		edgeColors = msf
+		if (graph is UndirectedGraph) {
+			val msfFinder by derivedStateOf { MSFFinder(graph) }
+			val msf = msfFinder.findMSF()
+			edgeColors = msf
 
-		ColorUtils.applyColors(edgeColors, graphViewModel.edges.sortedBy { it.model.weight }, Color(SEMI_BLACK))
+			ColorUtils.applyColors(
+				edgeColors,
+				graphViewModel.edges.sortedBy { it.model.weight },
+				Color(SEMI_BLACK)
+			)
+		} else {
+			isIncompatibleAlgorithm = true
+		}
 	}
 
 	private val bridgeFinder = BridgeFinder()
@@ -106,25 +135,38 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 			.filter { edge -> edge.startVertex to edge.endVertex in pairs }
 			.associateWith { Color(BRIGHT_RED) }
 	}
-	fun findBridges() {
-		require(graph is UndirectedGraph)
-		val bridges = bridgeFinder.runOn<V, K, W>(graph as UndirectedGraph<V, K, W>)
-		edgeColors = convertPairsToColorMap(bridges)
 
-		ColorUtils.applyColors(edgeColors, graphViewModel.edges.sortedBy { it.model.weight }, Color(SEMI_BLACK))
+	fun findBridges() {
+		if (graph is UndirectedGraph) {
+			val bridges = bridgeFinder.runOn<V, K, W>(graph as UndirectedGraph<V, K, W>)
+			edgeColors = convertPairsToColorMap(bridges)
+
+			ColorUtils.applyColors(
+				edgeColors,
+				graphViewModel.edges.sortedBy { it.model.weight },
+				Color(SEMI_BLACK)
+			)
+		} else {
+			isIncompatibleAlgorithm = true
+		}
 	}
 
 	var exceptionMessage: String? by mutableStateOf(null)
 	var aboutDialog = mutableStateOf(false)
 
 	fun assignCommunities() {
-		try {
-			val louvainDetector by derivedStateOf { Louvain(graph) }
-			val grouping = louvainDetector.detectCommunities()
-			val colorMap = ColorUtils.assignColorsGrouped(grouping)
-			ColorUtils.applyColors(colorMap, graphViewModel.vertices)
-		} catch (e: IllegalArgumentException) {
-			exceptionMessage = e.message
+		if (graph is UndirectedGraph) {
+			try {
+
+				val louvainDetector by derivedStateOf { Louvain(graph) }
+				val grouping = louvainDetector.detectCommunities()
+				val colorMap = ColorUtils.assignColorsGrouped(grouping)
+				ColorUtils.applyColors(colorMap, graphViewModel.vertices)
+			} catch (e: IllegalArgumentException) {
+				exceptionMessage = e.message
+			}
+		} else {
+			isIncompatibleAlgorithm = true
 		}
 	}
 
@@ -138,8 +180,7 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 			GraphService.uri = uri
 			GraphService.user = user
 			GraphService.pass = password
-		}
-		catch(e: IllegalArgumentException) {
+		} catch (e: IllegalArgumentException) {
 			showNeo4jConnectionFailedDialog = true
 			exceptionMessage = e.message
 		}
