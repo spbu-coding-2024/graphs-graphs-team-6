@@ -192,15 +192,15 @@ class SSSPCalculatorTest {
     @RepeatedTest(25)
     fun `Undirected graph with one negative weighted edge will not run on Bellman`(){
         val maxVertices = 100
-        val randomGraph = RandomUndirectedIntGraph.get(maxVertices)
+        val randomGraph = GraphGenerator.generateUndirectedGraph()
         val numOfVertices = randomGraph.vertices.size
 
-        val firstVert = Random.nextInt(0, numOfVertices)
-        val secondVert = Random.nextInt(0, numOfVertices)
+        val firstVert = "v${Random.nextInt(0, numOfVertices)}"
+        val secondVert = "v${Random.nextInt(0, numOfVertices)}"
         randomGraph.addEdge(firstVert, secondVert, maxVertices, -1)
 
         try {
-            BellmanFordPathCalculator.bellmanFordAlgorithm<Int, Int, Int>(randomGraph, 0)
+            BellmanFordPathCalculator.bellmanFordAlgorithm<String, Int, Int>(randomGraph, "v0")
         } catch (e: IllegalStateException) {
             assertEquals(e.message, "There's exist a negative cycle in a graph")
         }

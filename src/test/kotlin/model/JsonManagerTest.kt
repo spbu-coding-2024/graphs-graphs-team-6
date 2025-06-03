@@ -5,6 +5,8 @@ import model.graph.UndirectedGraph
 import model.json.JsonManager
 import org.junit.jupiter.api.RepeatedTest
 import space.kscience.kmath.operations.IntRing
+import viewmodel.GraphViewModel
+import viewmodel.MainScreenViewModel
 import java.io.File
 import java.nio.file.Files
 import kotlin.io.path.createTempFile
@@ -107,10 +109,10 @@ class JsonManagerTest {
         val path = createTempFile("tempGraph")
         Files.exists(path)
 
-        val randomGraph = RandomUndirectedIntGraph.get()
+        val randomGraph = GraphGenerator.generateUndirectedGraph()
         JsonManager.saveJSON(path.pathString, randomGraph)
 
-        val newGraph = JsonManager.loadJSON<Int, Int, Int>(path.pathString)
+        val newGraph = JsonManager.loadJSON<String, Int, Int>(path.pathString)
         assertTrue(newGraph.vertices.size == randomGraph.vertices.size)
         assertTrue(newGraph.edges.size == randomGraph.edges.size)
         assertEquals(newGraph.vertices.map { it.value }, randomGraph.vertices.map {it.value})

@@ -25,7 +25,7 @@ class JsonIntegrationTest {
      */
     @RepeatedTest(10)
     fun `BellmanFord after loading graph from JSON`() {
-        val randomGraph = RandomUndirectedIntGraph.get()
+        val randomGraph = GraphGenerator.generateDirectedGraph()
         val firstVertex = randomGraph.vertices.random().value
         val secondVertex = randomGraph.vertices.random().value
 
@@ -33,9 +33,9 @@ class JsonIntegrationTest {
 
         val beforeJsonPath = GraphPath.construct(predecessors, secondVertex)
         val tempFile = createTempFile("graphTemp")
-        JsonManager.saveJSON<Int, Int, Int>(tempFile.pathString, randomGraph)
+        JsonManager.saveJSON<String, Int, Int>(tempFile.pathString, randomGraph)
 
-        val loadedGraph = JsonManager.loadJSON<Int, Int, Int>(tempFile.pathString)
+        val loadedGraph = JsonManager.loadJSON<String, Int, Int>(tempFile.pathString)
         val (newPredecessors, _)= BellmanFordPathCalculator.bellmanFordAlgorithm(loadedGraph, firstVertex)
         val afterJsonPath = GraphPath.construct(newPredecessors, secondVertex)
         assertTrue(afterJsonPath.size == beforeJsonPath.size)
