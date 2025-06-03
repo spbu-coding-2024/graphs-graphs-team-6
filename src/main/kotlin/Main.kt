@@ -10,6 +10,7 @@ import model.GraphGenerator
 import view.MainScreenView
 import viewmodel.MainScreenViewModel
 import model.graph.DirectedGraph
+import model.graph.UndirectedGraph
 import space.kscience.kmath.operations.IntRing
 import view.resetGraphViewModel
 
@@ -26,7 +27,7 @@ fun <V: Any, K: Any, W: Comparable<W>>app(viewModel: MainScreenViewModel<V, K, W
 fun main() = application {
 	val viewModel = MainScreenViewModel(graph)
 	Window(onCloseRequest = ::exitApplication,
-		title = "Graphs-Graphs") {
+		title = "Graph-Dracula") {
 		app(viewModel)
 		MenuBar {
 			Menu("File", mnemonic = 'F') {

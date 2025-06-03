@@ -231,7 +231,6 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 		try {
 			kamadaKawai.compute(graphViewModel)
 		} catch(e: IllegalArgumentException) {
-			exceptionMessage = e.message
 			isIncompatibleAlgorithm = true
 		}
 	}

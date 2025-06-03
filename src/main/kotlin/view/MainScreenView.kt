@@ -35,17 +35,8 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import view.graph.GraphView
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyShortcut
-import androidx.compose.ui.window.MenuBar
-import androidx.compose.ui.window.Window
 import kotlinx.coroutines.CoroutineScope
 import model.neo4j.GraphService
-import org.neo4j.ogm.exception.ConnectionException
-import space.kscience.kmath.operations.IntRing
-import java.awt.FileDialog
-import java.awt.Frame
-import model.Constants
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -53,11 +44,8 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
 	GraphView(viewModel.graphViewModel)
 	if (viewModel.graphViewModel.vertices.isNotEmpty()) actionMenuView(viewModel.actionWindowVisibility.value, viewModel)
 	if (viewModel.aboutDialog.value) aboutDialog(viewModel)
-	if (viewModel.saveDialogState.value) {
-		viewModel.saveJSON()
-		viewModel.saveDialogState.value = false
-	}
-	dbMenu(viewModel)
+	openMenu(viewModel)
+	saveMenu(viewModel)
 }
 
 @Composable
@@ -95,16 +83,43 @@ fun <V: Any, K: Any, W: Comparable<W>>aboutDialog(viewModel: MainScreenViewModel
 	)
 }
 
+@Composable
+fun <V : Any, K : Any, W : Comparable<W>> saveMenu(
+	viewModel: MainScreenViewModel<V, K, W>
+) {
+	if (viewModel.saveDialogState.value) {
+		AlertDialog(
+			modifier = Modifier.testTag("SaveDialog"),
+			onDismissRequest = { viewModel.saveDialogState.value = false },
+			title = { Text("Select source to save") },
+			text = {
+				Column {
+					Spacer(Modifier.height(8.dp))
+					Button(
+						modifier = Modifier.testTag("JsonOpenDialogButton"),
+						onClick = {
+							viewModel.saveDialogState.value = false
+							viewModel.saveJSON()
+						}) {
+						Text("JSON")
+					}
+				}
+			},
+			buttons = {}
+		)
+	}
+}
+
 
 @Composable
-fun <V : Any, K : Any, W : Comparable<W>> dbMenu(
+fun <V : Any, K : Any, W : Comparable<W>> openMenu(
 	viewModel: MainScreenViewModel<V, K, W>
 ) {
 	if (viewModel.showDbSelectDialog.value) {
 		AlertDialog(
 			modifier = Modifier.testTag("OpenDialog"),
 			onDismissRequest = { viewModel.showDbSelectDialog.value = false },
-			title = { Text("Select source") },
+			title = { Text("Select source to open") },
 			text = {
 				Column {
 					Spacer(Modifier.height(8.dp))
