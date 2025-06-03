@@ -21,7 +21,7 @@ object GraphGenerator {
 		for (i in 1..vertexCount) {
 			for (j in 1..vertexCount) {
 				if (i != j && random.nextDouble() < edgeProbability) {
-					val weight = random.nextInt(Constants.GENERATOR_WEIGHT_BOUND)
+					val weight = random.nextInt(Constants.GENERATOR_WEIGHT_MIN, Constants.GENERATOR_WEIGHT_BOUND)
 					graph.addEdge("v$i", "v$j", edgeId++, weight)
 				}
 			}
@@ -53,7 +53,7 @@ object GraphGenerator {
 	 * This value must be not lower than 1 and not greater than 1.
 	 */
 	fun generateDirectedGraph(
-		vertexCount: Int = 1000,
+		vertexCount: Int = 100,
 		edgeProbability: Double = 0.01
 	): DirectedGraph<String, Int, Int> {
 		require(edgeProbability in 0.0..1.0)

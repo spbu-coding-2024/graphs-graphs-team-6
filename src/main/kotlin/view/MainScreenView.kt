@@ -50,48 +50,14 @@ import model.Constants
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenViewModel<V, K, W>) {
-	var isOpen = remember { mutableStateOf(true) }
-	if (isOpen.value) {
-		Window(onCloseRequest = { isOpen.value = false },
-			title = "Graphs-Graphs") {
-			GraphView(viewModel.graphViewModel)
-			if (viewModel.graphViewModel.vertices.isNotEmpty()) actionMenuView(viewModel.actionWindowVisibility.value, viewModel)
-			if (viewModel.aboutDialog.value) aboutDialog(viewModel)
-			if (viewModel.saveDialogState.value) {
-				viewModel.saveJSON()
-				viewModel.saveDialogState.value = false
-			}
-			dbMenu(viewModel)
-			MenuBar {
-				Menu("File", mnemonic = 'F') {
-					Item("Open", shortcut = KeyShortcut(Key.O, ctrl = true)) { viewModel.showDbSelectDialog.value = true }
-					Item("Save", shortcut = KeyShortcut(Key.S, ctrl = true)) { viewModel.saveDialogState.value = true }
-				}
-				Menu("Graph", mnemonic = 'G') {
-					CheckboxItem(
-						"Apply algorithm",
-						checked = viewModel.actionWindowVisibility.value,
-						shortcut = KeyShortcut(Key.A, ctrl = true)
-					)
-					{
-						if (viewModel.actionWindowVisibility.value == true) resetGraphViewModel(viewModel.graphViewModel)
-						viewModel.actionWindowVisibility.value = !viewModel.actionWindowVisibility.value
-					}
-					CheckboxItem(
-						"Show weights",
-						checked = viewModel.showEdgesWeights,
-						shortcut = KeyShortcut(Key.W, ctrl = true)
-					)
-					{ viewModel.showEdgesWeights = !viewModel.showEdgesWeights }
-				}
-				Menu("Help", mnemonic = 'H') {
-					Item("About") {
-						viewModel.aboutDialog.value = true
-					}
-				}
-			}
-		}
+	GraphView(viewModel.graphViewModel)
+	if (viewModel.graphViewModel.vertices.isNotEmpty()) actionMenuView(viewModel.actionWindowVisibility.value, viewModel)
+	if (viewModel.aboutDialog.value) aboutDialog(viewModel)
+	if (viewModel.saveDialogState.value) {
+		viewModel.saveJSON()
+		viewModel.saveDialogState.value = false
 	}
+	dbMenu(viewModel)
 }
 
 @Composable
