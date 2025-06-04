@@ -192,11 +192,11 @@ class SSSPCalculatorTest {
     @RepeatedTest(25)
     fun `Undirected graph with one negative weighted edge will not run on Bellman`(){
         val maxVertices = 100
-        val randomGraph = GraphGenerator.generateUndirectedGraph()
+        val randomGraph = GraphGenerator.generateUndirectedGraph(maxVertices)
         val numOfVertices = randomGraph.vertices.size
 
-        val firstVert = "v${Random.nextInt(0, numOfVertices)}"
-        val secondVert = "v${Random.nextInt(0, numOfVertices)}"
+        val firstVert = "v${Random.nextInt(1, numOfVertices)}"
+        val secondVert = "v${Random.nextInt(1, numOfVertices)}"
         randomGraph.addEdge(firstVert, secondVert, maxVertices, -1)
 
         try {
