@@ -42,410 +42,394 @@ class MainScreenViewModelTest {
         }
     }
 
-//    @OptIn(ExperimentalTestApi::class)
-//    @Test
-//    fun `One vertex graph case`() = runComposeUiTest {
-//        testGraph.addVertex("A")
-//        val vm = MainScreenViewModel<String, Int, Int>(testGraph)
-//        vm.actionWindowVisibility.value = true
-//        setContent {
-//            MainScreenView(vm)
-//        }
-//        onNodeWithTag("Vertex: A").assertExists("One vertex does not exist")
-//        onNodeWithTag("Algorithms").assertExists()
-//    }
-////    @OptIn(ExperimentalTestApi::class)
-//    @Test
-//    fun `Open button is working correctly`() = runComposeUiTest {
-//        testGraph.addVertex("A")
-//        testGraph.addVertex("B")
-//        testGraph.addEdge("A", "B", 0, 5)
-//        val vm = MainScreenViewModel(testGraph)
-//        vm.showDbSelectDialog.value = true
-//        setContent {
-//            MainScreenView(vm)
-//        }
-//        onNodeWithTag("OpenDialog").assertExists()
-//        onNodeWithTag("JsonOpenDialogButton").assertExists()
-//        onNodeWithTag("Neo4jOpenDialogButton").assertExists()
-//    }
-//    @OptIn(ExperimentalTestApi::class)
-//    @Test
-//    fun `Action expandable`() = runComposeUiTest {
-//        testGraph.addVertex("A")
-//        testGraph.addVertex("B")
-//        testGraph.addEdge("A", "B", 0, 5)
-//        val vm = MainScreenViewModel(testGraph)
-//        vm.actionWindowVisibility.value = true
-//        setContent {
-//            MainScreenView(vm)
-//        }
-//
-//        onNodeWithTag("Algorithms").performClick()
-//        onNodeWithTag("Algorithms: KamadaKawai").performClick()
-//
-//        onNodeWithTag("Algorithms").performClick()
-//        onNodeWithTag("Algorithms: KamadaKawai").assertDoesNotExist()
-//        onNodeWithTag("Algorithms: Louvain").assertDoesNotExist()
-//    }
-//
-//    @OptIn(ExperimentalTestApi::class)
-//    @Test
-//    fun `Expanded menus force close`() = runComposeUiTest {
-//        testGraph.addVertex("A")
-//        testGraph.addVertex("B")
-//        testGraph.addEdge("A", "B", 0, 5)
-//
-//        setContent {
-//            MainScreenView(MainScreenViewModel(testGraph))
-//        }
-//        onNodeWithTag("GraphMenu").isDisplayed()
-//        onNodeWithTag("GraphMenu").performClick()
-//        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
-//        onNodeWithTag("Algorithms").performClick()
-//        onNodeWithTag("Algorithms: BellmanFord").assertExists()
-//        onNodeWithTag("Algorithms: BellmanFord").performClick()
-//
-//        onNodeWithTag("StartVertex").assertExists()
-//        onNodeWithTag("EndVertex").assertExists()
-//
-//        onNodeWithTag("GraphMenu").isDisplayed()
-//        onNodeWithTag("GraphMenu").performClick()
-//        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
-//        onNodeWithTag("Algorithms: BellmanFord").assertDoesNotExist()
-//        onNodeWithTag("StartVertex").assertDoesNotExist()
-//        onNodeWithTag("EndVertex").assertDoesNotExist()
-//    }
-//
-//    @OptIn(ExperimentalTestApi::class)
-//    @Test
-//    fun `Apply BellmanFord`() = runComposeUiTest {
-//        testGraph.addVertex("A")
-//        testGraph.addVertex("B")
-//        testGraph.addVertex("C")
-//        val firstEdge = testGraph.addEdge("A", "B", 0, 5)
-//        val secondEdge = testGraph.addEdge("B", "C", 1, 6)
-//        val thirdEdge = testGraph.addEdge("A", "C", 2, 1)
-//        val vm = MainScreenViewModel(testGraph)
-//        setContent {
-//            MainScreenView(vm)
-//        }
-//        onNodeWithTag("GraphMenu").isDisplayed()
-//        onNodeWithTag("GraphMenu").performClick()
-//        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
-//        onNodeWithTag("Algorithms").performClick()
-//        onNodeWithTag("Algorithms: BellmanFord").performClick()
-//        onNodeWithTag("ApplyAlgorithm").performClick()
-//
-//        assertEquals(Color(Constants.DEFAULT_EDGE_COLOR), vm.graphViewModel.getEdgeViewModel(firstEdge).color)
-//        assertEquals(Color(Constants.DEFAULT_EDGE_COLOR), vm.graphViewModel.getEdgeViewModel(secondEdge).color)
-//        assertEquals(Color(Constants.DEFAULT_PATH_COLOR), vm.graphViewModel.getEdgeViewModel(thirdEdge).color)
-//    }
-//
-//    @OptIn(ExperimentalTestApi::class)
-//    @Test
-//    fun `Apply BellmanFord with different start and end vertex`() = runComposeUiTest {
-//        testGraph.addVertex("A")
-//        testGraph.addVertex("B")
-//        testGraph.addVertex("C")
-//        testGraph.addVertex("D")
-//        testGraph.addVertex("E")
-//        val firstEdge = testGraph.addEdge("A", "B", 0, 5)
-//        val secondEdge = testGraph.addEdge("B", "C", 1, 6)
-//        val thirdEdge = testGraph.addEdge("C", "D", 2, 1)
-//        val fourthEdge = testGraph.addEdge("E", "B", 3, 1)
-//        val vm = MainScreenViewModel(testGraph)
-//        setContent {
-//            MainScreenView(vm)
-//        }
-//        onNodeWithTag("GraphMenu").isDisplayed()
-//        onNodeWithTag("GraphMenu").performClick()
-//        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
-//        onNodeWithTag("Algorithms").performClick()
-//        onNodeWithTag("Algorithms: BellmanFord").performClick()
-//
-//        onNodeWithTag("StartVertex").performClick()
-//        onNodeWithTag("StartVertex: E").performClick()
-//
-//        onNodeWithTag("EndVertex").performClick()
-//        onNodeWithTag("EndVertex: C").performClick()
-//
-//        onNodeWithTag("ApplyAlgorithm").performClick()
-//
-//        assertEquals(Color(Constants.DEFAULT_EDGE_COLOR), vm.graphViewModel.getEdgeViewModel(firstEdge).color)
-//        assertEquals(Color(Constants.DEFAULT_PATH_COLOR), vm.graphViewModel.getEdgeViewModel(secondEdge).color)
-//        assertEquals(Color(Constants.DEFAULT_EDGE_COLOR), vm.graphViewModel.getEdgeViewModel(thirdEdge).color)
-//        assertEquals(Color(Constants.DEFAULT_PATH_COLOR), vm.graphViewModel.getEdgeViewModel(fourthEdge).color)
-//    }
-//
-//    @OptIn(ExperimentalTestApi::class)
-//    @Test
-//    fun `Apply BellmanFord will color edges if no such path`() = runComposeUiTest {
-//        testGraph.addVertex("A")
-//        testGraph.addVertex("B")
-//        testGraph.addVertex("C")
-//        testGraph.addVertex("D")
-//        testGraph.addVertex("E")
-//        testGraph.addEdge("A", "B", 0, 5)
-//        testGraph.addEdge("B", "C", 1, 6)
-//        testGraph.addEdge("C", "D", 2, 1)
-//        testGraph.addEdge("E", "B", 3, 1)
-//
-//
-//        val vm = MainScreenViewModel(testGraph)
-//        setContent {
-//            MainScreenView(vm)
-//        }
-//        onNodeWithTag("GraphMenu").isDisplayed()
-//        onNodeWithTag("GraphMenu").performClick()
-//        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
-//        onNodeWithTag("Algorithms").performClick()
-//        onNodeWithTag("Algorithms: BellmanFord").performClick()
-//
-//        onNodeWithTag("StartVertex").performClick()
-//        onNodeWithTag("StartVertex: A").performClick()
-//
-//        onNodeWithTag("EndVertex").performClick()
-//        onNodeWithTag("EndVertex: E").performClick()
-//
-//        onNodeWithTag("ApplyAlgorithm").performClick()
-//
-//        vm.graphViewModel.edges.forEach { assertEquals(Color(Constants.DEFAULT_EDGE_COLOR), it.color) }
-//    }
-//
-//    @OptIn(ExperimentalTestApi::class)
-//    @Test
-//    fun `Apply Louvain`() = runComposeUiTest {
-//        val undirectedGraph = UndirectedGraph<Int, Int, Int>(IntRing).apply {
-//            for (i in 0..8) addVertex(i)
-//
-//            var index = 0
-//            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) { it * 2 }
-//
-//            addEdge(0, 1, index, weight[index]); index++
-//            addEdge(4, 1, index, weight[index]); index++
-//            addEdge(4, 0, index, weight[index]); index++
-//
-//            addEdge(4, 3, index, weight[index]); index++
-//            addEdge(3, 2, index, weight[index]); index++
-//            addEdge(2, 1, index, weight[index]); index++
-//
-//            addEdge(4, 5, index, weight[index]); index++
-//
-//            addEdge(5, 8, index, weight[index]); index++
-//            addEdge(8, 7, index, weight[index]); index++
-//            addEdge(6, 7, index, weight[index]); index++
-//            addEdge(6, 8, index, weight[index]); index++
-//            addEdge(6, 5, index, weight[index]); index++
-//        }
-//
-//        val vm = MainScreenViewModel(undirectedGraph)
-//        setContent {
-//            MainScreenView(vm)
-//        }
-//        onNodeWithTag("GraphMenu").isDisplayed()
-//        onNodeWithTag("GraphMenu").performClick()
-//        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
-//        onNodeWithTag("Algorithms").performClick()
-//        onNodeWithTag("Algorithms: Louvain").performClick()
-//        val list = undirectedGraph.vertices.toList()
-//
-//        val firstColor = vm.graphViewModel.getVertexViewModel(list[0]).color
-//        val secondColor = vm.graphViewModel.getVertexViewModel(list[1]).color
-//        val thirdColor = vm.graphViewModel.getVertexViewModel(list[5]).color
-//
-//        assertEquals(firstColor, vm.graphViewModel.getVertexViewModel(list[0]).color)
-//        assertEquals(firstColor, vm.graphViewModel.getVertexViewModel(list[4]).color)
-//        assertEquals(firstColor, vm.graphViewModel.getVertexViewModel(list[3]).color)
-//
-//        assertEquals(secondColor, vm.graphViewModel.getVertexViewModel(list[1]).color)
-//        assertEquals(secondColor, vm.graphViewModel.getVertexViewModel(list[2]).color)
-//
-//        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(list[5]).color)
-//        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(list[6]).color)
-//        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(list[7]).color)
-//        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(list[8]).color)
-//    }
-//
-//    @OptIn(ExperimentalTestApi::class)
-//    @Test
-//    fun `Apply Kruskal`() = runComposeUiTest {
-//        val undirectedGraph = UndirectedGraph<String, Int, Int>(IntRing).apply {
-//            addVertex("A")
-//            addVertex("B")
-//            addVertex("C")
-//            addVertex("D")
-//            addVertex("E")
-//            addVertex("F")
-//            addVertex("G")
-//            addVertex("H")
-//
-//            var index = 0
-//            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) { it * 2 }
-//
-//            addEdge("A", "B", index, weight[index]); index++
-//            addEdge("B", "C", index, weight[index]); index++
-//            addEdge("C", "A", index, weight[index]); index++
-//            addEdge("C", "C", index, weight[index]); index++
-//
-//            addEdge("C", "F", index, weight[index]); index++
-//
-//            addEdge("D", "E", index, weight[index]); index++
-//            addEdge("E", "F", index, weight[index]); index++
-//            addEdge("F", "D", index, weight[index]); index++
-//
-//
-//            addEdge("H", "D", index, weight[index]); index++
-//
-//            addEdge("G", "H", index, weight[index]); index++
-//        }
-//
-//        val vm = MainScreenViewModel(undirectedGraph)
-//        setContent {
-//            MainScreenView(vm)
-//        }
-//        onNodeWithTag("GraphMenu").isDisplayed()
-//        onNodeWithTag("GraphMenu").performClick()
-//        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
-//        onNodeWithTag("Algorithms").performClick()
-//        onNodeWithTag("Algorithms: Kruskal").performClick()
-//        onNodeWithTag("ApplyAlgorithm").performClick()
-//
-//        val list = undirectedGraph.edges.toList()
-//
-//        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[9]).color)
-//        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[8]).color)
-//        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[5]).color)
-//        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[4]).color)
-//        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[1]).color)
-//        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[0]).color)
-//    }
-//
-//    @OptIn(ExperimentalTestApi::class)
-//    @Test
-//    fun `Apply Tarjan`() = runComposeUiTest {
-//        val firstVertex: Vertex<String>
-//        val undirectedGraph = UndirectedGraph<String, Int, Int>(IntRing).apply {
-//            firstVertex = addVertex("A")
-//            addVertex("B")
-//            addVertex("C")
-//            addVertex("D")
-//            addVertex("E")
-//            addVertex("F")
-//            addVertex("G")
-//            addVertex("H")
-//
-//            var index = 0
-//            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) { it * 2 }
-//
-//            addEdge("A", "B", index, weight[index]); index++
-//            addEdge("B", "C", index, weight[index]); index++
-//            addEdge("C", "A", index, weight[index]); index++
-//            addEdge("C", "C", index, weight[index]); index++
-//
-//
-//            addEdge("D", "E", index, weight[index]); index++
-//            addEdge("E", "F", index, weight[index]); index++
-//            addEdge("F", "D", index, weight[index]); index++
-//
-//            addEdge("H", "D", index, weight[index]); index++
-//
-//            addEdge("G", "H", index, weight[index]); index++
-//        }
-//
-//        val vm = MainScreenViewModel(undirectedGraph)
-//        setContent {
-//            MainScreenView(vm)
-//        }
-//
-//        onNodeWithTag("GraphMenu").isDisplayed()
-//        onNodeWithTag("GraphMenu").performClick()
-//        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
-//        onNodeWithTag("Algorithms").performClick()
-//        onNodeWithTag("Algorithms: Tarjan").performClick()
-//        onNodeWithTag("ApplyAlgorithm").performClick()
-//
-//        val colorOneComponent = vm.graphViewModel.getVertexViewModel(firstVertex).color
-//
-//        val list = undirectedGraph.vertices.toList()
-//
-//        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[0]).color)
-//        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[1]).color)
-//        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[2]).color)
-//
-//        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[3]).color)
-//        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[4]).color)
-//        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[5]).color)
-//        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[6]).color)
-//        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[7]).color)
-//    }
-//    @OptIn(ExperimentalTestApi::class)
-//    @Test
-//    fun `Apply CycleDetection`() = runComposeUiTest {
-//        val firstVertex: Vertex<String>
-//        val undirectedGraph = DirectedGraph<String, Int, Int>(IntRing).apply {
-//            firstVertex = addVertex("A")
-//            addVertex("B")
-//            addVertex("C")
-//            addVertex("D")
-//            addVertex("E")
-//            addVertex("F")
-//            addVertex("G")
-//            addVertex("H")
-//
-//            var index = 0
-//            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) { it * 2 }
-//
-//            addEdge("A", "B", index, weight[index]); index++
-//            addEdge("B", "C", index, weight[index]); index++
-//            addEdge("C", "A", index, weight[index]); index++
-//            addEdge("C", "C", index, weight[index]); index++
-//
-//
-//            addEdge("D", "E", index, weight[index]); index++
-//            addEdge("E", "F", index, weight[index]); index++
-//            addEdge("F", "D", index, weight[index]); index++
-//
-//            addEdge("H", "D", index, weight[index]); index++
-//
-//            addEdge("G", "H", index, weight[index]); index++
-//        }
-//
-//        val vm = MainScreenViewModel(undirectedGraph)
-//        setContent {
-//            MainScreenView(vm)
-//        }
-//
-//        onNodeWithTag("GraphMenu").isDisplayed()
-//        onNodeWithTag("GraphMenu").performClick()
-//        onNodeWithTag("ApplyAlgorithmMenuButton").performClick()
-//        onNodeWithTag("Algorithms").performClick()
-//        onNodeWithTag("Algorithms: CycleDetection").performClick()
-//        onNodeWithTag("ApplyAlgorithm").performClick()
-//
-//        val list = undirectedGraph.edges.toList()
-//        val color = vm.graphViewModel.getEdgeViewModel(list[0]).color
-//
-//        assertEquals(color, vm.graphViewModel.getEdgeViewModel(list[0]).color)
-//        assertEquals(color, vm.graphViewModel.getEdgeViewModel(list[1]).color)
-//        assertEquals(color, vm.graphViewModel.getEdgeViewModel(list[2]).color)
-//
-//    }
-//
-//    @OptIn(ExperimentalTestApi::class)
-//    @Test
-//    fun `Alert dialog works correctly`() = runComposeUiTest {
-//        testGraph.addVertex("A")
-//        testGraph.addVertex("B")
-//        testGraph.addEdge("A", "B", 1, 1)
-//        var vm = MainScreenViewModel(testGraph)
-//        vm.exceptionMessage = "message"
-//        setContent {
-//            MainScreenView(vm)
-//        }
-//        onNodeWithTag("AlertDialog").assertExists()
-//        onNodeWithTag("AlertDialogButton").performClick()
-//    }
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `One vertex graph case`() = runComposeUiTest {
+        testGraph.addVertex("A")
+        val vm = MainScreenViewModel<String, Int, Int>(testGraph)
+        vm.actionWindowVisibility.value = true
+        setContent {
+            MainScreenView(vm)
+        }
+        onNodeWithTag("Vertex: A").assertExists("One vertex does not exist")
+        onNodeWithTag("Algorithms").assertExists()
+    }
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `Open button is working correctly`() = runComposeUiTest {
+        testGraph.addVertex("A")
+        testGraph.addVertex("B")
+        testGraph.addEdge("A", "B", 0, 5)
+        val vm = MainScreenViewModel(testGraph)
+        vm.showDbSelectDialog.value = true
+        setContent {
+            MainScreenView(vm)
+        }
+        onNodeWithTag("OpenDialog").assertExists()
+        onNodeWithTag("JsonOpenDialogButton").assertExists()
+        onNodeWithTag("Neo4jOpenDialogButton").assertExists()
+    }
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `Algorithms menu appear and disappears`() = runComposeUiTest {
+        testGraph.addVertex("A")
+        testGraph.addVertex("B")
+        testGraph.addEdge("A", "B", 0, 5)
+        val vm = MainScreenViewModel(testGraph)
+        vm.actionWindowVisibility.value = true
+        setContent {
+            MainScreenView(vm)
+        }
+
+        onNodeWithTag("Algorithms").performClick()
+        onNodeWithTag("Algorithms: KamadaKawai").performClick()
+
+        vm.actionWindowVisibility.value = false
+        onNodeWithTag("Algorithms: KamadaKawai").assertDoesNotExist()
+        onNodeWithTag("Algorithms: Louvain").assertDoesNotExist()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `Expanded menus force close`() = runComposeUiTest {
+        testGraph.addVertex("A")
+        testGraph.addVertex("B")
+        testGraph.addEdge("A", "B", 0, 5)
+        val vm = MainScreenViewModel(testGraph)
+        vm.actionWindowVisibility.value = true
+        setContent {
+            MainScreenView(vm)
+        }
+
+        onNodeWithTag("Algorithms").performClick()
+        onNodeWithTag("Algorithms: BellmanFord").assertExists()
+        onNodeWithTag("Algorithms: BellmanFord").performClick()
+
+        onNodeWithTag("StartVertex").assertExists()
+        onNodeWithTag("EndVertex").assertExists()
+
+        vm.actionWindowVisibility.value = false
+        onNodeWithTag("Algorithms: BellmanFord").assertDoesNotExist()
+        onNodeWithTag("StartVertex").assertDoesNotExist()
+        onNodeWithTag("EndVertex").assertDoesNotExist()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `Apply BellmanFord`() = runComposeUiTest {
+        testGraph.addVertex("A")
+        testGraph.addVertex("B")
+        testGraph.addVertex("C")
+        val firstEdge = testGraph.addEdge("A", "B", 0, 5)
+        val secondEdge = testGraph.addEdge("B", "C", 1, 6)
+        val thirdEdge = testGraph.addEdge("A", "C", 2, 1)
+        val vm = MainScreenViewModel(testGraph)
+        vm.actionWindowVisibility.value = true
+        setContent {
+            MainScreenView(vm)
+        }
+        onNodeWithTag("Algorithms").performClick()
+        onNodeWithTag("Algorithms: BellmanFord").performClick()
+        onNodeWithTag("ApplyAlgorithm").performClick()
+
+        assertEquals(Color(Constants.DEFAULT_EDGE_COLOR), vm.graphViewModel.getEdgeViewModel(firstEdge).color)
+        assertEquals(Color(Constants.DEFAULT_EDGE_COLOR), vm.graphViewModel.getEdgeViewModel(secondEdge).color)
+        assertEquals(Color(Constants.DEFAULT_PATH_COLOR), vm.graphViewModel.getEdgeViewModel(thirdEdge).color)
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `Apply BellmanFord with different start and end vertex`() = runComposeUiTest {
+        testGraph.addVertex("A")
+        testGraph.addVertex("B")
+        testGraph.addVertex("C")
+        testGraph.addVertex("D")
+        testGraph.addVertex("E")
+        val firstEdge = testGraph.addEdge("A", "B", 0, 5)
+        val secondEdge = testGraph.addEdge("B", "C", 1, 6)
+        val thirdEdge = testGraph.addEdge("C", "D", 2, 1)
+        val fourthEdge = testGraph.addEdge("E", "B", 3, 1)
+        val vm = MainScreenViewModel(testGraph)
+        vm.actionWindowVisibility.value = true
+        setContent {
+            MainScreenView(vm)
+        }
+        onNodeWithTag("Algorithms").performClick()
+        onNodeWithTag("Algorithms: BellmanFord").performClick()
+
+        onNodeWithTag("StartVertex").performClick()
+        onNodeWithTag("StartVertex: E").performClick()
+
+        onNodeWithTag("EndVertex").performClick()
+        onNodeWithTag("EndVertex: C").performClick()
+
+        onNodeWithTag("ApplyAlgorithm").performClick()
+
+        assertEquals(Color(Constants.DEFAULT_EDGE_COLOR), vm.graphViewModel.getEdgeViewModel(firstEdge).color)
+        assertEquals(Color(Constants.DEFAULT_PATH_COLOR), vm.graphViewModel.getEdgeViewModel(secondEdge).color)
+        assertEquals(Color(Constants.DEFAULT_EDGE_COLOR), vm.graphViewModel.getEdgeViewModel(thirdEdge).color)
+        assertEquals(Color(Constants.DEFAULT_PATH_COLOR), vm.graphViewModel.getEdgeViewModel(fourthEdge).color)
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `Apply BellmanFord will color edges if no such path`() = runComposeUiTest {
+        testGraph.addVertex("A")
+        testGraph.addVertex("B")
+        testGraph.addVertex("C")
+        testGraph.addVertex("D")
+        testGraph.addVertex("E")
+        testGraph.addEdge("A", "B", 0, 5)
+        testGraph.addEdge("B", "C", 1, 6)
+        testGraph.addEdge("C", "D", 2, 1)
+        testGraph.addEdge("E", "B", 3, 1)
+
+
+        val vm = MainScreenViewModel(testGraph)
+        vm.actionWindowVisibility.value = true
+        setContent {
+            MainScreenView(vm)
+        }
+        onNodeWithTag("Algorithms").performClick()
+        onNodeWithTag("Algorithms: BellmanFord").performClick()
+
+        onNodeWithTag("StartVertex").performClick()
+        onNodeWithTag("StartVertex: A").performClick()
+
+        onNodeWithTag("EndVertex").performClick()
+        onNodeWithTag("EndVertex: E").performClick()
+
+        onNodeWithTag("ApplyAlgorithm").performClick()
+
+        vm.graphViewModel.edges.forEach { assertEquals(Color(Constants.DEFAULT_EDGE_COLOR), it.color) }
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `Apply Louvain`() = runComposeUiTest {
+        val undirectedGraph = UndirectedGraph<Int, Int, Int>(IntRing).apply {
+            for (i in 0..8) addVertex(i)
+
+            var index = 0
+            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) { it * 2 }
+
+            addEdge(0, 1, index, weight[index]); index++
+            addEdge(4, 1, index, weight[index]); index++
+            addEdge(4, 0, index, weight[index]); index++
+
+            addEdge(4, 3, index, weight[index]); index++
+            addEdge(3, 2, index, weight[index]); index++
+            addEdge(2, 1, index, weight[index]); index++
+
+            addEdge(4, 5, index, weight[index]); index++
+
+            addEdge(5, 8, index, weight[index]); index++
+            addEdge(8, 7, index, weight[index]); index++
+            addEdge(6, 7, index, weight[index]); index++
+            addEdge(6, 8, index, weight[index]); index++
+            addEdge(6, 5, index, weight[index]); index++
+        }
+
+        val vm = MainScreenViewModel(undirectedGraph)
+        vm.actionWindowVisibility.value = true
+        setContent {
+            MainScreenView(vm)
+        }
+
+        onNodeWithTag("Algorithms").performClick()
+        onNodeWithTag("Algorithms: Louvain").performClick()
+        val list = undirectedGraph.vertices.toList()
+
+        val firstColor = vm.graphViewModel.getVertexViewModel(list[0]).color
+        val secondColor = vm.graphViewModel.getVertexViewModel(list[1]).color
+        val thirdColor = vm.graphViewModel.getVertexViewModel(list[5]).color
+
+        assertEquals(firstColor, vm.graphViewModel.getVertexViewModel(list[0]).color)
+        assertEquals(firstColor, vm.graphViewModel.getVertexViewModel(list[4]).color)
+        assertEquals(firstColor, vm.graphViewModel.getVertexViewModel(list[3]).color)
+
+        assertEquals(secondColor, vm.graphViewModel.getVertexViewModel(list[1]).color)
+        assertEquals(secondColor, vm.graphViewModel.getVertexViewModel(list[2]).color)
+
+        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(list[5]).color)
+        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(list[6]).color)
+        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(list[7]).color)
+        assertEquals(thirdColor, vm.graphViewModel.getVertexViewModel(list[8]).color)
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `Apply Kruskal`() = runComposeUiTest {
+        val undirectedGraph = UndirectedGraph<String, Int, Int>(IntRing).apply {
+            addVertex("A")
+            addVertex("B")
+            addVertex("C")
+            addVertex("D")
+            addVertex("E")
+            addVertex("F")
+            addVertex("G")
+            addVertex("H")
+
+            var index = 0
+            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) { it * 2 }
+
+            addEdge("A", "B", index, weight[index]); index++
+            addEdge("B", "C", index, weight[index]); index++
+            addEdge("C", "A", index, weight[index]); index++
+            addEdge("C", "C", index, weight[index]); index++
+
+            addEdge("C", "F", index, weight[index]); index++
+
+            addEdge("D", "E", index, weight[index]); index++
+            addEdge("E", "F", index, weight[index]); index++
+            addEdge("F", "D", index, weight[index]); index++
+
+
+            addEdge("H", "D", index, weight[index]); index++
+
+            addEdge("G", "H", index, weight[index]); index++
+        }
+
+        val vm = MainScreenViewModel(undirectedGraph)
+        vm.actionWindowVisibility.value = true
+        setContent {
+            MainScreenView(vm)
+        }
+        onNodeWithTag("Algorithms").performClick()
+        onNodeWithTag("Algorithms: Kruskal").performClick()
+        onNodeWithTag("ApplyAlgorithm").performClick()
+
+        val list = undirectedGraph.edges.toList()
+
+        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[9]).color)
+        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[8]).color)
+        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[5]).color)
+        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[4]).color)
+        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[1]).color)
+        assertNotEquals(Color(Constants.SEMI_BLACK), vm.graphViewModel.getEdgeViewModel(list[0]).color)
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `Apply Tarjan`() = runComposeUiTest {
+        val firstVertex: Vertex<String>
+        val undirectedGraph = DirectedGraph<String, Int, Int>(IntRing).apply {
+            firstVertex = addVertex("A")
+            addVertex("B")
+            addVertex("C")
+            addVertex("D")
+            addVertex("E")
+            addVertex("F")
+            addVertex("G")
+            addVertex("H")
+
+            var index = 0
+            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) { it * 2 }
+
+            addEdge("A", "B", index, weight[index]); index++
+            addEdge("B", "C", index, weight[index]); index++
+            addEdge("C", "A", index, weight[index]); index++
+            addEdge("C", "C", index, weight[index]); index++
+
+
+            addEdge("D", "E", index, weight[index]); index++
+            addEdge("E", "F", index, weight[index]); index++
+            addEdge("F", "D", index, weight[index]); index++
+
+            addEdge("H", "D", index, weight[index]); index++
+
+            addEdge("G", "H", index, weight[index]); index++
+        }
+
+        val vm = MainScreenViewModel(undirectedGraph)
+        vm.actionWindowVisibility.value = true
+        setContent {
+            MainScreenView(vm)
+        }
+
+        onNodeWithTag("Algorithms").performClick()
+        onNodeWithTag("Algorithms: Tarjan").performClick()
+        onNodeWithTag("ApplyAlgorithm").performClick()
+
+        val colorOneComponent = vm.graphViewModel.getVertexViewModel(firstVertex).color
+
+        val list = undirectedGraph.vertices.toList()
+
+        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[0]).color)
+        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[1]).color)
+        assertEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[2]).color)
+
+        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[3]).color)
+        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[4]).color)
+        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[5]).color)
+        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[6]).color)
+        assertNotEquals(colorOneComponent, vm.graphViewModel.getVertexViewModel(list[7]).color)
+    }
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `Apply CycleDetection`() = runComposeUiTest {
+        val firstVertex: Vertex<String>
+        val undirectedGraph = DirectedGraph<String, Int, Int>(IntRing).apply {
+            firstVertex = addVertex("A")
+            addVertex("B")
+            addVertex("C")
+            addVertex("D")
+            addVertex("E")
+            addVertex("F")
+            addVertex("G")
+            addVertex("H")
+
+            var index = 0
+            val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) { it * 2 }
+
+            addEdge("A", "B", index, weight[index]); index++
+            addEdge("B", "C", index, weight[index]); index++
+            addEdge("C", "A", index, weight[index]); index++
+            addEdge("C", "C", index, weight[index]); index++
+
+
+            addEdge("D", "E", index, weight[index]); index++
+            addEdge("E", "F", index, weight[index]); index++
+            addEdge("F", "D", index, weight[index]); index++
+
+            addEdge("H", "D", index, weight[index]); index++
+
+            addEdge("G", "H", index, weight[index]); index++
+        }
+
+        val vm = MainScreenViewModel(undirectedGraph)
+        vm.actionWindowVisibility.value = true
+        setContent {
+            MainScreenView(vm)
+        }
+
+        onNodeWithTag("Algorithms").performClick()
+        onNodeWithTag("Algorithms: CycleDetection").performClick()
+        onNodeWithTag("ApplyAlgorithm").performClick()
+
+        val list = undirectedGraph.edges.toList()
+        val color = vm.graphViewModel.getEdgeViewModel(list[0]).color
+
+        assertEquals(color, vm.graphViewModel.getEdgeViewModel(list[0]).color)
+        assertEquals(color, vm.graphViewModel.getEdgeViewModel(list[1]).color)
+        assertEquals(color, vm.graphViewModel.getEdgeViewModel(list[2]).color)
+
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `Alert dialog works correctly`() = runComposeUiTest {
+        testGraph.addVertex("A")
+        testGraph.addVertex("B")
+        testGraph.addEdge("A", "B", 1, 1)
+        var vm = MainScreenViewModel(testGraph)
+        vm.exceptionMessage = "message"
+        setContent {
+            MainScreenView(vm)
+        }
+        onNodeWithTag("AlertDialog").assertExists()
+        onNodeWithTag("AlertDialogButton").performClick()
+    }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
@@ -464,23 +448,22 @@ class MainScreenViewModelTest {
         onNodeWithTag("TestButton").assertTextEquals("A pressed button")
     }
 
-//    @OptIn(ExperimentalTestApi::class)
-//    @Test
-//    fun `Test weights`() = runComposeUiTest {
-//        testGraph.addVertex("A")
-//        testGraph.addVertex("B")
-//        testGraph.addEdge("A", "B", 0, 5)
-//
-//
-//        var vm = MainScreenViewModel(testGraph)
-//        vm.showDbSelectDialog.value = true
-//        setContent {
-//            MainScreenView(vm)
-//        }
-//
-//        onNodeWithTag("EdgeLabel: 0").assertExists()
-//        onNodeWithTag("EdgeLabel: 0").assertTextEquals("5")
-//    }
-//
-//
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `Test weights`() = runComposeUiTest {
+        testGraph.addVertex("A")
+        testGraph.addVertex("B")
+        testGraph.addEdge("A", "B", 0, 5)
+
+        var vm = MainScreenViewModel(testGraph)
+        vm.showEdgesWeights = true
+        setContent {
+            MainScreenView(vm)
+        }
+
+        onNodeWithTag("EdgeLabel: 0").assertExists()
+        onNodeWithTag("EdgeLabel: 0").assertTextEquals("5")
+    }
+
+
 }
