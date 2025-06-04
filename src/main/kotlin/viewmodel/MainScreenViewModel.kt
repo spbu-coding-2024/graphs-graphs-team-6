@@ -28,7 +28,12 @@ import java.awt.Frame
  * @param graph A graph to visualize
  */
 class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph<V, K, W>) {
-	var graph by mutableStateOf(graphParam)
+	private var _graph = mutableStateOf(graphParam)
+	var graph: Graph<V, K, W>
+		get() = _graph.value
+		set(value) {
+			_graph.value = value
+		}
 
 	var actionWindowVisibility = mutableStateOf(false)
 	var showDbSelectDialog = mutableStateOf(false)
@@ -43,7 +48,7 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 
 	var isIncompatibleAlgorithm by mutableStateOf(false)
 
-	val graphViewModel = GraphViewModel(graph, _showEdgesWeights)
+	val graphViewModel = GraphViewModel(_graph, _showEdgesWeights)
 
 	// Current vertex colorscheme
 	var vertexColors by mutableStateOf(mapOf<Vertex<V>, Color>())
