@@ -113,7 +113,7 @@ class KamadaKawai<V, K, W: Comparable<W>> (viewModel: GraphViewModel<V, K, W>) {
         }
         var mVertex = calculateMaxDelta(viewModel, strength, length)
         while (iterateAlgorithm && deltaMap[mVertex.model.value] != null && deltaMap[mVertex.model.value]!! > EPSILON) {
-            while (iterateAlgorithm && deltaMap[mVertex.model.value] != null && deltaMap[mVertex.model.value]!! > EPSILON) {
+            while (deltaMap[mVertex.model.value] != null && deltaMap[mVertex.model.value]!! > EPSILON) {
                 var derivativeXX = 0F
                 var derivativeYY = 0F
                 var derivativeXY = 0F
