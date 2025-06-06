@@ -24,10 +24,13 @@ import model.graph.Vertex
  * @param graph a state of a graph
  * @param showEdgesWeights a show state of weight labels
  */
+
 class GraphViewModel<V, K, W : Comparable<W>>(
-	val graph: Graph<V, K, W>,
+	private val graphState: State<Graph<V, K, W>>,
 	showEdgesWeights: State<Boolean>
 ) {
+	val graph: Graph<V, K, W>
+		get() = graphState.value
 
 	private val _verticesState by derivedStateOf {
 		graph.vertices.associateWith {

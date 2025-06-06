@@ -20,6 +20,8 @@ object Constants {
 	const val BANNER_HEIGHT = 50
 
 	const val GENERATOR_WEIGHT_BOUND = 100
+    const val GENERATOR_WEIGHT_MIN = 1
+
 
 	//Colors
 	const val PALE_YELLOW = 0xFFFAF3C0
