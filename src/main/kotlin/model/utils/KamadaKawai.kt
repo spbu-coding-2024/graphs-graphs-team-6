@@ -98,6 +98,7 @@ class KamadaKawai<V, K, W: Comparable<W>> (viewModel: GraphViewModel<V, K, W>) {
         val strength: MutableMap<Pair<V, V>, Float> = mutableMapOf()
         val length: MutableMap<Pair<V, V>, Float> = mutableMapOf()
         val lengthConstant = DEFAULT_KAMADAKAWAI_LENGTH / maxDist
+        var iterateAlgorithm = true
         for (firstVertex in viewModel.graph.vertices) {
             for (secondVertex in viewModel.graph.vertices) {
                 val currentDist = dist[firstVertex.value to secondVertex.value]
@@ -111,8 +112,8 @@ class KamadaKawai<V, K, W: Comparable<W>> (viewModel: GraphViewModel<V, K, W>) {
             }
         }
         var mVertex = calculateMaxDelta(viewModel, strength, length)
-        while (deltaMap[mVertex.model.value] != null && deltaMap[mVertex.model.value]!! > EPSILON) {
-            while (deltaMap[mVertex.model.value] != null && deltaMap[mVertex.model.value]!! > EPSILON) {
+        while (iterateAlgorithm && deltaMap[mVertex.model.value] != null && deltaMap[mVertex.model.value]!! > EPSILON) {
+            while (iterateAlgorithm && deltaMap[mVertex.model.value] != null && deltaMap[mVertex.model.value]!! > EPSILON) {
                 var derivativeXX = 0F
                 var derivativeYY = 0F
                 var derivativeXY = 0F
@@ -133,14 +134,17 @@ class KamadaKawai<V, K, W: Comparable<W>> (viewModel: GraphViewModel<V, K, W>) {
                     derivativeX += strength * (mX - currentX) * (1 - length / norm)
                     derivativeY += strength * (mY - currentY) * (1 - length / norm)
 
-                    derivativeXX += strength * (1 - (length * (mY - currentY).pow(2)) /(norm * norm * norm))
-                    derivativeXY += strength * ((length * (mX - currentX) * (mY - currentY) )/ (norm * norm * norm))
-                    derivativeYY += strength * (1 - (length * (mX - currentX).pow(2))/ (norm * norm * norm))
+                    derivativeXX += strength * (1 - (length * (mY - currentY).pow(2)) /(norm.pow(3)))
+                    derivativeXY += strength * ((length * (mX - currentX) * (mY - currentY) )/ (norm.pow(3)))
+                    derivativeYY += strength * (1 - (length * (mX - currentX).pow(2))/ (norm.pow(3)))
                 }
                 val determinant = derivativeXX * derivativeYY - derivativeXY * derivativeXY
                 val deltaX = -(derivativeX * derivativeYY - derivativeY * derivativeXY) / determinant
                 val deltaY = -(derivativeXX * derivativeY - derivativeX * derivativeXY) / determinant
-                require(deltaX.isFinite() && deltaY.isFinite())
+                if (!(deltaX.isFinite() && deltaY.isFinite())) {
+                    iterateAlgorithm = false
+                    break
+                }
                 mVertex.x += deltaX.dp
                 mVertex.y += deltaY.dp
 
