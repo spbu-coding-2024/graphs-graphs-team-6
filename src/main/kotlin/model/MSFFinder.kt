@@ -1,4 +1,4 @@
-package model.utils
+package model
 
 import androidx.compose.ui.graphics.Color
 import model.graph.Edge
