@@ -19,6 +19,7 @@ import model.algos.Louvain
 import java.awt.FileDialog
 import java.awt.Frame
 
+enum class Neo4jAction { NONE, LOAD, SAVE }
 
 /**
  * General viewmodel for a program
@@ -179,6 +180,7 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 	var showNeo4jConnectionFailedDialog by mutableStateOf(false)
 	var showNeo4jOpsDialog by mutableStateOf(false)
 	var showNeo4jDialog by mutableStateOf(false)
+	var pendingNeo4jAction by mutableStateOf(Neo4jAction.NONE)
 
 	fun connectNeo4j(uri: String, user: String, password: String) {
 		try {
