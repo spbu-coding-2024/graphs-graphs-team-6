@@ -1,4 +1,4 @@
-package model.utils
+package model
 
 import androidx.compose.ui.graphics.Color
 import model.graph.Graph
@@ -6,6 +6,9 @@ import model.graph.Vertex
 import viewmodel.ColorUtils
 import java.util.Stack
 
+/**
+ * Algorithm fo searching Strongly Connected Components
+ */
 class SCCCalculator<V, K, W: Comparable<W>> {
 	fun calculateComponents(graph: Graph<V, K, W>): Map<Vertex<V>, Color> {
 		val sccs = tarjanSCC(graph)
