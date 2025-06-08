@@ -1,4 +1,4 @@
-package model
+package model.algos
 
 import androidx.compose.ui.graphics.Color
 import model.graph.Graph

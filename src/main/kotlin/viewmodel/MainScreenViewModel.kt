@@ -6,16 +6,16 @@ import model.Constants.BRIGHT_RED
 import model.Constants.SEMI_BLACK
 import model.graph.*
 import model.json.JsonManager
-import model.SCCCalculator
+import model.algos.SCCCalculator
 import model.neo4j.GraphService
-import model.utils.BellmanFordPathCalculator
-import model.utils.BridgeFinder
-import model.utils.CycleDetection
-import model.utils.DijkstraPathCalculator
-import model.utils.GraphPath
-import model.utils.KamadaKawai
-import model.MSFFinder
-import model.utils.Louvain
+import model.algos.BellmanFordPathCalculator
+import model.algos.BridgeFinder
+import model.algos.CycleDetection
+import model.algos.DijkstraPathCalculator
+import model.algos.GraphPath
+import model.algos.KamadaKawai
+import model.algos.MSFFinder
+import model.algos.Louvain
 import java.awt.FileDialog
 import java.awt.Frame
 

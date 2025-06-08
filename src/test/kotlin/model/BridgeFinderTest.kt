@@ -1,7 +1,7 @@
 package model
 
 import model.graph.UndirectedGraph
-import model.utils.BridgeFinder
+import model.algos.BridgeFinder
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach

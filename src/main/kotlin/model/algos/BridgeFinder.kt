@@ -1,4 +1,4 @@
-package model.utils
+package model.algos
 
 import model.graph.Vertex
 import model.graph.UndirectedGraph

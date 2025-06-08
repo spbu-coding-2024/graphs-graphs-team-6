@@ -1,4 +1,4 @@
-package model.utils
+package model.algos
 
 import androidx.compose.ui.unit.dp
 import model.Constants.DEFAULT_KAMADAKAWAI_LENGTH

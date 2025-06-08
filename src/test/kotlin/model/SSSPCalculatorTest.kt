@@ -2,8 +2,8 @@ package model
 
 import model.graph.DirectedGraph
 import model.graph.UndirectedGraph
-import model.utils.BellmanFordPathCalculator
-import model.utils.GraphPath
+import model.algos.BellmanFordPathCalculator
+import model.algos.GraphPath
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test

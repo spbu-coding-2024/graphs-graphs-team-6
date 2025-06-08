@@ -1,13 +1,12 @@
 package model
 
 import model.graph.DirectedGraph
-import model.graph.DirectedGraph.DirectedEdge
 import model.graph.DirectedGraph.DirectedVertex
 import model.graph.Edge
 import model.graph.UndirectedGraph
 import model.graph.UndirectedGraph.UndirectedVertex
 import model.graph.Vertex
-import model.utils.CycleDetection
+import model.algos.CycleDetection
 import space.kscience.kmath.operations.IntRing
 import kotlin.test.Test
 import kotlin.test.assertEquals

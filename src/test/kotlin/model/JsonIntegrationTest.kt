@@ -1,12 +1,8 @@
 package model
 
-import model.graph.Edge
-import model.graph.Vertex
 import model.json.JsonManager
-import model.utils.BellmanFordPathCalculator
-import model.utils.CycleDetection
-import model.utils.GraphPath
-import org.junit.jupiter.api.Assertions
+import model.algos.BellmanFordPathCalculator
+import model.algos.GraphPath
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.RepeatedTest
 import kotlin.io.path.createTempFile
