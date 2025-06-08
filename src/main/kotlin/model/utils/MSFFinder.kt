@@ -7,6 +7,9 @@ import model.graph.Vertex
 import viewmodel.ColorUtils
 import kotlin.random.Random
 
+/**
+ * Algorithm for finding Minimal Spanning Forest
+ */
 class MSFFinder<V, K, W : Comparable<W>>(val graph: Graph<V, K, W>) {
 
 	fun findMSF(): Map<Edge<V, K, W>, Color> {
