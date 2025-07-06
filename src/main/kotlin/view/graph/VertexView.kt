@@ -21,6 +21,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import viewmodel.VertexViewModel
 
+/**
+ * Views a vertex
+ * The passed modifier should handle viewport transformations (drag/zoom).
+ *
+ * @param vertexViewModel Vertex viewmodel to view
+ * @param modifier Canvas vertex modifier, crucial for zooming and dragging
+ */
 @Composable
 fun VertexView(
 	vertexViewModel: VertexViewModel<*>, modifier: Modifier = Modifier

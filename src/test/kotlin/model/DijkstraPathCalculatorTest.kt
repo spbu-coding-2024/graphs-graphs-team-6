@@ -3,7 +3,7 @@ package model
 import model.graph.DirectedGraph
 import model.graph.Graph
 import model.graph.UndirectedGraph
-import model.utils.DijkstraPathCalculator
+import model.algos.DijkstraPathCalculator
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import space.kscience.kmath.operations.IntRing

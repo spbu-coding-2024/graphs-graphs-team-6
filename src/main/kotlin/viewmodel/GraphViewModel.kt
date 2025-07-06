@@ -18,11 +18,19 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import model.graph.Vertex
 
+/**
+ * ViewModel for a graph
+ *
+ * @param graph a state of a graph
+ * @param showEdgesWeights a show state of weight labels
+ */
 
 class GraphViewModel<V, K, W : Comparable<W>>(
-	private val graph: Graph<V, K, W>,
+	private val graphState: State<Graph<V, K, W>>,
 	showEdgesWeights: State<Boolean>
 ) {
+	val graph: Graph<V, K, W>
+		get() = graphState.value
 
 	private val _verticesState by derivedStateOf {
 		graph.vertices.associateWith {
@@ -54,6 +62,8 @@ class GraphViewModel<V, K, W : Comparable<W>>(
 
 	/**
 	 * Given [edge], return its corresponding view model
+	 * @param edge Edge for which a function will find its viewmodel
+	 * @return The corresponding edge viewmodel
 	 */
 	fun getEdgeViewModel(edge: Edge<V, K, W>): EdgeViewModel<V, K, W> {
 		return _edgesState[edge] ?: error("Edge does not have its viewmodel")
@@ -61,6 +71,9 @@ class GraphViewModel<V, K, W : Comparable<W>>(
 
 	/**
 	 * Given [vertex], return its corresponding view model
+	 *
+	 * @param vertex vertex for which a function will find its viewmodel
+	 * @return The corresponding vertex viewmodel
 	 */
 	fun getVertexViewModel(vertex: Vertex<V>): VertexViewModel<V> {
 		return _verticesState[vertex] ?: error("Vertex does not have its viewmodel")

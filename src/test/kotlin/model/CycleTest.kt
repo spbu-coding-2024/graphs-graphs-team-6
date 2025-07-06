@@ -2,7 +2,11 @@ package model
 
 import model.graph.DirectedGraph
 import model.graph.DirectedGraph.DirectedVertex
-import model.utils.CycleDetection
+import model.graph.Edge
+import model.graph.UndirectedGraph
+import model.graph.UndirectedGraph.UndirectedVertex
+import model.graph.Vertex
+import model.algos.CycleDetection
 import space.kscience.kmath.operations.IntRing
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -22,8 +26,30 @@ class CycleTest {
             addEdge("C", "A", index++, 5)
         }
 
-        val list = cycleDetection.findCyclesFromGivenVertex<String, Int, Int>(graph, graph.getVertex("A")
-                as DirectedVertex).first()
+        val list: List<Edge<String, Int, Int>?> =
+            cycleDetection.findCyclesFromGivenVertex<String, Int, Int>(graph,
+                graph.getVertex("A") as Vertex).first()
+        assertEquals(graph.getEdge("C", "A"), list[0])
+        assertEquals(graph.getEdge("B", "C"), list[1])
+        assertEquals(graph.getEdge("A", "B"), list[2])
+    }
+
+    @Test
+    fun `Find triangle cycle in undirected graph`()  {
+        val cycleDetection = CycleDetection()
+        val graph = UndirectedGraph<String, Int, Int>(IntRing).apply {
+            addVertex("A")
+            addVertex("B")
+            addVertex("C")
+            var index = 0
+            addEdge("A", "B", index++, 5)
+            addEdge("B", "C", index++, 5)
+            addEdge("C", "A", index++, 5)
+        }
+
+        val list: List<Edge<String, Int, Int>?> =
+            cycleDetection.findCyclesFromGivenVertex<String, Int, Int>(graph,
+                graph.getVertex("A") as UndirectedVertex).first()
         assertEquals(graph.getEdge("C", "A"), list[0])
         assertEquals(graph.getEdge("B", "C"), list[1])
         assertEquals(graph.getEdge("A", "B"), list[2])
@@ -56,7 +82,7 @@ class CycleTest {
             addEdge("H", "E", index++, 5)
         }
 
-        val list = cycleDetection.findCyclesFromGivenVertex<String, Int, Int>(
+        val list: List<List<Edge<String, Int, Int>?>> = cycleDetection.findCyclesFromGivenVertex<String, Int, Int>(
             graph,
             graph.getVertex("A") as DirectedVertex
         )

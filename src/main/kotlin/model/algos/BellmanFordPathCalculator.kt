@@ -1,10 +1,16 @@
-package model.utils
+package model.algos
 
 import model.graph.DirectedGraph
 import model.graph.Edge
 import model.graph.Graph
 
-object SSSPCalculator {
+object BellmanFordPathCalculator {
+
+    /**
+     * Find SSSP using Bellman-Ford Algorithm
+     *
+     * @return Pair of edge path and distance
+     */
     fun <V, K, W: Comparable<W>> bellmanFordAlgorithm
                 (graph: Graph<V, K, W>, startVertex: V):
             Pair<Map<V, Edge<V, K, W>>, Map<V, W>> {

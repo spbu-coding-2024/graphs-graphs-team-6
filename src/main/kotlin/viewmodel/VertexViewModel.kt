@@ -7,6 +7,17 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import model.graph.Vertex
 
+/**
+ * ViewModel for a vertex
+ *
+ * @param x x coordinate
+ * @param y y coordinate
+ * @param color Main color
+ * @param borderColor Second color for a border
+ * @param radius radius of a vertex
+ * @param borderWidth the thickness of a border
+ * @param model Vertex model
+ */
 class VertexViewModel<V>(
 	x: Dp = 0.dp,
 	y: Dp = 0.dp,
@@ -37,9 +48,20 @@ class VertexViewModel<V>(
 		get() = _y.value
 		set(value) { _y.value = value }
 
+	/**
+	 * Moves x and y coordinates using offset
+	 * @param offset offset to move
+	 */
 	fun move(offset: Offset) {
 		_x.value += offset.x.dp
 		_y.value += offset.y.dp
+	}
+	/**
+	 * Converts dp to float type
+	 * @return Float coordinates
+	 */
+	fun toFloat(): Pair<Float, Float> {
+		return x.value to y.value
 	}
 
 }

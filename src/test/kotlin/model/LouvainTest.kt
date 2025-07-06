@@ -8,7 +8,7 @@ import io.mockk.mockk
 import model.graph.UndirectedGraph
 import model.graph.UndirectedGraph.UndirectedEdge
 import model.graph.UndirectedGraph.UndirectedVertex
-import model.utils.Louvain
+import model.algos.Louvain
 import space.kscience.kmath.operations.Ring
 
 class LouvainTest {

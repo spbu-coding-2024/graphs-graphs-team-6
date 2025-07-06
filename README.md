@@ -19,3 +19,9 @@ A desktop app to analyse graphs.
 - Load & Save graph from/to Neo4j;
 - Load & Save graph as JSON;
 - Load & Save graph from/to SQLite `WIP`.
+
+## Get Started
+
+```declarative
+./gradlew run
+```
