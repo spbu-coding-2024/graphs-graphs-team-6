@@ -2,11 +2,27 @@ package model.SQLite
 
 import model.graph.DirectedGraph
 import model.graph.Graph
+import model.graph.UndirectedGraph
+import model.graph.Vertex
+import org.hamcrest.core.AnyOf
+import space.kscience.kmath.operations.IntRing
+import space.kscience.kmath.operations.Ring
 import java.sql.Connection
+import kotlin.reflect.KClass
 
 object GraphService {
+    fun parseStringToType(value: String, type: KClass<*>): Any? = when (type) {
+        Int::class -> value.toIntOrNull()
+        Long::class -> value.toLongOrNull()
+        Double::class -> value.toDoubleOrNull()
+        Float::class -> value.toFloatOrNull()
+        Boolean::class -> value.lowercase() in listOf("true", "1")
+        String::class -> value
+        else -> throw IllegalArgumentException("Unsupported type: $type")
+    }
     fun <V, K, W : Comparable<W>> saveGraphToDatabase(graph: Graph<V, K, W>, connection: Connection, name: String) {
-        val graphStmt = connection.prepareStatement("INSERT INTO graphs (name, V, K, W, directed) VALUES ($name, ?, ?, ?, ?)")
+        val graphStmt =
+            connection.prepareStatement("INSERT INTO graphs (name, V, K, W, directed) VALUES ($name, ?, ?, ?, ?)")
 
         require(graph.vertices.last().value != null)
         graphStmt.setString(1, graph.vertices.last().value!!::class.java.name)
@@ -18,17 +34,18 @@ object GraphService {
 
         graphStmt.setString(4, (graph is DirectedGraph).toString())
 
-        val vertexStmt = connection.prepareStatement("INSERT OR REPLACE INTO vertices (id, graph, value, adj_list) VALUES (?, ?, ?, ?)")
+        val vertexStmt =
+            connection.prepareStatement("INSERT OR REPLACE INTO vertices (id, graph, value) VALUES (?, ?, ?)")
         for (v in graph.vertices) {
             vertexStmt.setString(1, name + "_" + v.value.toString())
             vertexStmt.setString(2, name)
             vertexStmt.setString(3, v.value.toString())
-            vertexStmt.setString(4, v.adjacencyList.toString())
             vertexStmt.addBatch()
         }
         vertexStmt.executeBatch()
 
-        val edgeStmt = connection.prepareStatement("INSERT OR REPLACE INTO edges (key, start_vertex, end_vertex, weight) VALUES (?, ?, ?, ?)")
+        val edgeStmt =
+            connection.prepareStatement("INSERT OR REPLACE INTO edges (id, graph, key, start_vertex, end_vertex, weight) VALUES (?, ?, ?, ?)")
         for (e in graph.edges) {
             edgeStmt.setString(1, e.key.toString())
             edgeStmt.setString(2, e.startVertex.value.toString())
@@ -37,5 +54,37 @@ object GraphService {
             edgeStmt.addBatch()
         }
         edgeStmt.executeBatch()
+    }
+
+    fun <V: Any, K: Any, W : Comparable<W>> loadGraphFromDatabase(
+        connection: Connection,
+        name: String,
+        ring: Ring<W>,
+        isDirectedGraph: Boolean,
+        VType: KClass<V>,
+        KType: KClass<K>,
+        WType: KClass<W>
+    ): Graph<V, K, W> {
+        val graph = if (isDirectedGraph) DirectedGraph<V, K, W>(ring) else UndirectedGraph(ring)
+        val vertexStmt = connection.prepareStatement("SELECT graph, value FROM vertices WHERE graph == ?")
+        val edgeStmt =
+            connection.prepareStatement("SELECT graph, key, start_vertex, end_vertex, weight FROM edges WHERE graph == ?")
+        vertexStmt.setString(1, name)
+        edgeStmt.setString(1, name)
+
+        val vertexRows = vertexStmt.executeQuery()
+        val edgeRows = edgeStmt.executeQuery()
+
+        while (vertexRows.next()){
+            graph.addVertex(parseStringToType(vertexRows.getString("value"), VType) as V)
+        }
+        while (edgeRows.next()){
+            val start = parseStringToType(edgeRows.getString("start_vertex"), VType) as V
+            val end = parseStringToType(edgeRows.getString("end_vertex"), VType) as V
+            val key = parseStringToType(edgeRows.getString("key"), KType) as K
+            val weight = parseStringToType(edgeRows.getString("weight"), WType) as W
+            graph.addEdge(start, end, key, weight)
+        }
+        return graph
     }
 }
