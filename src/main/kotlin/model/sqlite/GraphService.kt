@@ -1,17 +1,14 @@
-package model.SQLite
+package model.sqlite
 
 import model.graph.DirectedGraph
 import model.graph.Graph
 import model.graph.UndirectedGraph
-import model.graph.Vertex
-import org.hamcrest.core.AnyOf
-import space.kscience.kmath.operations.IntRing
 import space.kscience.kmath.operations.Ring
 import java.sql.Connection
 import kotlin.reflect.KClass
 
 object GraphService {
-    fun parseStringToType(value: String, type: KClass<*>): Any? = when (type) {
+    private fun parseStringToType(value: String, type: KClass<*>): Any? = when (type) {
         Int::class -> value.toIntOrNull()
         Long::class -> value.toLongOrNull()
         Double::class -> value.toDoubleOrNull()
@@ -61,9 +58,9 @@ object GraphService {
         name: String,
         ring: Ring<W>,
         isDirectedGraph: Boolean,
-        VType: KClass<V>,
-        KType: KClass<K>,
-        WType: KClass<W>
+        typeOfV: KClass<V>,
+        typeOfK: KClass<K>,
+        typeOfW: KClass<W>
     ): Graph<V, K, W> {
         val graph = if (isDirectedGraph) DirectedGraph<V, K, W>(ring) else UndirectedGraph(ring)
         val vertexStmt = connection.prepareStatement("SELECT graph, value FROM vertices WHERE graph == ?")
@@ -76,13 +73,13 @@ object GraphService {
         val edgeRows = edgeStmt.executeQuery()
 
         while (vertexRows.next()){
-            graph.addVertex(parseStringToType(vertexRows.getString("value"), VType) as V)
+            graph.addVertex(parseStringToType(vertexRows.getString("value"), typeOfV) as V)
         }
         while (edgeRows.next()){
-            val start = parseStringToType(edgeRows.getString("start_vertex"), VType) as V
-            val end = parseStringToType(edgeRows.getString("end_vertex"), VType) as V
-            val key = parseStringToType(edgeRows.getString("key"), KType) as K
-            val weight = parseStringToType(edgeRows.getString("weight"), WType) as W
+            val start = parseStringToType(edgeRows.getString("start_vertex"), typeOfV) as V
+            val end = parseStringToType(edgeRows.getString("end_vertex"), typeOfV) as V
+            val key = parseStringToType(edgeRows.getString("key"), typeOfK) as K
+            val weight = parseStringToType(edgeRows.getString("weight"), typeOfW) as W
             graph.addEdge(start, end, key, weight)
         }
         return graph
