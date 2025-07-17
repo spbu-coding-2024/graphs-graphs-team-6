@@ -1,54 +1,61 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyShortcut
+import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import model.GraphGenerator
 import view.MainScreenView
 import viewmodel.MainScreenViewModel
 import model.graph.DirectedGraph
+import model.graph.UndirectedGraph
 import space.kscience.kmath.operations.IntRing
+import view.resetGraphViewModel
 
-const val TEMP_WEIGHT_VALUE = 231
-
-
-val graph = DirectedGraph<String, Int, Int>(IntRing).apply {
-	listOf("A","B","C","D","E","F","G","H").forEach { addVertex(it) }
-
-	var index = 0
-	val weight = Array<Int>(vertices.size * (vertices.size - 1) / 2) {it * 2}
-
-	addEdge("A", "B", index, weight[index]); index++
-	addEdge("B", "C", index, weight[index]); index++
-	addEdge("C", "A", index, weight[index]); index++
-	addEdge("C", "C", index, weight[index]); index++
-
-	addEdge("C", "F", index, weight[index]); index++
-
-	addEdge("D", "E", index, weight[index]); index++
-	addEdge("E", "F", index, weight[index]); index++
-	addEdge("F", "D", index, weight[index]); index++
-
-
-	addEdge("H", "D", index, weight[index]); index++
-
-	addEdge("G", "H", index, weight[index]); index++
-	addEdge("H", "G", index, TEMP_WEIGHT_VALUE); index++
-//	addVertex("X")
-//	addVertex("Y")
-//	addVertex("Z")
-}
+val graph = GraphGenerator.generateDirectedGraph()
 
 @Composable
 @Preview
-fun app() {
+fun <V: Any, K: Any, W: Comparable<W>>app(viewModel: MainScreenViewModel<V, K, W>) {
 	MaterialTheme {
-		MainScreenView<String, Int, Int>(MainScreenViewModel(graph))
+		MainScreenView(viewModel)
 	}
 }
 
 fun main() = application {
+	val viewModel = MainScreenViewModel(graph)
 	Window(onCloseRequest = ::exitApplication,
-	title = "Graphs-Graphs") {
-		app()
+		title = "Graph-Dracula") {
+		app(viewModel)
+		MenuBar {
+			Menu("File", mnemonic = 'F') {
+				Item("Open", shortcut = KeyShortcut(Key.O, ctrl = true)) { viewModel.showDbSelectDialog.value = true }
+				Item("Save", shortcut = KeyShortcut(Key.S, ctrl = true)) { viewModel.saveDialogState.value = true }
+			}
+			Menu("Graph", mnemonic = 'G') {
+				CheckboxItem(
+					"Apply algorithm",
+					checked = viewModel.actionWindowVisibility.value,
+					shortcut = KeyShortcut(Key.A, ctrl = true)
+				)
+				{
+					if (viewModel.actionWindowVisibility.value == true) resetGraphViewModel(viewModel.graphViewModel)
+					viewModel.actionWindowVisibility.value = !viewModel.actionWindowVisibility.value
+				}
+				CheckboxItem(
+					"Show weights",
+					checked = viewModel.showEdgesWeights,
+					shortcut = KeyShortcut(Key.W, ctrl = true)
+				)
+				{ viewModel.showEdgesWeights = !viewModel.showEdgesWeights }
+			}
+			Menu("Help", mnemonic = 'H') {
+				Item("About") {
+					viewModel.aboutDialog.value = true
+				}
+			}
+		}
 	}
 }

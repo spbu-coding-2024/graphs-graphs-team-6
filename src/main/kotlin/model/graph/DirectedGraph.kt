@@ -4,8 +4,6 @@ import space.kscience.kmath.operations.Ring
 import kotlin.collections.get
 
 class DirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph<V, K, W> {
-	//var idCounter = AtomicLong(0)
-
 	class DirectedVertex<V>(
 		override var value: V,
 		override val adjacencyList: MutableList<DirectedVertex<V>> = mutableListOf()
@@ -30,8 +28,8 @@ class DirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph
 	override val edges: Collection<DirectedEdge<V, K, W>>
 		get() = _edges.values
 
-	override fun getEdge(firstVertex: V, secondVertex: V): DirectedEdge<V, K, W> {
-		return _edges[_edgeMap[firstVertex to secondVertex]] ?: error("No such edge")
+	override fun getEdge(firstVertex: V, secondVertex: V): DirectedEdge<V, K, W>? {
+		return _edges[_edgeMap[firstVertex to secondVertex]]
 	}
 
 	override fun addEdge(firstVertex: V, secondVertex: V, key: K, weight: W): Edge<V, K, W> {
@@ -48,7 +46,7 @@ class DirectedGraph<V, K, W : Comparable<W>>(override val ring: Ring<W>) : Graph
 		return _vertices.getOrPut(vertex) { DirectedVertex(vertex) }
 	}
 
-	override fun getVertex(vertex: V): Vertex<V> {
-		return _vertices[vertex] ?: error("No such vertex with a given value")
+	override fun getVertex(vertex: V): Vertex<V>? {
+		return _vertices[vertex]
 	}
 }

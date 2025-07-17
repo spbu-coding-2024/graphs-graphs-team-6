@@ -41,8 +41,13 @@ import model.graph.UndirectedGraph
 import viewmodel.GraphViewModel
 import viewmodel.MainScreenViewModel
 import viewmodel.VertexViewModel
-
-
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.expandVertically
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.background
+import model.Constants
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -62,22 +67,18 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 	var startVertex by remember { mutableStateOf(viewModel.graphViewModel.vertices.first()) }
 	var endVertex by remember { mutableStateOf(viewModel.graphViewModel.vertices.last()) }
 
-	AnimatedVisibility(actionWindowVisibility, Modifier, EnterTransition.None, ExitTransition.None) {
+	AnimatedVisibility(viewModel.actionWindowVisibility.value, Modifier, EnterTransition.None, ExitTransition.None) {
 		Row(
-			modifier = Modifier.fillMaxSize()
-				.padding(20.dp)
-				.width(300.dp)
-				.height(300.dp),
+			modifier = Modifier.fillMaxSize().padding(20.dp).width(300.dp).height(300.dp),
 			horizontalArrangement = Arrangement.Start,
 			verticalAlignment = Alignment.Bottom,
 		) {
-			menuBox(algorithms[currentAlgorithm], algorithms, algorithms.toTypedArray(), "Algorithms") { i, _ ->
+			menuBox(algorithms[currentAlgorithm], algorithms, algorithms.toTypedArray(),
+				"Algorithms") { i, _ ->
 				currentAlgorithm = i
 			}
 			Button(
-				modifier = Modifier
-					.testTag("ApplyAlgorithm")
-					.padding(5.dp),
+				modifier = Modifier.testTag("ApplyAlgorithm").padding(5.dp),
 				onClick = {
 					applyAlgorithm(currentAlgorithm, viewModel, startVertex, endVertex)
 				}
@@ -85,17 +86,16 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 				Icon(Icons.Default.Check, "Apply algorithm")
 			}
 			if (currentAlgorithm == Algorithm.BellmanFord.ordinal ||
-                currentAlgorithm == Algorithm.CycleDetection.ordinal ||
-                currentAlgorithm == Algorithm.Dijkstra.ordinal) {
-				menuBox(
-					startVertex.model.value.toString(),
+				currentAlgorithm == Algorithm.CycleDetection.ordinal ||
+				currentAlgorithm == Algorithm.Dijkstra.ordinal
+			) {
+				menuBox(startVertex.model.value.toString(),
 					viewModel.graphViewModel.vertices, arrayOfVertexNames, "StartVertex"
-				) { _, vertex ->
-					startVertex = vertex
-				}
+				) { _, vertex -> startVertex = vertex }
 			}
 			if (currentAlgorithm == Algorithm.BellmanFord.ordinal ||
-                currentAlgorithm == Algorithm.Dijkstra.ordinal) {
+				currentAlgorithm == Algorithm.Dijkstra.ordinal
+			) {
 				menuBox(
 					endVertex.model.value.toString(),
 					viewModel.graphViewModel.vertices, arrayOfVertexNames, "EndVertex"
@@ -105,9 +105,11 @@ fun <V : Any, K : Any, W : Comparable<W>> actionMenuView(
 			}
 		}
 	}
-	if (viewModel.showIncompatibleWeightTypeDialog) {
-		LouvainAlertDialog(viewModel)
-	}
+	if (viewModel.exceptionMessage != null)
+		alertDialog(viewModel)
+	if (viewModel.isIncompatibleAlgorithm)
+		IncompatibilityBanner(viewModel.isIncompatibleAlgorithm, {viewModel.isIncompatibleAlgorithm = false})
+
 }
 
 enum class Algorithm {
@@ -117,10 +119,11 @@ enum class Algorithm {
 	Louvain,
 	CycleDetection,
 	Bridges,
-	Dijkstra
+	Dijkstra,
+	KamadaKawai
 }
 
-fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
+fun <V : Any, K : Any, W : Comparable<W>> applyAlgorithm(
 	algoNum: Int,
 	viewModel: MainScreenViewModel<V, K, W>,
 	startVertex: VertexViewModel<V>,
@@ -128,28 +131,29 @@ fun <V: Any, K: Any, W : Comparable<W>> applyAlgorithm(
 ) {
 	resetGraphViewModel(viewModel.graphViewModel)
 	when (algoNum) {
+		Algorithm.KamadaKawai.ordinal -> viewModel.drawGraph()
 		Algorithm.BellmanFord.ordinal -> viewModel.findSSSPBellmanFord(startVertex, endVertex)
+		Algorithm.Dijkstra.ordinal -> viewModel.findDijkstraPath(startVertex, endVertex)
 		Algorithm.CycleDetection.ordinal -> viewModel.findCycles(startVertex)
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
-		Algorithm.Kruskal.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findMSF()
-        Algorithm.Bridges.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.findBridges()
-		Algorithm.Louvain.ordinal -> if (viewModel.graph is UndirectedGraph) viewModel.assignCommunities()
+		Algorithm.Kruskal.ordinal -> viewModel.findMSF()
+		Algorithm.Bridges.ordinal -> viewModel.findBridges()
+		Algorithm.Louvain.ordinal -> viewModel.assignCommunities()
 	}
 }
 
 @Composable
-fun <V: Any, K: Any, W: Comparable<W>> LouvainAlertDialog(viewModel: MainScreenViewModel<V, K, W>){
+fun <V: Any, K: Any, W: Comparable<W>> alertDialog(viewModel: MainScreenViewModel<V, K, W>){
 	AlertDialog(
 		modifier = Modifier
 			.testTag("AlertDialog"),
 		onDismissRequest = {
-            viewModel.showIncompatibleWeightTypeDialog = false
+            viewModel.exceptionMessage = null
 		},
-		title = { Text("Incompatible Edge Weight Type") },
+		title = { Text("Oops!") },
 		text = {
 			Text(
-				"Your graph uses edge weight type that is not supported yet. " +
-					"Please try exploring graph with numerical weight" +
+				"There's something wrong with the graph " +
 					"\n${viewModel.exceptionMessage}"
 			)
 		},
@@ -157,7 +161,7 @@ fun <V: Any, K: Any, W: Comparable<W>> LouvainAlertDialog(viewModel: MainScreenV
 			TextButton(
 				modifier = Modifier
 					.testTag("AlertDialogButton"),
-				onClick = { viewModel.showIncompatibleWeightTypeDialog = false }
+				onClick = { viewModel.exceptionMessage = null }
 			) {
 				Text("ОК")
 			}
@@ -202,6 +206,35 @@ fun <T> menuBox(
 				) {
 					Text(text = arrayOfNames[i])
 				}
+			}
+		}
+	}
+}
+
+@Composable
+fun IncompatibilityBanner(
+	show: Boolean,
+	onDismiss: () -> Unit
+) {
+	AnimatedVisibility(
+		visible = show,
+		enter = fadeIn() + expandVertically(),
+		exit  = fadeOut() + shrinkVertically()
+	) {
+		Row(
+			modifier = Modifier
+				.fillMaxWidth()
+				.background(Color(Constants.PALE_YELLOW))
+				.padding(12.dp),
+			verticalAlignment = Alignment.CenterVertically,
+			horizontalArrangement = Arrangement.SpaceBetween
+		) {
+			Text(
+				text = "This algorithm cannot be applied to this graph type",
+				color = Color.Black
+			)
+			TextButton(onClick = onDismiss) {
+				Text("OK")
 			}
 		}
 	}

@@ -3,7 +3,7 @@ package model
 import androidx.compose.ui.graphics.Color
 import model.graph.DirectedGraph
 import model.graph.Vertex
-import model.utils.SCCCalculator
+import model.algos.SCCCalculator
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import space.kscience.kmath.operations.IntRing

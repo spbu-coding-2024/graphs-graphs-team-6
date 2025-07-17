@@ -1,7 +1,7 @@
 package model
 
+import model.algos.MSFFinder
 import model.graph.UndirectedGraph
-import model.utils.MSFFinder
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
