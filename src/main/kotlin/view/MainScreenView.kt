@@ -51,6 +51,7 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
         openMenu(viewModel)
         saveMenu(viewModel)
         neo4jMenu(viewModel)
+        loadSQLiteMenu(viewModel)
 }
 
 @Composable
@@ -126,6 +127,18 @@ fun <V : Any, K : Any, W : Comparable<W>> saveMenu(
                                         ) {
                                                 Text("JSON")
                                         }
+
+                                        Spacer(Modifier.height(8.dp))
+
+                                        Button(
+                                                modifier = Modifier.testTag("SQLiteSaveDialogButton"),
+                                                onClick = {
+                                                        viewModel.saveDialogState.value = false
+                                                        viewModel.runSaveSQLiteMenu()
+                                                }
+                                        ) {
+                                                Text("SQLite")
+                                        }
                                 }
                         },
                         buttons = {}
@@ -168,6 +181,15 @@ fun <V : Any, K : Any, W : Comparable<W>> openMenu(
                                                         viewModel.loadJSON()
                                                 }) {
                                                 Text("JSON")
+                                        }
+                                        Spacer(Modifier.height(8.dp))
+                                        Button(
+                                                modifier = Modifier.testTag("SQLiteOpenDialogButton"),
+                                                onClick = {
+                                                        viewModel.showDbSelectDialog.value = false
+                                                        viewModel.runLoadSQLiteMenu(viewModel)
+                                                }) {
+                                                Text("SQLite")
                                         }
                                 }
                         },
@@ -335,3 +357,28 @@ fun drawerButton(
         }
 }
 
+fun <V : Any, K : Any, W : Comparable<W>>loadSQLiteMenu(
+        viewModel: MainScreenViewModel<V, K, W>,
+        graphList: MutableState<List<String>>
+)
+{
+        var graphName: String
+        var finalGraphName = remember { mutableStateOf<String?>(null) }
+        if (viewModel.showLoadSQLiteMenu.value) {
+                AlertDialog(
+                        onDismissRequest = { viewModel.showLoadSQLiteMenu.value = false },
+                        title = { Text("Select Graph") },
+                        text = {
+                                Column {
+                                        graphList.value.forEach {
+                                                Button(onClick = { graphName = it }) {
+                                                        Text(it)
+                                                }
+                                        }
+                                }
+                        },
+                        confirmButton = { viewModel.showLoadSQLiteMenu.value = false },
+                        dismissButton = { viewModel.showLoadSQLiteMenu.value = false }
+                )
+        }
+}

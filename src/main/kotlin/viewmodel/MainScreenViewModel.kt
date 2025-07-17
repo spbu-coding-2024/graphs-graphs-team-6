@@ -8,6 +8,7 @@ import model.graph.*
 import model.json.JsonManager
 import model.algos.SCCCalculator
 import model.neo4j.GraphService
+import model.sqlite.SQLiteManager
 import model.algos.BellmanFordPathCalculator
 import model.algos.BridgeFinder
 import model.algos.CycleDetection
@@ -16,6 +17,8 @@ import model.algos.GraphPath
 import model.algos.KamadaKawai
 import model.algos.MSFFinder
 import model.algos.Louvain
+import space.kscience.kmath.nd.RingND
+import view.loadSQLiteMenu
 import java.awt.FileDialog
 import java.awt.Frame
 
@@ -39,6 +42,7 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 	var actionWindowVisibility = mutableStateOf(false)
 	var showDbSelectDialog = mutableStateOf(false)
 	var saveDialogState = mutableStateOf(false)
+	var showLoadSQLiteMenu = mutableStateOf(false)
 	private var _showEdgesWeights = mutableStateOf(false)
 
 	var showEdgesWeights: Boolean
@@ -241,5 +245,34 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 			isIncompatibleAlgorithm = true
 			println(e.message)
 		}
+	}
+
+	fun runSaveSQLiteMenu() {
+		val extension = ".json"
+		val dialog = FileDialog(null as Frame?, "Save JSON")
+		dialog.mode = FileDialog.SAVE
+		dialog.isVisible = true
+		var file = dialog.file
+		if (file == null) return
+		if (file.length < extension.length || file.substring(file.length - extension.length) != ".json") {
+			file += extension
+		}
+		JsonManager.saveJSON<V,K,W>(file, graph)
+	}
+
+	fun <V : Any, K : Any, W : Comparable<W>>runLoadSQLiteMenu(viewModel: MainScreenViewModel<V, K, W>) {
+		val database = SQLiteManager.createConnection()
+
+		val graphList = remember { mutableStateOf<List<String>>(emptyList()) }
+
+		LaunchedEffect(database) {
+			graphList.value = SQLiteManager.getGraphNames(database)
+		}
+		loadSQLiteMenu(viewModel, graphList)
+	}
+
+	fun loadSQLite(name: String){
+		val database = SQLiteManager.createConnection()
+		graph = SQLiteManager.loadGraphFromDatabase(database, name, Ring<>)
 	}
 }
