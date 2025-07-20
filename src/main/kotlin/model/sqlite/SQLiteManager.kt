@@ -14,8 +14,24 @@ import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
-import kotlin.reflect.KClass
-import kotlin.reflect.cast
+
+/**
+ * SQLite database manager for a graph
+ *
+ * Stores graphs in database in format:
+ * graphs:
+ *      name - unique identifier
+ *      V, K, W - Type::class.java.name
+ *      directed - Boolean
+ * edges:
+ *      id - unique identifier - obtains from the name of the graph and the key (key is unique)
+ *      graph - graph name
+ *      key, start_vertex, end_vertex, weight - corresponding fields in the string representation
+ * vertices:
+ *      id - unique identifier - obtains from the name of the graph and the value (value is unique)
+ *      graph - graph name
+ *      value - value in the string representation
+ */
 
 object SQLiteManager {
     fun createConnection(): Connection {
@@ -35,34 +51,69 @@ object SQLiteManager {
             )
             """.trimIndent()
             )
+            stmt.executeUpdate(
+                """
+            CREATE TABLE IF NOT EXISTS vertices (
+                id TEXT NOT NULL
+                graph TEXT NOT NULL,
+                value TEXT NOT NULL
+            )
+            """.trimIndent()
+            )
+            stmt.executeUpdate(
+                """
+            CREATE TABLE IF NOT EXISTS graphs (
+                id TEXT NOT NULL
+                graph TEXT NOT NULL,
+                key TEXT NOT NULL,
+                start_vertex TEXT NOT NULL,
+                end_vertex TEXT NOT NULL,
+                weight TEXT NOT NULL
+            )
+            """.trimIndent()
+            )
         }
 
         return conn
     }
 
-    private fun determineRingType(
+    private fun <W: Comparable<W>>determineRingType(
         name: String
-    ): Ring<*> = when (name) {
-        Int::class.java.name -> IntRing
-        Long::class.java.name -> LongRing
-        Short::class.java.name -> ShortRing
-        Byte::class.java.name -> ByteRing
-        Double::class.java.name -> Float64Field
-        Float::class.java.name -> Float32Field
-        else -> error("Can't load this type of weight. Type: $name")
+    ): Ring<W> = try {
+        @Suppress("UNCHECKED_CAST")
+        when (name) {
+            Int::class.java.name -> IntRing // Ring<Int>
+            Long::class.java.name -> LongRing // Ring<Long>
+            Short::class.java.name -> ShortRing // Ring<Short>
+            Byte::class.java.name -> ByteRing // Ring<Byte>
+            Double::class.java.name -> Float64Field // Ring<Float>
+            Float::class.java.name -> Float32Field // Ring<Double>
+            else -> error("Can't load this type of weight. Type: $name")
+        } as Ring<W>
     }
-    private fun determineType(
+    catch (e: ClassCastException){
+        error("The weight type $name in the database does not match the required ring type.")
+    }
+
+    private fun <T: Any>castToType(
+        value: String,
         name: String
-    ): KClass<*> = when (name) {
-        Int::class.java.name -> Int::class
-        Long::class.java.name -> Long::class
-        Short::class.java.name -> Short::class
-        Byte::class.java.name -> Byte::class
-        Double::class.java.name -> Double::class
-        Float::class.java.name -> Float::class
-        Boolean::class.java.name -> Boolean::class
-        String::class.java.name -> String::class
-        else -> error("Can't load this type. Type: $name")
+    ): T = try {
+        @Suppress("UNCHECKED_CAST") //
+        when (name) {
+            Int::class.java.name -> value.toInt() as T
+            Long::class.java.name -> value.toLong() as T
+            Short::class.java.name -> value.toShort() as T
+            Byte::class.java.name -> value.toByte() as T
+            Double::class.java.name -> value.toDouble() as T
+            Float::class.java.name -> value.toFloat() as T
+            Boolean::class.java.name -> value.toBooleanStrict() as T
+            String::class.java.name -> value as T
+            else -> error("Can't load this type. Type: $name")
+        }
+    }
+    catch (e: ClassCastException){
+        error("The type $name in the database does not match the required graph type.")
     }
 
     fun <V, K, W : Comparable<W>> saveGraphToDatabase(graph: Graph<V, K, W>, connection: Connection, name: String) {
@@ -102,25 +153,24 @@ object SQLiteManager {
         }
         edgeStmt.executeBatch()
     }
-
-    fun loadGraphFromDatabase(
+    fun <V: Any, K : Any, W : Comparable<W>>loadGraphFromDatabase(
         connection: Connection,
         name: String
-    ): Pair<Graph<*, *, *>, Triple<KClass<*>, KClass<*>, KClass<*>>> {
+    ): Graph<V, K, W> {
         val graphStmt =
             connection.prepareStatement("SELECT name, V, K, W, directed FROM graphs WHERE name = ?")
         graphStmt.setString(1, name)
         val graphMeta = graphStmt.executeQuery()
-        val V: KClass<*>
-        val K: KClass<*>
-        val W: KClass<*>
-        val ring: Ring<*>
+        val typeV: String
+        val typeK: String
+        val typeW: String
+        val ring: Ring<W>
         val isDirectedGraph: Boolean
         try {
-            V = determineType(graphMeta.getString("V"))
-            K = determineType(graphMeta.getString("K"))
-            W = determineType(graphMeta.getString("W"))
-            ring = determineRingType(graphMeta.getString("W"))
+            typeV = graphMeta.getString("V")
+            typeK = graphMeta.getString("K")
+            typeW = graphMeta.getString("W")
+            ring = determineRingType(typeW)
             isDirectedGraph = graphMeta.getBoolean("directed")
         }
         catch (_: SQLException)
@@ -128,7 +178,7 @@ object SQLiteManager {
             error("Can not find graph named $name")
         }
         val graph = if (isDirectedGraph)
-            DirectedGraph<Any, Any, Comparable<Any>>(ring)
+            DirectedGraph<V, K, W>(ring)
         else
             UndirectedGraph(ring)
         val vertexStmt = connection.prepareStatement("SELECT graph, value FROM vertices WHERE graph = ?")
@@ -141,17 +191,16 @@ object SQLiteManager {
         val edgeRows = edgeStmt.executeQuery()
 
         while (vertexRows.next()) {
-            graph.addVertex(V.cast(vertexRows.getString("value")))
+            graph.addVertex(castToType(vertexRows.getString("value"), typeV))
         }
         while (edgeRows.next()) {
-            val start = V.cast(edgeRows.getString("start_vertex"))
-            val end = V.cast(edgeRows.getString("end_vertex"))
-            val key = K.cast(edgeRows.getString("key"))
-            val weight = W.cast(edgeRows.getString("weight"))
-            require(weight::class == W) { "Inconsistent weight in database, weight $weight must be $W" }
-            graph.addEdge(start, end, key, weight as Comparable<Any>)
+            val start: V = castToType(edgeRows.getString("start_vertex"), typeV)
+            val end: V = castToType(edgeRows.getString("end_vertex"), typeV)
+            val key: K = castToType(edgeRows.getString("key"), typeK)
+            val weight: W = castToType(edgeRows.getString("weight"), typeW)
+            graph.addEdge(start, end, key, weight)
         }
-        return graph to Triple(V, K, W)
+        return graph
     }
 
     fun getGraphNames(database: Connection): List<String> {

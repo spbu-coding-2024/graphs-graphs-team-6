@@ -273,6 +273,6 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 
 	fun loadSQLite(name: String){
 		val database = SQLiteManager.createConnection()
-		graph = SQLiteManager.loadGraphFromDatabase(database, name, Ring<>)
+		graph = SQLiteManager.loadGraphFromDatabase(database, name)
 	}
 }
