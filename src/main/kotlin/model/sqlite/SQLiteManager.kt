@@ -46,7 +46,7 @@ object SQLiteManager {
             stmt.executeUpdate(
                 """
             CREATE TABLE IF NOT EXISTS graphs (
-                name TEXT NOT NULL
+                name TEXT NOT NULL,
                 V TEXT NOT NULL,
                 K TEXT NOT NULL,
                 W TEXT NOT NULL,
@@ -57,7 +57,7 @@ object SQLiteManager {
             stmt.executeUpdate(
                 """
             CREATE TABLE IF NOT EXISTS vertices (
-                id TEXT NOT NULL
+                id TEXT NOT NULL,
                 graph TEXT NOT NULL,
                 value TEXT NOT NULL
             )
@@ -66,7 +66,7 @@ object SQLiteManager {
             stmt.executeUpdate(
                 """
             CREATE TABLE IF NOT EXISTS graphs (
-                id TEXT NOT NULL
+                id TEXT NOT NULL,
                 graph TEXT NOT NULL,
                 key TEXT NOT NULL,
                 start_vertex TEXT NOT NULL,
