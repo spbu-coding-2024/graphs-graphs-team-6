@@ -17,8 +17,6 @@ import model.algos.GraphPath
 import model.algos.KamadaKawai
 import model.algos.MSFFinder
 import model.algos.Louvain
-import space.kscience.kmath.nd.RingND
-import view.loadSQLiteMenu
 import java.awt.FileDialog
 import java.awt.Frame
 
@@ -32,13 +30,14 @@ enum class Neo4jAction { NONE, LOAD, SAVE }
  * @param graph A graph to visualize
  */
 class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph<V, K, W>) {
-	private var _graph = mutableStateOf(graphParam)
+    private var _graph = mutableStateOf(graphParam)
 	var graph: Graph<V, K, W>
 		get() = _graph.value
 		set(value) {
 			_graph.value = value
 		}
 
+    val showExceptionDialog = mutableStateOf(false)
 	var actionWindowVisibility = mutableStateOf(false)
 	var showDbSelectDialog = mutableStateOf(false)
 	var saveDialogState = mutableStateOf(false)
@@ -258,17 +257,6 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 			file += extension
 		}
 		JsonManager.saveJSON<V,K,W>(file, graph)
-	}
-
-	fun <V : Any, K : Any, W : Comparable<W>>runLoadSQLiteMenu(viewModel: MainScreenViewModel<V, K, W>) {
-		val database = SQLiteManager.createConnection()
-
-		val graphList = remember { mutableStateOf<List<String>>(emptyList()) }
-
-		LaunchedEffect(database) {
-			graphList.value = SQLiteManager.getGraphNames(database)
-		}
-		loadSQLiteMenu(viewModel, graphList)
 	}
 
 	fun loadSQLite(name: String){
