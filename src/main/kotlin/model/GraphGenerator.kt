@@ -4,7 +4,6 @@ import model.graph.DirectedGraph
 import model.graph.Graph
 import model.graph.UndirectedGraph
 import kotlin.random.Random
-import space.kscience.kmath.operations.IntRing
 
 /**
  * An API to create random large graphs.
@@ -12,7 +11,7 @@ import space.kscience.kmath.operations.IntRing
 object GraphGenerator {
 	private val random = Random(System.currentTimeMillis())
 
-	private fun expandGraph(graph: Graph<String, Int, Int>, vertexCount: Int, edgeProbability: Double) {
+	private fun expandGraph(graph: Graph<APPLICATION_V_TYPE, APPLICATION_K_TYPE, APPLICATION_W_TYPE>, vertexCount: Int, edgeProbability: Double) {
 		for (i in 1..vertexCount) {
 			graph.addVertex("v$i")
 		}
@@ -38,9 +37,9 @@ object GraphGenerator {
 	fun generateUndirectedGraph(
 		vertexCount: Int = 1000,
 		edgeProbability: Double = 0.01
-	): UndirectedGraph<String, Int, Int> {
+	): UndirectedGraph<APPLICATION_V_TYPE, APPLICATION_K_TYPE, APPLICATION_W_TYPE> {
 		require(edgeProbability in 0.0..1.0)
-		val graph = UndirectedGraph<String, Int, Int>(IntRing)
+		val graph = UndirectedGraph<APPLICATION_V_TYPE, APPLICATION_K_TYPE, APPLICATION_W_TYPE>(APPLICATION_RING)
 		expandGraph(graph, vertexCount, edgeProbability)
 		return graph
 	}
@@ -55,9 +54,9 @@ object GraphGenerator {
 	fun generateDirectedGraph(
 		vertexCount: Int = 100,
 		edgeProbability: Double = 0.01
-	): DirectedGraph<String, Int, Int> {
+	): DirectedGraph<APPLICATION_V_TYPE, APPLICATION_K_TYPE, APPLICATION_W_TYPE> {
 		require(edgeProbability in 0.0..1.0)
-		val graph = DirectedGraph<String, Int, Int>(IntRing)
+		val graph = DirectedGraph<APPLICATION_V_TYPE, APPLICATION_K_TYPE, APPLICATION_W_TYPE>(APPLICATION_RING)
 		expandGraph(graph, vertexCount, edgeProbability)
 		return graph
 	}

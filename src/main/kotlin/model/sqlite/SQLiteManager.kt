@@ -1,5 +1,8 @@
 package model.sqlite
 
+import model.APPLICATION_K_TYPE
+import model.APPLICATION_V_TYPE
+import model.APPLICATION_W_TYPE
 import model.graph.DirectedGraph
 import model.graph.Graph
 import model.graph.UndirectedGraph
@@ -99,7 +102,7 @@ object SQLiteManager {
         value: String,
         name: String
     ): T = try {
-        @Suppress("UNCHECKED_CAST") //
+        @Suppress("UNCHECKED_CAST")
         when (name) {
             Int::class.java.name -> value.toInt() as T
             Long::class.java.name -> value.toLong() as T
@@ -205,7 +208,10 @@ object SQLiteManager {
 
     fun getGraphNames(database: Connection): List<String> {
         val result: List<String> = mutableListOf()
-        val namesStmt = database.prepareStatement("SELECT name FROM graphs")
+        val namesStmt = database.prepareStatement("SELECT name FROM graphs WHERE V = ? AND K = ? AND W = ?")
+        namesStmt.setString(1, APPLICATION_V_TYPE::class.java.name)
+        namesStmt.setString(2, APPLICATION_K_TYPE::class.java.name)
+        namesStmt.setString(3, APPLICATION_W_TYPE::class.java.name)
         val names = namesStmt.executeQuery()
         while (names.next()) {
             result.plusElement(names.getString("name"))
