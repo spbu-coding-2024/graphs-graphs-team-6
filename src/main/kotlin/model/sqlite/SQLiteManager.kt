@@ -65,7 +65,7 @@ object SQLiteManager {
             )
             stmt.executeUpdate(
                 """
-            CREATE TABLE IF NOT EXISTS graphs (
+            CREATE TABLE IF NOT EXISTS edges (
                 id TEXT NOT NULL,
                 graph TEXT NOT NULL,
                 key TEXT NOT NULL,
