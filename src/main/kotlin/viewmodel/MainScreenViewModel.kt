@@ -30,13 +30,14 @@ enum class Neo4jAction { NONE, LOAD, SAVE }
  * @param graph A graph to visualize
  */
 class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph<V, K, W>) {
-    private var _graph = mutableStateOf(graphParam)
+	private var _graph = mutableStateOf(graphParam)
 	var graph: Graph<V, K, W>
 		get() = _graph.value
 		set(value) {
 			_graph.value = value
 		}
 
+	var showSaveSQLiteMenu = mutableStateOf(false)
     val showExceptionDialog = mutableStateOf(false)
 	var actionWindowVisibility = mutableStateOf(false)
 	var showDbSelectDialog = mutableStateOf(false)
@@ -246,17 +247,9 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 		}
 	}
 
-	fun runSaveSQLiteMenu() {
-		val extension = ".json"
-		val dialog = FileDialog(null as Frame?, "Save JSON")
-		dialog.mode = FileDialog.SAVE
-		dialog.isVisible = true
-		var file = dialog.file
-		if (file == null) return
-		if (file.length < extension.length || file.substring(file.length - extension.length) != ".json") {
-			file += extension
-		}
-		JsonManager.saveJSON<V,K,W>(file, graph)
+	fun saveSQLite(name: String) {
+		val database = SQLiteManager.createConnection()
+		SQLiteManager.saveGraphToDatabase(graph, database, name)
 	}
 
 	fun loadSQLite(name: String){

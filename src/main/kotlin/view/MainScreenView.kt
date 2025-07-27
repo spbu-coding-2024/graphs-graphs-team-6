@@ -20,6 +20,7 @@ import viewmodel.MainScreenViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +54,7 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
         saveMenu(viewModel)
         neo4jMenu(viewModel)
         loadSQLiteMenu(viewModel)
+        saveSQLiteMenu(viewModel)
 }
 
 @Composable
@@ -135,7 +137,7 @@ fun <V : Any, K : Any, W : Comparable<W>> saveMenu(
                                                 modifier = Modifier.testTag("SQLiteSaveDialogButton"),
                                                 onClick = {
                                                         viewModel.saveDialogState.value = false
-                                                        viewModel.runSaveSQLiteMenu()
+                                                        viewModel.showSaveSQLiteMenu.value = true
                                                 }
                                         ) {
                                                 Text("SQLite")
@@ -381,32 +383,76 @@ fun <V : Any, K : Any, W : Comparable<W>>loadSQLiteMenu(
         viewModel: MainScreenViewModel<V, K, W>
 )
 {
-        val graphList: List<String> = SQLiteManager.getGraphNames(SQLiteManager.createConnection())
-                if (viewModel.showLoadSQLiteMenu.value) {
-                        if (graphList.isEmpty()){
-                                viewModel.showExceptionDialog.value = true
-                                exceptionDialog(viewModel, "Cannot find graphs in SQLite database to load.")
-                        }
-                        else {
-                                var graphName = remember { mutableStateOf(graphList[0]) }
-                                AlertDialog(
-                                        onDismissRequest = { viewModel.showLoadSQLiteMenu.value = false },
-                                        title = { Text("Select Graph") },
-                                        text = {
-                                                Column {
-                                                        graphList.forEach {
-                                                                Button(onClick = { graphName.value = it }) {
-                                                                        Text(it)
-                                                                }
+        val graphList = remember { mutableStateOf<List<String>>(emptyList()) }
+
+        LaunchedEffect(Unit) {
+                graphList.value = SQLiteManager.getGraphNames(SQLiteManager.createConnection())
+        }
+        if (viewModel.showLoadSQLiteMenu.value) {
+                if (graphList.value.isEmpty()){
+                        viewModel.showExceptionDialog.value = true
+                        exceptionDialog(viewModel, "Cannot find graphs in SQLite database to load.")
+                }
+                else {
+                        var graphName = remember { mutableStateOf(graphList.value[0]) }
+                        AlertDialog(
+                                onDismissRequest = { viewModel.showLoadSQLiteMenu.value = false },
+                                title = { Text("Select Graph") },
+                                text = {
+                                        Column {
+                                                graphList.value.forEach {
+                                                        Button(onClick = { graphName.value = it }) {
+                                                                Text(it)
                                                         }
                                                 }
-                                        },
-                                        confirmButton = {
-                                                viewModel.showLoadSQLiteMenu.value = false
-                                                viewModel.loadSQLite(graphName.value)
-                                        },
-                                        dismissButton = { viewModel.showLoadSQLiteMenu.value = false }
-                                )
-                        }
+                                        }
+                                },
+                                confirmButton = {
+                                        viewModel.showLoadSQLiteMenu.value = false
+                                        viewModel.loadSQLite(graphName.value)
+                                },
+                                dismissButton = { viewModel.showLoadSQLiteMenu.value = false }
+                        )
                 }
+        }
+}
+
+@Composable
+fun <V : Any, K : Any, W : Comparable<W>>saveSQLiteMenu(
+        viewModel: MainScreenViewModel<V, K, W>
+)
+{
+        val graphList: List<String> = SQLiteManager.getGraphNames(SQLiteManager.createConnection())
+        var graphName = remember { mutableStateOf("default") }
+        if (viewModel.showSaveSQLiteMenu.value) {
+                if (graphList.isNotEmpty()){
+                        graphName.value = graphList[0]
+                }
+                        AlertDialog(
+                                onDismissRequest = { viewModel.showSaveSQLiteMenu.value = false },
+                                title = { Text("Select Graph") },
+                                text = {
+                                        Column {
+                                                graphList.forEach {
+                                                        Button(onClick = { graphName.value = it }) {
+                                                                Text(it)
+                                                        }
+                                                }
+                                        }
+
+                                        OutlinedTextField(
+                                                value = graphName.value,
+                                                onValueChange = { graphName.value = it },
+                                                label = { Text("Graph name") },
+                                                modifier = Modifier.fillMaxWidth()
+                                        )
+                                },
+                                confirmButton = {
+                                        viewModel.showSaveSQLiteMenu.value = false
+                                        viewModel.saveSQLite(graphName.value)
+                                },
+                                dismissButton = { viewModel.showSaveSQLiteMenu.value = false }
+                        )
+
+        }
 }
