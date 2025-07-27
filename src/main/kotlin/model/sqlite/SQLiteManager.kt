@@ -85,12 +85,12 @@ object SQLiteManager {
     ): Ring<W> = try {
         @Suppress("UNCHECKED_CAST")
         when (name) {
-            Int::class.java.name -> IntRing // Ring<Int>
-            Long::class.java.name -> LongRing // Ring<Long>
-            Short::class.java.name -> ShortRing // Ring<Short>
-            Byte::class.java.name -> ByteRing // Ring<Byte>
-            Double::class.java.name -> Float64Field // Ring<Float>
-            Float::class.java.name -> Float32Field // Ring<Double>
+            Int::class.javaObjectType.name -> IntRing // Ring<Int>
+            Long::class.javaObjectType.name -> LongRing // Ring<Long>
+            Short::class.javaObjectType.name -> ShortRing // Ring<Short>
+            Byte::class.javaObjectType.name -> ByteRing // Ring<Byte>
+            Double::class.javaObjectType.name -> Float64Field // Ring<Float>
+            Float::class.javaObjectType.name -> Float32Field // Ring<Double>
             else -> error("Can't load this type of weight. Type: $name")
         } as Ring<W>
     }
@@ -104,14 +104,14 @@ object SQLiteManager {
     ): T = try {
         @Suppress("UNCHECKED_CAST")
         when (name) {
-            Int::class.java.name -> value.toInt() as T
-            Long::class.java.name -> value.toLong() as T
-            Short::class.java.name -> value.toShort() as T
-            Byte::class.java.name -> value.toByte() as T
-            Double::class.java.name -> value.toDouble() as T
-            Float::class.java.name -> value.toFloat() as T
-            Boolean::class.java.name -> value.toBooleanStrict() as T
-            String::class.java.name -> value as T
+            Int::class.javaObjectType.name -> value.toInt() as T
+            Long::class.javaObjectType.name -> value.toLong() as T
+            Short::class.javaObjectType.name -> value.toShort() as T
+            Byte::class.javaObjectType.name -> value.toByte() as T
+            Double::class.javaObjectType.name -> value.toDouble() as T
+            Float::class.javaObjectType.name -> value.toFloat() as T
+            Boolean::class.javaObjectType.name -> value.toBooleanStrict() as T
+            String::class.javaObjectType.name -> value as T
             else -> error("Can't load this type. Type: $name")
         }
     }
@@ -135,6 +135,8 @@ object SQLiteManager {
 
         graphStmt.setString(5, (graph is DirectedGraph).toString())
 
+        graphStmt.execute()
+
         val vertexStmt =
             connection.prepareStatement("INSERT OR REPLACE INTO vertices (id, graph, value) VALUES (?, ?, ?)")
         for (v in graph.vertices) {
@@ -146,12 +148,14 @@ object SQLiteManager {
         vertexStmt.executeBatch()
 
         val edgeStmt =
-            connection.prepareStatement("INSERT OR REPLACE INTO edges (id, graph, key, start_vertex, end_vertex, weight) VALUES (?, ?, ?, ?)")
+            connection.prepareStatement("INSERT OR REPLACE INTO edges (id, graph, key, start_vertex, end_vertex, weight) VALUES (?, ?, ?, ?, ?, ?)")
         for (e in graph.edges) {
-            edgeStmt.setString(1, e.key.toString())
-            edgeStmt.setString(2, e.startVertex.value.toString())
-            edgeStmt.setString(3, e.endVertex.value.toString())
-            edgeStmt.setString(4, e.weight.toString())
+            edgeStmt.setString(1, name + "_" + e.key.toString())
+            edgeStmt.setString(2, name)
+            edgeStmt.setString(3, e.key.toString())
+            edgeStmt.setString(4, e.startVertex.value.toString())
+            edgeStmt.setString(5, e.endVertex.value.toString())
+            edgeStmt.setString(6, e.weight.toString())
             edgeStmt.addBatch()
         }
         edgeStmt.executeBatch()
@@ -207,15 +211,17 @@ object SQLiteManager {
     }
 
     fun getGraphNames(database: Connection): List<String> {
-        val result: List<String> = mutableListOf()
+        val result: MutableList<String> = mutableListOf()
         val namesStmt = database.prepareStatement("SELECT name FROM graphs WHERE V = ? AND K = ? AND W = ?")
-        namesStmt.setString(1, APPLICATION_V_TYPE::class.java.name)
-        namesStmt.setString(2, APPLICATION_K_TYPE::class.java.name)
-        namesStmt.setString(3, APPLICATION_W_TYPE::class.java.name)
+        namesStmt.setString(1, (APPLICATION_V_TYPE::class.javaObjectType).name)
+        namesStmt.setString(2, (APPLICATION_K_TYPE::class.javaObjectType).name)
+        namesStmt.setString(3, (APPLICATION_W_TYPE::class.javaObjectType).name)
         val names = namesStmt.executeQuery()
+
         while (names.next()) {
-            result.plusElement(names.getString("name"))
+            result.add(names.getString("name"))
         }
+
         return result
     }
 }
