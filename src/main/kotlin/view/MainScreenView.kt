@@ -7,20 +7,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Button
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.DrawerState
-import androidx.compose.material.TextButton
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ExposedDropdownMenuBox
+import androidx.compose.material.ExposedDropdownMenuDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Icon
+import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
 import viewmodel.MainScreenViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -359,25 +362,7 @@ fun drawerButton(
         }
 }
 
-
-
-@Composable
-fun <V : Any, K : Any, W : Comparable<W>> exceptionDialog(viewModel: MainScreenViewModel<V, K, W>, exceptionMessage: String) {
-        if (viewModel.showExceptionDialog.value) {
-                AlertDialog(
-                        onDismissRequest = { viewModel.showExceptionDialog.value = false },
-                        text = { Text(exceptionMessage) },
-                        confirmButton = {
-                                TextButton(onClick = {
-                                        viewModel.showExceptionDialog.value = false
-                                }) {
-                                        Text("ОК")
-                                }
-                        }
-                )
-        }
-}
-
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun <V : Any, K : Any, W : Comparable<W>>loadSQLiteMenu(
         viewModel: MainScreenViewModel<V, K, W>
@@ -385,73 +370,103 @@ fun <V : Any, K : Any, W : Comparable<W>>loadSQLiteMenu(
 {
         val graphList = remember { mutableStateOf<List<String>>(emptyList()) }
 
-        LaunchedEffect(Unit) {
-                graphList.value = SQLiteManager.getGraphNames(SQLiteManager.createConnection())
-        }
         if (viewModel.showLoadSQLiteMenu.value) {
+                graphList.value = SQLiteManager.getGraphNames(SQLiteManager.createConnection())
                 if (graphList.value.isEmpty()){
-                        viewModel.showExceptionDialog.value = true
-                        exceptionDialog(viewModel, "Cannot find graphs in SQLite database to load.")
+                        viewModel.exceptionMessage = "Cannot load graph names."
+                        viewModel.showLoadSQLiteMenu.value = false
                 }
                 else {
-                        var graphName = remember { mutableStateOf(graphList.value[0]) }
+                        val graphName = remember { mutableStateOf(graphList.value[0]) }
                         AlertDialog(
                                 onDismissRequest = { viewModel.showLoadSQLiteMenu.value = false },
                                 title = { Text("Select Graph") },
                                 text = {
-                                        Column {
-                                                graphList.value.forEach {
-                                                        Button(onClick = { graphName.value = it }) {
-                                                                Text(it)
+                                        var selectedOption by remember { mutableStateOf(graphName.value) }
+                                        var expanded by remember { mutableStateOf(false) }
+                                        ExposedDropdownMenuBox(
+                                                expanded = expanded,
+                                                content = {
+                                                        TextField(
+                                                                value = selectedOption,
+                                                                onValueChange = {selectedOption = graphName.value},
+                                                                readOnly = true,
+                                                                label = { Text("Choose graph") },
+                                                                trailingIcon = {
+                                                                        ExposedDropdownMenuDefaults.TrailingIcon(
+                                                                                expanded = expanded
+                                                                        )
+                                                                }
+                                                        )
+                                                        ExposedDropdownMenu(
+                                                                expanded = expanded,
+                                                                onDismissRequest = { expanded = false }
+                                                        ) {
+                                                                graphList.value.forEach { selectionOption ->
+                                                                        DropdownMenuItem(
+                                                                                content = { Text(selectionOption) },
+                                                                                onClick = {
+                                                                                        selectedOption = selectionOption
+                                                                                        expanded = false
+                                                                                }
+                                                                        )
+                                                                }
                                                         }
-                                                }
-                                        }
+                                                          },
+                                                onExpandedChange = {expanded = !expanded}
+                                        )
                                 },
                                 confirmButton = {
-                                        viewModel.showLoadSQLiteMenu.value = false
-                                        viewModel.loadSQLite(graphName.value)
+                                        TextButton(onClick = {
+                                                viewModel.showLoadSQLiteMenu.value = false
+                                                viewModel.loadSQLite(graphName.value)
+                                        }) {
+                                                Text("Ok")
+                                        }
                                 },
-                                dismissButton = { viewModel.showLoadSQLiteMenu.value = false }
+                                dismissButton = {
+                                        TextButton(onClick = { viewModel.showLoadSQLiteMenu.value = false }) {
+                                                Text("Cancel")
+                                        }
+                                }
                         )
                 }
         }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun <V : Any, K : Any, W : Comparable<W>>saveSQLiteMenu(
         viewModel: MainScreenViewModel<V, K, W>
 )
 {
-        val graphList: List<String> = SQLiteManager.getGraphNames(SQLiteManager.createConnection())
-        var graphName = remember { mutableStateOf("default") }
+        var graphName by remember { mutableStateOf("") }
         if (viewModel.showSaveSQLiteMenu.value) {
-                if (graphList.isNotEmpty()){
-                        graphName.value = graphList[0]
-                }
                         AlertDialog(
                                 onDismissRequest = { viewModel.showSaveSQLiteMenu.value = false },
-                                title = { Text("Select Graph") },
+                                title = { Text("Save graph...") },
                                 text = {
-                                        Column {
-                                                graphList.forEach {
-                                                        Button(onClick = { graphName.value = it }) {
-                                                                Text(it)
-                                                        }
-                                                }
-                                        }
 
                                         OutlinedTextField(
-                                                value = graphName.value,
-                                                onValueChange = { graphName.value = it },
-                                                label = { Text("Graph name") },
+                                                value = graphName,
+                                                onValueChange = { graphName = it },
+                                                label = { Text("Enter graph name") },
                                                 modifier = Modifier.fillMaxWidth()
                                         )
                                 },
                                 confirmButton = {
+                                        TextButton(onClick = {
                                         viewModel.showSaveSQLiteMenu.value = false
-                                        viewModel.saveSQLite(graphName.value)
+                                        viewModel.saveSQLite(graphName)
+                                        }) {
+                                                Text("Ok")
+                                        }
                                 },
-                                dismissButton = { viewModel.showSaveSQLiteMenu.value = false }
+                                dismissButton = {
+                                        TextButton(onClick = { viewModel.showSaveSQLiteMenu.value = false }) {
+                                                Text("Cancel")
+                                        }
+                                }
                         )
 
         }

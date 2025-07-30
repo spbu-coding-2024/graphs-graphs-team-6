@@ -38,7 +38,6 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 		}
 
 	var showSaveSQLiteMenu = mutableStateOf(false)
-    val showExceptionDialog = mutableStateOf(false)
 	var actionWindowVisibility = mutableStateOf(false)
 	var showDbSelectDialog = mutableStateOf(false)
 	var saveDialogState = mutableStateOf(false)
