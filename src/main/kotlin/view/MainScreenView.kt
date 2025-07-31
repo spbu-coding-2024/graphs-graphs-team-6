@@ -10,16 +10,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.DrawerState
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ExposedDropdownMenuBox
-import androidx.compose.material.ExposedDropdownMenuDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
 import viewmodel.MainScreenViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -41,7 +37,6 @@ import view.graph.GraphView
 import androidx.compose.ui.Alignment
 import kotlinx.coroutines.CoroutineScope
 import model.neo4j.GraphService
-import model.sqlite.SQLiteManager
 import viewmodel.Neo4jAction
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -333,7 +328,6 @@ fun <V : Any, K : Any, W : Comparable<W>> neo4jConnectionExceptionDialog(viewMod
         }
 }
 
-
 @Composable
 fun drawerButton(
         textString: String,
@@ -362,112 +356,22 @@ fun drawerButton(
         }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun <V : Any, K : Any, W : Comparable<W>>loadSQLiteMenu(
-        viewModel: MainScreenViewModel<V, K, W>
-)
-{
-        val graphList = remember { mutableStateOf<List<String>>(emptyList()) }
-
-        if (viewModel.showLoadSQLiteMenu.value) {
-                graphList.value = SQLiteManager.getGraphNames(SQLiteManager.createConnection())
-                if (graphList.value.isEmpty()){
-                        viewModel.exceptionMessage = "Cannot load graph names."
-                        viewModel.showLoadSQLiteMenu.value = false
-                }
-                else {
-                        val graphName = remember { mutableStateOf(graphList.value[0]) }
-                        AlertDialog(
-                                onDismissRequest = { viewModel.showLoadSQLiteMenu.value = false },
-                                title = { Text("Select Graph") },
-                                text = {
-                                        var selectedOption by remember { mutableStateOf(graphName.value) }
-                                        var expanded by remember { mutableStateOf(false) }
-                                        ExposedDropdownMenuBox(
-                                                expanded = expanded,
-                                                content = {
-                                                        TextField(
-                                                                value = selectedOption,
-                                                                onValueChange = {selectedOption = graphName.value},
-                                                                readOnly = true,
-                                                                label = { Text("Choose graph") },
-                                                                trailingIcon = {
-                                                                        ExposedDropdownMenuDefaults.TrailingIcon(
-                                                                                expanded = expanded
-                                                                        )
-                                                                }
-                                                        )
-                                                        ExposedDropdownMenu(
-                                                                expanded = expanded,
-                                                                onDismissRequest = { expanded = false }
-                                                        ) {
-                                                                graphList.value.forEach { selectionOption ->
-                                                                        DropdownMenuItem(
-                                                                                content = { Text(selectionOption) },
-                                                                                onClick = {
-                                                                                        selectedOption = selectionOption
-                                                                                        expanded = false
-                                                                                }
-                                                                        )
-                                                                }
-                                                        }
-                                                          },
-                                                onExpandedChange = {expanded = !expanded}
-                                        )
-                                },
-                                confirmButton = {
-                                        TextButton(onClick = {
-                                                viewModel.showLoadSQLiteMenu.value = false
-                                                viewModel.loadSQLite(graphName.value)
-                                        }) {
-                                                Text("Ok")
-                                        }
-                                },
-                                dismissButton = {
-                                        TextButton(onClick = { viewModel.showLoadSQLiteMenu.value = false }) {
-                                                Text("Cancel")
-                                        }
-                                }
-                        )
-                }
+fun ConfirmButton(onClick: () -> Unit = {}, showMenuVariable: MutableState<Boolean>) {
+        TextButton(onClick = {
+                showMenuVariable.value = false
+                onClick()
+        }) {
+                Text("Ok")
         }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun <V : Any, K : Any, W : Comparable<W>>saveSQLiteMenu(
-        viewModel: MainScreenViewModel<V, K, W>
-)
-{
-        var graphName by remember { mutableStateOf("") }
-        if (viewModel.showSaveSQLiteMenu.value) {
-                        AlertDialog(
-                                onDismissRequest = { viewModel.showSaveSQLiteMenu.value = false },
-                                title = { Text("Save graph...") },
-                                text = {
-
-                                        OutlinedTextField(
-                                                value = graphName,
-                                                onValueChange = { graphName = it },
-                                                label = { Text("Enter graph name") },
-                                                modifier = Modifier.fillMaxWidth()
-                                        )
-                                },
-                                confirmButton = {
-                                        TextButton(onClick = {
-                                        viewModel.showSaveSQLiteMenu.value = false
-                                        viewModel.saveSQLite(graphName)
-                                        }) {
-                                                Text("Ok")
-                                        }
-                                },
-                                dismissButton = {
-                                        TextButton(onClick = { viewModel.showSaveSQLiteMenu.value = false }) {
-                                                Text("Cancel")
-                                        }
-                                }
-                        )
-
+fun DismissButton(onClick: () -> Unit = {}, showMenuVariable: MutableState<Boolean>) {
+        TextButton(onClick = {
+                showMenuVariable.value = false
+                onClick()
+        }) {
+                Text("Cancel")
         }
 }
