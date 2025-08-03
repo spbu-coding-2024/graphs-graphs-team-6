@@ -48,4 +48,6 @@ object Constants {
     const val DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_MENU = 0xFFF0F0F0
     const val DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_BUTTON = 0xFFF0F0F0
 
+	const val SQLITE_DATABASE_PATH = "data/graphs.sqlite"
+
 }
