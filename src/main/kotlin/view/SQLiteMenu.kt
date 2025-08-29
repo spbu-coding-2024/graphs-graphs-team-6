@@ -15,7 +15,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import model.sqlite.SQLiteManager
+import model.sqlite.createConnection
+import model.sqlite.getGraphNames
 import viewmodel.MainScreenViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -26,7 +27,7 @@ fun <V : Any, K : Any, W : Comparable<W>> loadSQLiteMenu(
     val graphList = remember { mutableStateOf<List<String>>(emptyList()) }
 
     if (viewModel.showLoadSQLiteMenu.value) {
-        graphList.value = SQLiteManager.getGraphNames(SQLiteManager.createConnection())
+        graphList.value = getGraphNames(createConnection())
         if (graphList.value.isEmpty()) {
             viewModel.exceptionMessage = "Cannot load graph names."
             viewModel.showLoadSQLiteMenu.value = false

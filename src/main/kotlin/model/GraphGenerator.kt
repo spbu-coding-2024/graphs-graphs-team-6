@@ -11,7 +11,11 @@ import kotlin.random.Random
 object GraphGenerator {
 	private val random = Random(System.currentTimeMillis())
 
-	private fun expandGraph(graph: Graph<APPLICATION_V_TYPE, APPLICATION_K_TYPE, APPLICATION_W_TYPE>, vertexCount: Int, edgeProbability: Double) {
+	private fun expandGraph(
+		graph: Graph<APPLICATION_V_TYPE, APPLICATION_K_TYPE, APPLICATION_W_TYPE>,
+		vertexCount: Int,
+		edgeProbability: Double
+	) {
 		for (i in 1..vertexCount) {
 			graph.addVertex("v$i")
 		}

@@ -37,6 +37,8 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 			_graph.value = value
 		}
 
+	val sqliteManager = SQLiteManager()
+
 	var showSaveSQLiteMenu = mutableStateOf(false)
 	var actionWindowVisibility = mutableStateOf(false)
 	var showDbSelectDialog = mutableStateOf(false)
@@ -247,12 +249,10 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 	}
 
 	fun saveSQLite(name: String) {
-		val database = SQLiteManager.createConnection()
-		SQLiteManager.saveGraphToDatabase(graph, database, name)
+		sqliteManager.saveGraphToDatabase(graph, name)
 	}
 
 	fun loadSQLite(name: String){
-		val database = SQLiteManager.createConnection()
-		graph = SQLiteManager.loadGraphFromDatabase(database, name)
+		graph = sqliteManager.loadGraphFromDatabase(name)
 	}
 }
