@@ -88,7 +88,11 @@ class SQLiteDatabaseTest {
 
     @Test
     fun writeManyTimes() {
-        TODO()
+        manager.saveGraphToDatabase(simpleGraph, "emptyGraph")
+        manager.saveGraphToDatabase(simpleGraph, "emptyGraph")
+        manager.saveGraphToDatabase(simpleGraph, "emptyGraph")
+        val received = manager.loadGraphFromDatabase<Int, Int, Int>("emptyGraph")
+        assert(isGraphsEqual(received, simpleGraph))
     }
 
     @Test
