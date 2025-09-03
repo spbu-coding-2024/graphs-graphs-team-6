@@ -29,15 +29,15 @@ fun <V : Any, K : Any, W : Comparable<W>> isGraphsEqual(first: Graph<V, K, W>, s
         }
     } && first.edges.all { firstEdge ->
         second.edges.any { secondEdge ->
-            firstEdge.startVertex == secondEdge.startVertex &&
-                    firstEdge.endVertex == secondEdge.endVertex &&
+            firstEdge.startVertex.value == secondEdge.startVertex.value &&
+                    firstEdge.endVertex.value == secondEdge.endVertex.value &&
                     firstEdge.key == secondEdge.key &&
                     firstEdge.weight == secondEdge.weight
         }
     } && second.edges.all { secondEdge ->
         first.edges.any { firstEdge ->
-            firstEdge.startVertex == secondEdge.startVertex &&
-                    firstEdge.endVertex == secondEdge.endVertex &&
+            firstEdge.startVertex.value == secondEdge.startVertex.value &&
+                    firstEdge.endVertex.value == secondEdge.endVertex.value &&
                     firstEdge.key == secondEdge.key &&
                     firstEdge.weight == secondEdge.weight
         }
