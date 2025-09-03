@@ -110,6 +110,43 @@ class SQLiteDatabaseTest {
 
     @Test
     fun writeReadManyTimes() {
-        TODO()
+        var graph = UndirectedGraph<Int, Int, Int>(IntRing)
+            .apply {
+                addVertex(1)
+                addVertex(2)
+                addVertex(3)
+                addEdge(1, 2, 1)
+                addEdge(2, 1, 2)
+                addEdge(1, 3, 3)
+            }
+        manager.saveGraphToDatabase(graph, "emptyGraph")
+        var received = manager.loadGraphFromDatabase<Int, Int, Int>("emptyGraph")
+        assert(isGraphsEqual(received, graph))
+
+        graph = UndirectedGraph<Int, Int, Int>(IntRing)
+            .apply {
+                addVertex(1)
+                addVertex(2)
+                addVertex(3)
+                addEdge(1, 2, 1)
+                addEdge(2, 1, 3)
+                addEdge(2, 3, 2)
+            }
+        manager.saveGraphToDatabase(graph, "emptyGraph")
+        received = manager.loadGraphFromDatabase("emptyGraph")
+        assert(isGraphsEqual(received, graph))
+
+        graph = UndirectedGraph<Int, Int, Int>(IntRing)
+            .apply {
+                addVertex(1)
+                addVertex(2)
+                addVertex(3)
+                addEdge(1, 2, 3)
+                addEdge(2, 2, 2)
+                addEdge(1, 3, 1)
+            }
+        manager.saveGraphToDatabase(graph, "emptyGraph")
+        received = manager.loadGraphFromDatabase("emptyGraph")
+        assert(isGraphsEqual(received, graph))
     }
 }
