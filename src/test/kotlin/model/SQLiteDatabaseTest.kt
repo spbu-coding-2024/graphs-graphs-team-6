@@ -88,11 +88,40 @@ class SQLiteDatabaseTest {
 
     @Test
     fun writeManyTimes() {
-        manager.saveGraphToDatabase(simpleGraph, "writeManyTimes")
-        manager.saveGraphToDatabase(simpleGraph, "writeManyTimes")
-        manager.saveGraphToDatabase(simpleGraph, "writeManyTimes")
+        var graph = DirectedGraph<Int, Int, Int>(IntRing)
+            .apply {
+                addVertex(1)
+                addVertex(2)
+                addVertex(3)
+                addEdge(1, 2, 1)
+                addEdge(2, 1, 2)
+                addEdge(1, 3, 3)
+            }
+        manager.saveGraphToDatabase(graph, "writeManyTimes")
+
+        graph = DirectedGraph<Int, Int, Int>(IntRing)
+            .apply {
+                addVertex(1)
+                addVertex(2)
+                addVertex(3)
+                addEdge(1, 2, 1)
+                addEdge(2, 1, 3)
+                addEdge(2, 3, 2)
+            }
+        manager.saveGraphToDatabase(graph, "writeManyTimes")
+
+        graph = DirectedGraph<Int, Int, Int>(IntRing)
+            .apply {
+                addVertex(1)
+                addVertex(2)
+                addVertex(3)
+                addEdge(1, 2, 3)
+                addEdge(2, 2, 2)
+                addEdge(1, 3, 1)
+            }
+        manager.saveGraphToDatabase(graph, "writeManyTimes")
         val received = manager.loadGraphFromDatabase<Int, Int, Int>("writeManyTimes")
-        assert(isGraphsEqual(received, simpleGraph))
+        assert(isGraphsEqual(received, graph))
     }
 
     @Test
