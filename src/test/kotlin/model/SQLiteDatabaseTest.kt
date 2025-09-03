@@ -1,7 +1,7 @@
 package model
 
 import model.graph.Graph
-import model.graph.UndirectedGraph
+import model.graph.DirectedGraph
 import model.sqlite.SQLiteManager
 import model.sqlite.setupTables
 import org.junit.jupiter.api.DisplayName
@@ -48,7 +48,7 @@ fun <V : Any, K : Any, W : Comparable<W>> isGraphsEqual(first: Graph<V, K, W>, s
 @DisplayName("Tests for SQLite database")
 class SQLiteDatabaseTest {
     private val manager = SQLiteManager(createMockConnection())
-    val simpleGraph = UndirectedGraph<Int, Int, Int>(IntRing)
+    val simpleGraph = DirectedGraph<Int, Int, Int>(IntRing)
         .apply {
             addVertex(1)
             addVertex(2)
@@ -60,7 +60,7 @@ class SQLiteDatabaseTest {
 
     @Test
     fun emptyGraph() {
-        val graph = UndirectedGraph<Int, Int, Int>(IntRing)
+        val graph = DirectedGraph<Int, Int, Int>(IntRing)
         manager.saveGraphToDatabase(graph, "emptyGraph")
         val received = manager.loadGraphFromDatabase<Int, Int, Int>("emptyGraph")
         assert(isGraphsEqual(received, graph))
@@ -68,7 +68,7 @@ class SQLiteDatabaseTest {
 
     @Test
     fun graphWithNoEdgesWriteRead() {
-        val graph = UndirectedGraph<Int, Int, Int>(IntRing)
+        val graph = DirectedGraph<Int, Int, Int>(IntRing)
             .apply {
                 addVertex(1)
                 addVertex(2)
@@ -110,7 +110,7 @@ class SQLiteDatabaseTest {
 
     @Test
     fun writeReadManyTimes() {
-        var graph = UndirectedGraph<Int, Int, Int>(IntRing)
+        var graph = DirectedGraph<Int, Int, Int>(IntRing)
             .apply {
                 addVertex(1)
                 addVertex(2)
@@ -123,7 +123,7 @@ class SQLiteDatabaseTest {
         var received = manager.loadGraphFromDatabase<Int, Int, Int>("writeReadManyTimes")
         assert(isGraphsEqual(received, graph))
 
-        graph = UndirectedGraph<Int, Int, Int>(IntRing)
+        graph = DirectedGraph<Int, Int, Int>(IntRing)
             .apply {
                 addVertex(1)
                 addVertex(2)
@@ -136,7 +136,7 @@ class SQLiteDatabaseTest {
         received = manager.loadGraphFromDatabase("writeReadManyTimes")
         assert(isGraphsEqual(received, graph))
 
-        graph = UndirectedGraph<Int, Int, Int>(IntRing)
+        graph = DirectedGraph<Int, Int, Int>(IntRing)
             .apply {
                 addVertex(1)
                 addVertex(2)
