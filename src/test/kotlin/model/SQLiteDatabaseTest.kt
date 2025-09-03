@@ -47,7 +47,16 @@ fun <V : Any, K : Any, W : Comparable<W>> isGraphsEqual(first: Graph<V, K, W>, s
 
 @DisplayName("Tests for SQLite database")
 class SQLiteDatabaseTest {
-    var manager = SQLiteManager(createMockConnection())
+    private val manager = SQLiteManager(createMockConnection())
+    val simpleGraph = UndirectedGraph<Int, Int, Int>(IntRing)
+        .apply {
+            addVertex(1)
+            addVertex(2)
+            addVertex(3)
+            addEdge(1, 2, 1)
+            addEdge(2, 1, 2)
+            addEdge(1, 3, 3)
+        }
 
     @Test
     fun emptyGraph() {
@@ -72,7 +81,9 @@ class SQLiteDatabaseTest {
 
     @Test
     fun simpleGraphWriteRead() {
-        TODO()
+        manager.saveGraphToDatabase(simpleGraph, "emptyGraph")
+        val received = manager.loadGraphFromDatabase<Int, Int, Int>("emptyGraph")
+        assert(isGraphsEqual(received, simpleGraph))
     }
 
     @Test
