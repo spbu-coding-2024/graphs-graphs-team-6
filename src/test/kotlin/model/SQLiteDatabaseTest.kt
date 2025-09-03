@@ -59,7 +59,15 @@ class SQLiteDatabaseTest {
 
     @Test
     fun graphWithNoEdgesWriteRead() {
-        TODO()
+        val graph = UndirectedGraph<Int, Int, Int>(IntRing)
+            .apply {
+                addVertex(1)
+                addVertex(2)
+                addVertex(3)
+            }
+        manager.saveGraphToDatabase(graph, "emptyGraph")
+        val received = manager.loadGraphFromDatabase<Int, Int, Int>("emptyGraph")
+        assert(isGraphsEqual(received, graph))
     }
 
     @Test
