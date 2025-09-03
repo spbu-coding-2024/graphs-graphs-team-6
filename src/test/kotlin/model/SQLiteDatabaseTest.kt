@@ -97,7 +97,15 @@ class SQLiteDatabaseTest {
 
     @Test
     fun readManyTimes() {
-        TODO()
+        manager.saveGraphToDatabase(simpleGraph, "emptyGraph")
+        var received = manager.loadGraphFromDatabase<Int, Int, Int>("emptyGraph")
+        assert(isGraphsEqual(received, simpleGraph))
+
+        received = manager.loadGraphFromDatabase("emptyGraph")
+        assert(isGraphsEqual(received, simpleGraph))
+
+        received = manager.loadGraphFromDatabase("emptyGraph")
+        assert(isGraphsEqual(received, simpleGraph))
     }
 
     @Test
