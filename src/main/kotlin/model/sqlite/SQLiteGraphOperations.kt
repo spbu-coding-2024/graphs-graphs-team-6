@@ -170,3 +170,36 @@ fun loadEdgeValues(
     }
     return result
 }
+
+fun cleanupGraph(conn: Connection, graphName: String) {
+    conn.prepareStatement(
+        """
+            DELETE FROM edges
+            WHERE graph = ?
+            """.trimIndent()
+    ).use { stmt ->
+        stmt.setString(1, graphName)
+        stmt.executeUpdate()
+    }
+
+    conn.prepareStatement(
+        """
+            DELETE FROM vertices
+            WHERE graph = ?
+            """.trimIndent()
+    ).use { stmt ->
+        stmt.setString(1, graphName)
+        stmt.executeUpdate()
+    }
+
+    conn.prepareStatement(
+        """
+            DELETE FROM graphs
+            WHERE name = ?
+            """.trimIndent()
+    ).use { stmt ->
+        stmt.setString(1, graphName)
+        stmt.executeUpdate()
+    }
+}
+

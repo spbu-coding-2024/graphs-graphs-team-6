@@ -4,6 +4,7 @@ import model.graph.DirectedGraph
 import model.graph.Graph
 import model.graph.UndirectedGraph
 import java.sql.Connection
+import java.sql.SQLException
 
 /**
  * SQLite database manager for a graph
@@ -39,42 +40,54 @@ import java.sql.Connection
  */
 
 class SQLiteManager(val connection: Connection = createConnection()) {
-    fun <V: Any, K: Any, W : Comparable<W>> saveGraphToDatabase(graph: Graph<V, K, W>, name: String) {
+    fun <V : Any, K : Any, W : Comparable<W>> saveGraphToDatabase(graph: Graph<V, K, W>, name: String) {
         val writeManager = SQLiteWriteConnectionManager(connection)
-        writeManager.setMetadataValues(
-            // BE CAREFUL: N/D now didn't handle. Correctness relies on the absence of type casts in case of empty graph
-            metadata = GraphMetadata(
-                name = name,
-                typeV = if (graph.vertices.isNotEmpty()) graph.vertices.last().value::class.java.name else "N/D",
-                typeK = if (graph.edges.isNotEmpty()) graph.edges.last().key::class.java.name else "N/D",
-                typeW = graph.ring.zero::class.java.name,
-                directed = (graph is DirectedGraph)
-            )
-        )
-        writeManager.metadataStmt.execute()
 
-        for (v in graph.vertices) {
-            writeManager.setVertexValues(
-                id = name + "_" + v.value.toString(),
-                graphName = name,
-                value = v.value.toString()
-            )
-        }
-        writeManager.vertexStmt.executeBatch()
-
-        for (e in graph.edges) {
-            writeManager.setEdgeValues(
-                id = name + "_" + e.key.toString(),
-                graph = name,
-                edge = EdgeRow(
-                    key = e.key.toString(),
-                    start = e.startVertex.value.toString(),
-                    end = e.endVertex.value.toString(),
-                    weight = e.weight.toString()
+        connection.autoCommit = false
+        try {
+            cleanupGraph(connection, name)
+            writeManager.setMetadataValues(
+                // BE CAREFUL: N/D is not processed.
+                // Correctness relies on the absence of type casts in case of empty graph
+                metadata = GraphMetadata(
+                    name = name,
+                    typeV = if (graph.vertices.isNotEmpty()) graph.vertices.last().value::class.java.name else "N/D",
+                    typeK = if (graph.edges.isNotEmpty()) graph.edges.last().key::class.java.name else "N/D",
+                    typeW = graph.ring.zero::class.java.name,
+                    directed = (graph is DirectedGraph)
                 )
             )
+            writeManager.metadataStmt.execute()
+
+            for (v in graph.vertices) {
+                writeManager.setVertexValues(
+                    id = name + "_" + v.value.toString(),
+                    graphName = name,
+                    value = v.value.toString()
+                )
+            }
+            writeManager.vertexStmt.executeBatch()
+
+            for (e in graph.edges) {
+                writeManager.setEdgeValues(
+                    id = name + "_" + e.key.toString(),
+                    graph = name,
+                    edge = EdgeRow(
+                        key = e.key.toString(),
+                        start = e.startVertex.value.toString(),
+                        end = e.endVertex.value.toString(),
+                        weight = e.weight.toString()
+                    )
+                )
+            }
+            writeManager.edgeStmt.executeBatch()
+            connection.commit()
+        } catch (ex: SQLException) {
+            connection.rollback()
+            throw ex
+        } finally {
+            connection.autoCommit = true
         }
-        writeManager.edgeStmt.executeBatch()
     }
 
     fun <V : Any, K : Any, W : Comparable<W>> loadGraphFromDatabase(name: String): Graph<V, K, W> {
