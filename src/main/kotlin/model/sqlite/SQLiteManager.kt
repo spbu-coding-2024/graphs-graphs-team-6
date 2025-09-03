@@ -3,6 +3,7 @@ package model.sqlite
 import model.graph.DirectedGraph
 import model.graph.Graph
 import model.graph.UndirectedGraph
+import java.sql.Connection
 
 /**
  * SQLite database manager for a graph
@@ -37,18 +38,16 @@ import model.graph.UndirectedGraph
  *      value - value in the string representation
  */
 
-class SQLiteManager {
-    val connection = createConnection()
-    fun <V, K, W : Comparable<W>> saveGraphToDatabase(graph: Graph<V, K, W>, name: String) {
-        requireNotNull(graph.edges.last().key)
-        requireNotNull(graph.vertices.last().value)
+class SQLiteManager(val connection: Connection = createConnection()) {
+    fun <V: Any, K: Any, W : Comparable<W>> saveGraphToDatabase(graph: Graph<V, K, W>, name: String) {
         val writeManager = SQLiteWriteConnectionManager(connection)
         writeManager.setMetadataValues(
+            // BE CAREFUL: N/D now didn't handle. Correctness relies on the absence of type casts in case of empty graph
             metadata = GraphMetadata(
                 name = name,
-                typeV = graph.vertices.last().value!!::class.java.name,
-                typeK = graph.edges.last().key!!::class.java.name,
-                typeW = graph.edges.last().weight::class.java.name,
+                typeV = if (graph.vertices.isNotEmpty()) graph.vertices.last().value::class.java.name else "N/D",
+                typeK = if (graph.edges.isNotEmpty()) graph.edges.last().key::class.java.name else "N/D",
+                typeW = graph.ring.zero::class.java.name,
                 directed = (graph is DirectedGraph)
             )
         )
