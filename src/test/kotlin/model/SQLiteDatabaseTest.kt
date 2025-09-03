@@ -74,37 +74,37 @@ class SQLiteDatabaseTest {
                 addVertex(2)
                 addVertex(3)
             }
-        manager.saveGraphToDatabase(graph, "emptyGraph")
-        val received = manager.loadGraphFromDatabase<Int, Int, Int>("emptyGraph")
+        manager.saveGraphToDatabase(graph, "graphWithNoEdgesWriteRead")
+        val received = manager.loadGraphFromDatabase<Int, Int, Int>("graphWithNoEdgesWriteRead")
         assert(isGraphsEqual(received, graph))
     }
 
     @Test
     fun simpleGraphWriteRead() {
-        manager.saveGraphToDatabase(simpleGraph, "emptyGraph")
-        val received = manager.loadGraphFromDatabase<Int, Int, Int>("emptyGraph")
+        manager.saveGraphToDatabase(simpleGraph, "simpleGraphWriteRead")
+        val received = manager.loadGraphFromDatabase<Int, Int, Int>("simpleGraphWriteRead")
         assert(isGraphsEqual(received, simpleGraph))
     }
 
     @Test
     fun writeManyTimes() {
-        manager.saveGraphToDatabase(simpleGraph, "emptyGraph")
-        manager.saveGraphToDatabase(simpleGraph, "emptyGraph")
-        manager.saveGraphToDatabase(simpleGraph, "emptyGraph")
-        val received = manager.loadGraphFromDatabase<Int, Int, Int>("emptyGraph")
+        manager.saveGraphToDatabase(simpleGraph, "writeManyTimes")
+        manager.saveGraphToDatabase(simpleGraph, "writeManyTimes")
+        manager.saveGraphToDatabase(simpleGraph, "writeManyTimes")
+        val received = manager.loadGraphFromDatabase<Int, Int, Int>("writeManyTimes")
         assert(isGraphsEqual(received, simpleGraph))
     }
 
     @Test
     fun readManyTimes() {
-        manager.saveGraphToDatabase(simpleGraph, "emptyGraph")
-        var received = manager.loadGraphFromDatabase<Int, Int, Int>("emptyGraph")
+        manager.saveGraphToDatabase(simpleGraph, "readManyTimes")
+        var received = manager.loadGraphFromDatabase<Int, Int, Int>("readManyTimes")
         assert(isGraphsEqual(received, simpleGraph))
 
-        received = manager.loadGraphFromDatabase("emptyGraph")
+        received = manager.loadGraphFromDatabase("readManyTimes")
         assert(isGraphsEqual(received, simpleGraph))
 
-        received = manager.loadGraphFromDatabase("emptyGraph")
+        received = manager.loadGraphFromDatabase("readManyTimes")
         assert(isGraphsEqual(received, simpleGraph))
     }
 
@@ -119,8 +119,8 @@ class SQLiteDatabaseTest {
                 addEdge(2, 1, 2)
                 addEdge(1, 3, 3)
             }
-        manager.saveGraphToDatabase(graph, "emptyGraph")
-        var received = manager.loadGraphFromDatabase<Int, Int, Int>("emptyGraph")
+        manager.saveGraphToDatabase(graph, "writeReadManyTimes")
+        var received = manager.loadGraphFromDatabase<Int, Int, Int>("writeReadManyTimes")
         assert(isGraphsEqual(received, graph))
 
         graph = UndirectedGraph<Int, Int, Int>(IntRing)
@@ -132,8 +132,8 @@ class SQLiteDatabaseTest {
                 addEdge(2, 1, 3)
                 addEdge(2, 3, 2)
             }
-        manager.saveGraphToDatabase(graph, "emptyGraph")
-        received = manager.loadGraphFromDatabase("emptyGraph")
+        manager.saveGraphToDatabase(graph, "writeReadManyTimes")
+        received = manager.loadGraphFromDatabase("writeReadManyTimes")
         assert(isGraphsEqual(received, graph))
 
         graph = UndirectedGraph<Int, Int, Int>(IntRing)
@@ -145,8 +145,8 @@ class SQLiteDatabaseTest {
                 addEdge(2, 2, 2)
                 addEdge(1, 3, 1)
             }
-        manager.saveGraphToDatabase(graph, "emptyGraph")
-        received = manager.loadGraphFromDatabase("emptyGraph")
+        manager.saveGraphToDatabase(graph, "writeReadManyTimes")
+        received = manager.loadGraphFromDatabase("writeReadManyTimes")
         assert(isGraphsEqual(received, graph))
     }
 }
