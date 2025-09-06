@@ -23,7 +23,7 @@ object Constants {
     const val GENERATOR_WEIGHT_MIN = 1
 
 
-	const val MINIMAL_VERTEX_RADIUS = 4.0
+	const val MINIMAL_VERTEX_RADIUS = 1.0/4.0
 	const val CENTRALITY_RADIUS_MULTIPLYER = 64.0
 
 

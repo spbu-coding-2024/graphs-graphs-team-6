@@ -110,9 +110,9 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 				vertex.radius.value = (
 						centrality[vertex.model.value].let {
 							if (it == null || it == 0.0) {
-								MINIMAL_VERTEX_RADIUS
+								MINIMAL_VERTEX_RADIUS * CENTRALITY_RADIUS_MULTIPLYER
 							} else {
-								sqrt(it) * CENTRALITY_RADIUS_MULTIPLYER
+								sqrt(sqrt(it)) * CENTRALITY_RADIUS_MULTIPLYER
 							}
 						}
 						).dp
