@@ -87,11 +87,12 @@ fun <V, K, W : Comparable<W>> EdgeView(
 	) {
 		val first = edgeViewModel.firstVertexViewModel
 		val second = edgeViewModel.secondVertexViewModel
-		val r = first.radius.value.toPx()
+		val firstR = first.radius.value.toPx()
+		val secondR = second.radius.value.toPx()
 
 		if (first != second) {
-			val start = Offset(first.x.toPx() + r, first.y.toPx() + r)
-			val end = Offset(second.x.toPx() + r, second.y.toPx() + r)
+			val start = Offset(first.x.toPx() + firstR, first.y.toPx() + firstR)
+			val end = Offset(second.x.toPx() + secondR, second.y.toPx() + secondR)
 			drawLine(
 
 				start = start,
@@ -106,8 +107,8 @@ fun <V, K, W : Comparable<W>> EdgeView(
 				val angle = atan2(dx, -dy) - PI.toFloat() / 2f
 				val sinA = sin(angle)
 				val cosA = cos(angle)
-				val baseX = end.x - r * cosA
-				val baseY = end.y - r * sinA
+				val baseX = end.x - secondR * cosA
+				val baseY = end.y - secondR * sinA
 				val path = androidx.compose.ui.graphics.Path().apply {
 					moveTo(baseX, baseY)
 					lineTo(
@@ -121,12 +122,12 @@ fun <V, K, W : Comparable<W>> EdgeView(
 					close()
 				}
 				val norm = sqrt(dx * dx + dy * dy)
-				if (norm >= 2 * r) drawPath(path, edgeViewModel.color)
+				if (norm >= 2 * firstR) drawPath(path, edgeViewModel.color)
 			}
 		} else {
-			val centerX = first.x.toPx() + DEFAULT_LOOP_MULTIPLIER * DEFAULT_LOOP_RADIUS_COEFF * r
-			val centerY = first.y.toPx() + DEFAULT_LOOP_MULTIPLIER * DEFAULT_LOOP_RADIUS_COEFF * r
-			val loopR = 2 * DEFAULT_LOOP_RADIUS_COEFF * r
+			val centerX = first.x.toPx() + DEFAULT_LOOP_MULTIPLIER * DEFAULT_LOOP_RADIUS_COEFF * firstR
+			val centerY = first.y.toPx() + DEFAULT_LOOP_MULTIPLIER * DEFAULT_LOOP_RADIUS_COEFF * firstR
+			val loopR = 2 * DEFAULT_LOOP_RADIUS_COEFF * firstR
 			drawArc(
 				color = edgeViewModel.color,
 				startAngle = 0f,
