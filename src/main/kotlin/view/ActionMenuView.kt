@@ -119,6 +119,7 @@ enum class Algorithm {
 	CycleDetection,
 	Bridges,
 	Dijkstra,
+	KeyVertices,
 	KamadaKawai
 }
 
@@ -133,6 +134,7 @@ fun <V : Any, K : Any, W : Comparable<W>> applyAlgorithm(
 		Algorithm.KamadaKawai.ordinal -> viewModel.drawGraph()
 		Algorithm.BellmanFord.ordinal -> viewModel.findSSSPBellmanFord(startVertex, endVertex)
 		Algorithm.Dijkstra.ordinal -> viewModel.findDijkstraPath(startVertex, endVertex)
+		Algorithm.KeyVertices.ordinal -> viewModel.findKeyVertices()
 		Algorithm.CycleDetection.ordinal -> viewModel.findCycles(startVertex)
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
 		Algorithm.Kruskal.ordinal -> viewModel.findMSF()

@@ -23,6 +23,10 @@ object Constants {
     const val GENERATOR_WEIGHT_MIN = 1
 
 
+	const val MINIMAL_VERTEX_RADIUS = 4.0
+	const val CENTRALITY_RADIUS_MULTIPLYER = 64.0
+
+
 	//Colors
 	const val PALE_YELLOW = 0xFFFAF3C0
 	const val DEFAULT_PATH_COLOR = 0xFFFF0000
