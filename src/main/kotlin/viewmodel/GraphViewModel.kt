@@ -16,6 +16,7 @@ import kotlin.random.Random
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import model.graph.Vertex
 
 /**
@@ -39,7 +40,7 @@ class GraphViewModel<V, K, W : Comparable<W>>(
 				Random.nextInt(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE).dp,
 				Color(DEFAULT_VERTEX_COLOR),
 				Color(DEFAULT_VERTEX_BORDER_COLOR),
-				DEFAULT_VERTEX_RADIUS.dp,
+				mutableStateOf(DEFAULT_VERTEX_RADIUS.dp),
 				DEFAULT_BORDER_WIDTH.dp,
 				it
 			)

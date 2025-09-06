@@ -87,7 +87,7 @@ fun <V, K, W : Comparable<W>> EdgeView(
 	) {
 		val first = edgeViewModel.firstVertexViewModel
 		val second = edgeViewModel.secondVertexViewModel
-		val r = first.radius.toPx()
+		val r = first.radius.value.toPx()
 
 		if (first != second) {
 			val start = Offset(first.x.toPx() + r, first.y.toPx() + r)
