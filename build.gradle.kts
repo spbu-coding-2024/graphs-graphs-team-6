@@ -56,6 +56,7 @@ dependencies {
 	implementation(compose.desktop.currentOs)
 	implementation(compose.uiTest)
 	implementation(compose.desktop.uiTestJUnit4)
+	implementation("org.xerial:sqlite-jdbc:3.45.1.0")
 	detekt("io.gitlab.arturbosch.detekt:detekt-cli:1.23.8")
 	testImplementation(kotlin("test"))
 	testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")

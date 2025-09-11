@@ -8,6 +8,7 @@ import model.graph.*
 import model.json.JsonManager
 import model.algos.SCCCalculator
 import model.neo4j.GraphService
+import model.sqlite.SQLiteManager
 import model.algos.BellmanFordPathCalculator
 import model.algos.BridgeFinder
 import model.algos.CycleDetection
@@ -36,9 +37,13 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 			_graph.value = value
 		}
 
+	val sqliteManager = SQLiteManager()
+
+	var showSaveSQLiteMenu = mutableStateOf(false)
 	var actionWindowVisibility = mutableStateOf(false)
 	var showDbSelectDialog = mutableStateOf(false)
 	var saveDialogState = mutableStateOf(false)
+	var showLoadSQLiteMenu = mutableStateOf(false)
 	private var _showEdgesWeights = mutableStateOf(false)
 
 	var showEdgesWeights: Boolean
@@ -241,5 +246,13 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 			isIncompatibleAlgorithm = true
 			println(e.message)
 		}
+	}
+
+	fun saveSQLite(name: String) {
+		sqliteManager.saveGraphToDatabase(graph, name)
+	}
+
+	fun loadSQLite(name: String){
+		graph = sqliteManager.loadGraphFromDatabase(name)
 	}
 }
