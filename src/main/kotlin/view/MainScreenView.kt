@@ -7,15 +7,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Button
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.DrawerState
-import androidx.compose.material.TextButton
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Icon
+import androidx.compose.material.TextButton
 import viewmodel.MainScreenViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -51,6 +51,8 @@ fun <V : Any, K : Any, W : Comparable<W>> MainScreenView(viewModel: MainScreenVi
         openMenu(viewModel)
         saveMenu(viewModel)
         neo4jMenu(viewModel)
+        loadSQLiteMenu(viewModel)
+        saveSQLiteMenu(viewModel)
 }
 
 @Composable
@@ -126,6 +128,18 @@ fun <V : Any, K : Any, W : Comparable<W>> saveMenu(
                                         ) {
                                                 Text("JSON")
                                         }
+
+                                        Spacer(Modifier.height(8.dp))
+
+                                        Button(
+                                                modifier = Modifier.testTag("SQLiteSaveDialogButton"),
+                                                onClick = {
+                                                        viewModel.saveDialogState.value = false
+                                                        viewModel.showSaveSQLiteMenu.value = true
+                                                }
+                                        ) {
+                                                Text("SQLite")
+                                        }
                                 }
                         },
                         buttons = {}
@@ -168,6 +182,15 @@ fun <V : Any, K : Any, W : Comparable<W>> openMenu(
                                                         viewModel.loadJSON()
                                                 }) {
                                                 Text("JSON")
+                                        }
+                                        Spacer(Modifier.height(8.dp))
+                                        Button(
+                                                modifier = Modifier.testTag("SQLiteOpenDialogButton"),
+                                                onClick = {
+                                                        viewModel.showDbSelectDialog.value = false
+                                                        viewModel.showLoadSQLiteMenu.value = true
+                                                }) {
+                                                Text("SQLite")
                                         }
                                 }
                         },
@@ -303,9 +326,7 @@ fun <V : Any, K : Any, W : Comparable<W>> neo4jConnectionExceptionDialog(viewMod
                         }
                 )
         }
-
 }
-
 
 @Composable
 fun drawerButton(
@@ -335,3 +356,22 @@ fun drawerButton(
         }
 }
 
+@Composable
+fun ConfirmButton(onClick: () -> Unit = {}, showMenuVariable: MutableState<Boolean>) {
+        TextButton(onClick = {
+                showMenuVariable.value = false
+                onClick()
+        }) {
+                Text("Ok")
+        }
+}
+
+@Composable
+fun DismissButton(onClick: () -> Unit = {}, showMenuVariable: MutableState<Boolean>) {
+        TextButton(onClick = {
+                showMenuVariable.value = false
+                onClick()
+        }) {
+                Text("Cancel")
+        }
+}
