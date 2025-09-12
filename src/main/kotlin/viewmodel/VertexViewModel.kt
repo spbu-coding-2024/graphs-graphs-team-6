@@ -1,5 +1,6 @@
 package viewmodel
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -23,7 +24,7 @@ class VertexViewModel<V>(
 	y: Dp = 0.dp,
 	color: Color,
 	borderColor: Color,
-	var radius: Dp,
+	var radius: MutableState<Dp>,
 	var borderWidth: Dp,
 	override val model: Vertex<V>
 ): Colorable<Vertex<V>> {

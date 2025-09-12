@@ -37,7 +37,6 @@ import model.Constants.DEFAULT_EDGE_WIDTH
 import model.Constants.DEFAULT_VERTEX_BORDER_COLOR
 import model.Constants.DEFAULT_VERTEX_COLOR
 import model.Constants.DEFAULT_VERTEX_RADIUS
-import model.graph.UndirectedGraph
 import viewmodel.GraphViewModel
 import viewmodel.MainScreenViewModel
 import viewmodel.VertexViewModel
@@ -120,6 +119,7 @@ enum class Algorithm {
 	CycleDetection,
 	Bridges,
 	Dijkstra,
+	KeyVertices,
 	KamadaKawai
 }
 
@@ -134,6 +134,7 @@ fun <V : Any, K : Any, W : Comparable<W>> applyAlgorithm(
 		Algorithm.KamadaKawai.ordinal -> viewModel.drawGraph()
 		Algorithm.BellmanFord.ordinal -> viewModel.findSSSPBellmanFord(startVertex, endVertex)
 		Algorithm.Dijkstra.ordinal -> viewModel.findDijkstraPath(startVertex, endVertex)
+		Algorithm.KeyVertices.ordinal -> viewModel.findKeyVertices()
 		Algorithm.CycleDetection.ordinal -> viewModel.findCycles(startVertex)
 		Algorithm.Tarjan.ordinal -> viewModel.calculateSCC()
 		Algorithm.Kruskal.ordinal -> viewModel.findMSF()
@@ -244,7 +245,7 @@ fun <V, K, W : Comparable<W>> resetGraphViewModel(graphViewModel: GraphViewModel
 	graphViewModel.vertices.forEach {
 		it.color = Color(DEFAULT_VERTEX_COLOR)
 		it.borderColor = Color(DEFAULT_VERTEX_BORDER_COLOR)
-		it.radius = DEFAULT_VERTEX_RADIUS.dp
+		it.radius.value = DEFAULT_VERTEX_RADIUS.dp
 		it.borderWidth = DEFAULT_BORDER_WIDTH.dp
 	}
 	graphViewModel.edges.forEach {

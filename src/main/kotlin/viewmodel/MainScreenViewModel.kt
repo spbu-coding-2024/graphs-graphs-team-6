@@ -2,7 +2,10 @@ package viewmodel
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import model.Constants.BRIGHT_RED
+import model.Constants.CENTRALITY_RADIUS_MULTIPLYER
+import model.Constants.MINIMAL_VERTEX_RADIUS
 import model.Constants.SEMI_BLACK
 import model.graph.*
 import model.json.JsonManager
@@ -14,11 +17,13 @@ import model.algos.BridgeFinder
 import model.algos.CycleDetection
 import model.algos.DijkstraPathCalculator
 import model.algos.GraphPath
+import model.algos.HarmonicCentrality
 import model.algos.KamadaKawai
 import model.algos.MSFFinder
 import model.algos.Louvain
 import java.awt.FileDialog
 import java.awt.Frame
+import kotlin.math.sqrt
 
 enum class Neo4jAction { NONE, LOAD, SAVE }
 
@@ -97,6 +102,26 @@ class MainScreenViewModel<V : Any, K : Any, W : Comparable<W>>(graphParam: Graph
 			val path = GraphPath.construct(predecessors, endVertex.model.value)
 				.map { graphViewModel.getEdgeViewModel(it) }
 			ColorUtils.applyOneColor(path, Color.Red)
+		}
+		else {
+			isIncompatibleAlgorithm = true
+		}
+	}
+
+	fun findKeyVertices() {
+		if (graph is DirectedGraph) {
+			val centrality = HarmonicCentrality<V, K, W>().calculate(graph)
+			graphViewModel.vertices.forEach { vertex ->
+				vertex.radius.value = (
+						centrality[vertex.model.value].let {
+							if (it == null || it == 0.0) {
+								MINIMAL_VERTEX_RADIUS * CENTRALITY_RADIUS_MULTIPLYER
+							} else {
+								sqrt(sqrt(it)) * CENTRALITY_RADIUS_MULTIPLYER
+							}
+						}
+						).dp
+			}
 		}
 		else {
 			isIncompatibleAlgorithm = true
