@@ -1,0 +1,58 @@
+package model
+
+import space.kscience.kmath.operations.Int32Ring
+
+typealias APPLICATION_V_TYPE = String
+typealias APPLICATION_K_TYPE = Int
+typealias APPLICATION_W_TYPE = Int
+typealias APPLICATION_RING = Int32Ring
+
+object Constants {
+	const val MIN_RANDOM_VALUE = 0
+	const val MAX_RANDOM_VALUE = 500
+
+	const val DEFAULT_VERTEX_RADIUS = 25
+	const val DEFAULT_BORDER_WIDTH = 5
+	const val DEFAULT_EDGE_WIDTH = 2
+
+	const val DEFAULT_ARROW_TRIANGLE_HEIGHT = 30
+	const val DEFAULT_ARROW_TRIANGLE_WIDTH = 10
+	const val DEFAULT_LOOP_RADIUS_COEFF = 0.75f
+	const val DEFAULT_LOOP_MULTIPLIER = 3
+
+	const val DEFAULT_ZOOM_SCALE_COEF = .001f
+
+	const val SHOW_LABEL_MOD = 3
+
+	const val BANNER_HEIGHT = 50
+
+	const val GENERATOR_WEIGHT_BOUND = 100
+	const val GENERATOR_WEIGHT_MIN = 1
+
+
+	const val MINIMAL_VERTEX_RADIUS = 1.0/4.0
+	const val CENTRALITY_RADIUS_MULTIPLYER = 64.0
+
+  
+	//Colors
+	const val PALE_YELLOW = 0xFFFAF3C0
+	const val DEFAULT_PATH_COLOR = 0xFFFF0000
+	const val SEMI_BLACK = 0x50000000
+	const val BRIGHT_RED = 0xFFFF0000
+	const val DEFAULT_EDGE_COLOR = 0xFF000000
+	const val DEFAULT_VERTEX_COLOR = 0xFF2979FF
+	const val DEFAULT_VERTEX_BORDER_COLOR = 0xFF2962FF
+
+    const val MAX_ZOOM_MULTIPLIER = 2F
+    const val MIN_ZOOM_MULTIPLIER = 0.25F
+    const val DEFAULT_STRENGTH_CONSTANT = 10F
+    const val EPSILON = 0.1F
+    const val DEFAULT_KAMADAKAWAI_LENGTH = 500F
+
+    const val DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_MENU = 0xFFF0F0F0
+    const val DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_BUTTON = 0xFFF0F0F0
+
+	const val SQLITE_DATABASE_PATH = "data/graphs.sqlite"
+	const val JSON_DEFAULT_DIRECTORY = "json"
+
+}
