@@ -27,7 +27,7 @@ object Constants {
 	const val BANNER_HEIGHT = 50
 
 	const val GENERATOR_WEIGHT_BOUND = 100
-  const val GENERATOR_WEIGHT_MIN = 1
+	const val GENERATOR_WEIGHT_MIN = 1
 
 
 	const val MINIMAL_VERTEX_RADIUS = 1.0/4.0
@@ -53,5 +53,6 @@ object Constants {
     const val DEFAULT_MAIN_SCREEN_BACKGROUND_COLOR_BUTTON = 0xFFF0F0F0
 
 	const val SQLITE_DATABASE_PATH = "data/graphs.sqlite"
+	const val JSON_DEFAULT_DIRECTORY = "json"
 
 }
